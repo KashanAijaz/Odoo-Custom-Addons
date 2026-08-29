@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Technical Quotation -->
+    <record id="action_sale_order_technical_quotation"
+            model="ir.actions.server">
+
+        <field name="name">Technical Quotation</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+
+        <field name="code">
+if record:
+    action = record.action_print_technical_quotation()
+        </field>
+
+    </record>
+
+
+    <!-- Financial Quotation -->
+    <record id="action_sale_order_financial_quotation"
+            model="ir.actions.server">
+
+        <field name="name">Financial Quotation</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+
+        <field name="code">
+if record:
+    action = record.action_print_financial_quotation()
+        </field>
+
+    </record>
+
+
+    <!-- Techno Financial Quotation -->
+    <record id="action_sale_order_techno_financial_quotation"
+            model="ir.actions.server">
+
+        <field name="name">Techno Financial</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+
+        <field name="code">
+if record:
+    action = record.action_print_techno_financial_quotation()
+        </field>
+
+    </record>
+
+</odoo>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!--
+            This rule is created WITHOUT a struct_id on purpose, because the
+            default salary structure's external ID differs between Odoo
+            installations/localizations. After installing this module, go to
+            Payroll > Configuration > Salary Rules, open
+            "Attendance Deduction (Shariah / International)" and set its
+            "Salary Structure" field to whichever structure your payslips
+            use (e.g. the Regular Pay / CIB structure), then move it into
+            the Deduction category/sequence you want.
+        -->
+        <!--
+            We define our own category instead of referencing a category
+            from hr_payroll/hr_payroll_community, because the external ID
+            for "Deductions" differs (or may not exist) between the
+            Enterprise app and the various free/community payroll forks.
+            If your payroll module already has a "Deductions" category you
+            prefer to reuse, just delete this record and change the
+            category_id ref below to point at yours instead.
+        -->
+        <record id="hr_salary_rule_category_attendance_deduction" model="hr.salary.rule.category">
+            <field name="name">Attendance Deductions (Shariah/International)</field>
+            <field name="code">ATT_DED</field>
+        </record>
+
+        <record id="hr_salary_rule_attendance_deduction" model="hr.salary.rule">
+            <field name="name">Attendance Deduction (Shariah / International)</field>
+            <field name="code">ATTENDANCE_DEDUCTION</field>
+            <field name="category_id" ref="hr_salary_rule_category_attendance_deduction"/>
+            <field name="sequence" eval="180"/>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = -payslip.attendance_total_deduction
+            </field>
+            <field name="condition_select">python</field>
+            <field name="condition_python">
+result = payslip.payroll_type and payslip.attendance_total_deduction > 0
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

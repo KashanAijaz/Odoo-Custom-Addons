@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="product_category_tdc_import_charges" model="product.category">
+        <field name="name">Import Clearing Charges</field>
+    </record>
+
+    <record id="product_tdc_charge_bank_charges" model="product.product">
+        <field name="name">Bank Charges</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_packing_origin" model="product.product">
+        <field name="name">Packing Charges at Origin</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_freight_grand_total" model="product.product">
+        <field name="name">Sea/Air/Land Freight (Grand Total)</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_uae_bank_expenses" model="product.product">
+        <field name="name">Total UAE Bank Expenses</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <!-- UAE Expenses Products -->
+<record id="product_tdc_charge_uae_freight_expense" model="product.product">
+    <field name="name">Freight Expense from Origin to UAE</field>
+    <field name="type">service</field>
+    <field name="categ_id" ref="product_category_tdc_import_charges"/>
+    <field name="purchase_ok" eval="True"/>
+    <field name="sale_ok" eval="False"/>
+    <field name="list_price">0.0</field>
+</record>
+
+<record id="product_tdc_charge_uae_customs_clearance" model="product.product">
+    <field name="name">UAE Customs Clearance Expense (Excl. VAT Paid)</field>
+    <field name="type">service</field>
+    <field name="categ_id" ref="product_category_tdc_import_charges"/>
+    <field name="purchase_ok" eval="True"/>
+    <field name="sale_ok" eval="False"/>
+    <field name="list_price">0.0</field>
+</record>
+
+<record id="product_tdc_charge_uae_vat_paid" model="product.product">
+    <field name="name">VAT Paid at Customs Clearance (UAE)</field>
+    <field name="type">service</field>
+    <field name="categ_id" ref="product_category_tdc_import_charges"/>
+    <field name="purchase_ok" eval="True"/>
+    <field name="sale_ok" eval="False"/>
+    <field name="list_price">0.0</field>
+</record>
+
+    <record id="product_tdc_charge_uae_company_expenses" model="product.product">
+        <field name="name">Total UAE Company Expenses</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_courier_uae_bank" model="product.product">
+        <field name="name">TDHL/TCS/Fedex etc. Docs Courier Charges to UAE Bank</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_cess_sindh_excise" model="product.product">
+        <field name="name">CESS Sindh Excise Duty</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_sindh_stamp_duty" model="product.product">
+        <field name="name">Sindh Stamp Duty</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_psw_gd_fee" model="product.product">
+        <field name="name">PSW GD Fee</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_invoice_not_found_penalty" model="product.product">
+        <field name="name">Invoice Not Found Penalty</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_any_other_charges" model="product.product">
+        <field name="name">Any Other Charges</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_godown_shed_charges" model="product.product">
+        <field name="name">Godown/Shed Charges</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_delivery_order" model="product.product">
+        <field name="name">Delivery Order (DO) Charges</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_psw_token_gd" model="product.product">
+        <field name="name">PSW Token for GD Submission</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_caa_charges" model="product.product">
+        <field name="name">Civil Aviation (CAA) Charges (if By Air)</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_transport_port_warehouse" model="product.product">
+        <field name="name">Transport Exp. from Port/Airport to Welkin Warehouse</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_clearing_agent_fees" model="product.product">
+        <field name="name">Clearing Agent Fees</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_misc_examination" model="product.product">
+        <field name="name">MISC. Examination Expense</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_misc_assessment" model="product.product">
+        <field name="name">MISC. Assessment Expense</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_misc_delivery_gateout" model="product.product">
+        <field name="name">MISC. Delivery/Gate-out Expense</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+
+    <record id="product_tdc_charge_any_other_expense_transport" model="product.product">
+        <field name="name">Any Other Expense - Transportation/Bykea or Other</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="product_category_tdc_import_charges"/>
+        <field name="purchase_ok" eval="True"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+</odoo>

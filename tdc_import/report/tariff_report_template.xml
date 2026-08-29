@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <record id="action_report_tariff" model="ir.actions.report">
+        <field name="name">Tariff Report</field>
+        <field name="model">tariff.import</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tdc_import.tariff_report_template</field>
+        <field name="report_file">tdc_import.tariff_report_template</field>
+        <field name="print_report_name">'Tariff Report - %s' % (object.reference or '')</field>
+        <field name="binding_model_id" ref="model_tariff_import"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Excel Report -->
+    <record id="action_report_tariff_xlsx" model="ir.actions.report">
+        <field name="name">Tariff Excel Report</field>
+        <field name="model">tariff.import</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">tdc_import.tariff_report_xlsx</field>
+        <field name="report_file">tdc_import.tariff_report_xlsx</field>
+        <field name="print_report_name">'Tariff Report - %s.xlsx' % (object.reference or '')</field>
+        <field name="binding_model_id" ref="model_tariff_import"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- PDF Report Template -->
+    <template id="tariff_report_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <div class="row">
+                        <div class="col-12">
+                            <h2 class="text-center">TARIFF IMPORT REPORT</h2>
+                            <h4 class="text-center">Reference: <span t-field="doc.reference"/></h4>
+                            <h4 class="text-center">DG No: <span t-field="doc.dg_no"/></h4>
+                            <hr/>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>GD Date:</strong></td>
+                                    <td><span t-field="doc.gd_date"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vendor:</strong></td>
+                                    <td><span t-field="doc.vendor_id"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Currency:</strong></td>
+                                    <td><span t-field="doc.currency_id"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Exchange Rate:</strong></td>
+                                    <td><span t-field="doc.exchange_rate"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Insurance %:</strong></td>
+                                    <td><span t-field="doc.insurance_percent"/>%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Landing Charges %:</strong></td>
+                                    <td><span t-field="doc.landing_charges_percent"/>%</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-sm" style="font-size: 8px;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Description</th>
+                                <th>HS Code</th>
+                                <th>Qty</th>
+                                <th>UOM</th>
+                                <th>Assessed Unit Value (EUR)</th>
+                                <th>Assessed Total Value (EUR)</th>
+                                <th>Assessed Unit Value (PKR)</th>
+                                <th>Assessed Total Value (PKR)</th>
+                                <th>CD %</th>
+                                <th>CD (PKR)</th>
+                                <th>RD %</th>
+                                <th>RD (PKR)</th>
+                                <th>ACD %</th>
+                                <th>ACD (PKR)</th>
+                                <th>ST %</th>
+                                <th>ST (PKR)</th>
+                                <th>AST %</th>
+                                <th>AST (PKR)</th>
+                                <th>IT %</th>
+                                <th>IT (PKR)</th>
+                                <th>Total Payable (PKR)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="doc.line_ids" t-as="line" t-set="index" t-value="line_index+1">
+                                <td><span t-esc="index"/></td>
+                                <td><span t-field="line.description"/></td>
+                                <td><span t-field="line.hs_code"/></td>
+                                <td><span t-field="line.quantity"/></td>
+                                <td><span t-field="line.uom_id"/></td>
+                                <td class="text-right"><span t-field="line.assessed_unit_value_eur"/></td>
+                                <td class="text-right"><span t-field="line.assessed_total_value_eur"/></td>
+                                <td class="text-right"><span t-field="line.assessed_unit_value_pkr"/></td>
+                                <td class="text-right"><span t-field="line.assessed_total_value_pkr"/></td>
+                                <td class="text-right"><span t-field="line.cd_percentage"/></td>
+                                <td class="text-right"><span t-field="line.cd_pkr"/></td>
+                                <td class="text-right"><span t-field="line.rd_percentage"/></td>
+                                <td class="text-right"><span t-field="line.rd_pkr"/></td>
+                                <td class="text-right"><span t-field="line.acd_percentage"/></td>
+                                <td class="text-right"><span t-field="line.acd_pkr"/></td>
+                                <td class="text-right"><span t-field="line.st_percentage"/></td>
+                                <td class="text-right"><span t-field="line.st_pkr"/></td>
+                                <td class="text-right"><span t-field="line.ast_percentage"/></td>
+                                <td class="text-right"><span t-field="line.ast_pkr"/></td>
+                                <td class="text-right"><span t-field="line.it_percentage"/></td>
+                                <td class="text-right"><span t-field="line.it_pkr"/></td>
+                                <td class="text-right"><strong><span t-field="line.total_payable_pkr"/></strong></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="8"><strong>TOTAL</strong></td>
+                                <td class="text-right"><strong><span t-field="doc.total_assessed_value_pkr"/></strong></td>
+                                <td></td>
+                                <td class="text-right"><strong><span t-field="doc.total_cd_pkr"/></strong></td>
+                                <td></td>
+                                <td class="text-right"><strong><span t-field="doc.total_rd_pkr"/></strong></td>
+                                <td></td>
+                                <td class="text-right"><strong><span t-field="doc.total_acd_pkr"/></strong></td>
+                                <td></td>
+                                <td class="text-right"><strong><span t-field="doc.total_st_pkr"/></strong></td>
+                                <td></td>
+                                <td class="text-right"><strong><span t-field="doc.total_ast_pkr"/></strong></td>
+                                <td></td>
+                                <td class="text-right"><strong><span t-field="doc.total_it_pkr"/></strong></td>
+                                <td class="text-right"><strong><span t-field="doc.total_sum_payable_pkr"/></strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5>SUMMARY</h5>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td><strong>Total Assessed Value (EUR):</strong></td>
+                                    <td><span t-field="doc.total_assessed_value_eur"/></td>
+                                    <td><strong>Total Assessed Value (PKR):</strong></td>
+                                    <td><span t-field="doc.total_assessed_value_pkr"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total CD (PKR):</strong></td>
+                                    <td><span t-field="doc.total_cd_pkr"/></td>
+                                    <td><strong>Total RD (PKR):</strong></td>
+                                    <td><span t-field="doc.total_rd_pkr"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total ACD (PKR):</strong></td>
+                                    <td><span t-field="doc.total_acd_pkr"/></td>
+                                    <td><strong>Total ST (PKR):</strong></td>
+                                    <td><span t-field="doc.total_st_pkr"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total AST (PKR):</strong></td>
+                                    <td><span t-field="doc.total_ast_pkr"/></td>
+                                    <td><strong>Total IT (PKR):</strong></td>
+                                    <td><span t-field="doc.total_it_pkr"/></td>
+                                </tr>
+                                <tr class="table-success">
+                                    <td colspan="3"><strong>GRAND TOTAL PAYABLE (PKR):</strong></td>
+                                    <td><strong><span t-field="doc.total_sum_payable_pkr"/></strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="oe_structure"/>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

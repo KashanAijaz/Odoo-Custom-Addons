@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tariff_import_form_inherit" model="ir.ui.view">
+        <field name="name">tariff.import.form.inherit</field>
+        <field name="model">tariff.import</field>
+        <field name="inherit_id" ref="view_tariff_import_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="print_tariff_report" string="Print PDF" type="object" 
+                        class="btn-secondary" icon="fa-print" states="confirmed,done"/>
+                <button name="print_tariff_xlsx_report" string="Export Excel" type="object" 
+                        class="btn-secondary" icon="fa-file-excel-o" states="confirmed,done"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================================
+                            LIST VIEW
+    =========================================================== -->
+
+    <record id="view_tdc_tender_notification_tree" model="ir.ui.view">
+        <field name="name">tdc.tender.notification.tree</field>
+        <field name="model">tdc.tender.notification</field>
+        <field name="arch" type="xml">
+            <list string="Notifications"
+                  decoration-danger="priority == '2' and state == 'unread'"
+                  decoration-warning="priority == '1' and state == 'unread'"
+                  decoration-muted="state in ('archived', 'read')">
+
+                <field name="notification_date"/>
+                <field name="organization_id"/>
+                <field name="upcoming_tender_id"/>
+                <field name="tender_id"/>
+                <field name="worksheet_id"/>
+                <field name="sale_order_id"/>
+                <field name="notification_type"/>
+                <field name="priority" widget="badge"
+                       decoration-danger="priority == '2'"
+                       decoration-warning="priority == '1'"
+                       decoration-info="priority == '0'"/>
+                <field name="due_date"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'unread'"
+                       decoration-warning="state == 'snoozed'"
+                       decoration-muted="state in ('read', 'archived')"/>
+                <field name="message"/>
+
+                <button name="action_open_record" string="Open" type="object" icon="fa-external-link"/>
+                <button name="action_mark_read" string="Mark Read" type="object" icon="fa-check"
+                        invisible="state != 'unread'"/>
+                <button name="action_archive_notification" string="Archive" type="object" icon="fa-archive"
+                        invisible="state == 'archived'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ==========================================================
+                            FORM VIEW
+    =========================================================== -->
+
+    <record id="view_tdc_tender_notification_form" model="ir.ui.view">
+        <field name="name">tdc.tender.notification.form</field>
+        <field name="model">tdc.tender.notification</field>
+        <field name="arch" type="xml">
+            <form string="Notification">
+                <header>
+                    <button name="action_open_record" string="Open Record" type="object" class="btn-primary"/>
+                    <button name="action_mark_read" string="Mark Read" type="object"
+                            invisible="state != 'unread'"/>
+                    <button name="action_snooze" string="Remind Me Later" type="object"
+                            invisible="state == 'archived'"/>
+                    <button name="action_archive_notification" string="Archive" type="object"
+                            invisible="state == 'archived'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="unread,read,snoozed,archived"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="notification_type"/>
+                            <field name="priority"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group>
+                            <field name="due_date"/>
+                            <field name="notification_date"/>
+                            <field name="is_read" invisible="1"/>
+                            <field name="is_popup_shown" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Related Records">
+                        <field name="organization_id"/>
+                        <field name="upcoming_tender_id"/>
+                        <field name="tender_id"/>
+                        <field name="worksheet_id"/>
+                        <field name="sale_order_id"/>
+                    </group>
+                    <group string="Message">
+                        <field name="message" nolabel="1"/>
+                    </group>
+                    <group string="Remind Me Later" invisible="state != 'snoozed'">
+                        <field name="remind_days"/>
+                        <field name="remind_me_on"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==========================================================
+                            SEARCH VIEW
+    =========================================================== -->
+
+<record id="view_tdc_tender_notification_search" model="ir.ui.view">
+    <field name="name">tdc.tender.notification.search</field>
+    <field name="model">tdc.tender.notification</field>
+    <field name="arch" type="xml">
+        <search string="Search Notifications">
+            <field name="name"/>
+            <field name="organization_id"/>
+            <field name="tender_id"/>
+        </search>
+    </field>
+</record>
+
+    <!-- ==========================================================
+                            ACTION
+    =========================================================== -->
+
+    <record id="action_tdc_tender_notification" model="ir.actions.act_window">
+        <field name="name">Notifications</field>
+        <field name="res_model">tdc.tender.notification</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tdc_tender_notification_search"/>
+        <field name="context">{'search_default_filter_unread': 1}</field>
+    </record>
+
+    <!-- ==========================================================
+                            MENU
+    =========================================================== -->
+
+    
+
+</odoo>

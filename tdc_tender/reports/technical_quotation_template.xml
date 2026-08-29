@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_technical_quotation">
+
+        <t t-call="web.html_container">
+
+            <t t-foreach="docs" t-as="doc">
+
+                <t t-call="web.external_layout">
+
+                    <!-- First Sale Order Against Tender -->
+                    <t t-set="sale_order" t-value="doc.sale_order_ids[:1]"/>
+
+                    <div class="page">
+
+                        <!-- ================= HEADER ================= -->
+
+                        <table style="width:100%; font-size:13px; border-collapse:collapse;">
+
+                            <tr>
+
+                                <td style="width:60%; vertical-align:top;">
+
+                                    <strong>Attn.</strong><br/>
+
+                                    <span t-esc="doc.upcoming_tender_id.partner_id.name"/>
+
+                                </td>
+
+                                <td style="width:40%;">
+
+                                    <table style="width:100%;">
+
+                                        <tr>
+                                            <td><b>Date</b></td>
+                                            <td>
+                                                <span t-field="doc.create_date"
+                                                      t-options='{"widget":"date"}'/>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><b>Validity</b></td>
+                                            <td>120 Days</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><b>Quote No.</b></td>
+                                            <td>
+                                                <span t-field="doc.name"/>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><b>Reference</b></td>
+                                            <td>
+                                                <span t-esc="doc.upcoming_tender_id.tender_title"/>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                        <br/>
+
+                        <div style="text-align:center;
+                                    border-top:2px solid black;
+                                    border-bottom:2px solid black;
+                                    margin-bottom:15px;">
+
+                            <h3>TECHNICAL QUOTATION</h3>
+
+                        </div>
+
+                        <p>
+
+                            Dear Correspondent,
+
+                            <br/><br/>
+
+                            In response to your inquiry, we would like to offer our quotation in compliance with your tender requirements.
+
+                        </p>
+
+                        <!-- ================= TABLE ================= -->
+
+                        <table border="1"
+                               style="width:100%;
+                                      border-collapse:collapse;
+                                      font-size:12px;">
+
+                            <thead>
+
+                                <tr style="background:#d9e3f0;">
+
+                                    <th style="width:5%; text-align:center;">S.#</th>
+
+                                    <th style="width:85%; text-align:center;">
+                                        DESCRIPTION OF ITEMS (QUOTED SPECIFICATIONS)
+                                    </th>
+
+                                    <th style="width:10%; text-align:center;">
+                                        QTY
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <t t-foreach="doc.worksheet_ids.line_ids" t-as="line">
+
+                                    <tr>
+
+                                        <td style="text-align:center; vertical-align:top;">
+
+                                            <span t-field="line.sequence"/>
+
+                                        </td>
+
+                                        <td style="padding:8px;">
+
+                                            <strong>
+
+                                                <span t-field="line.product_id"/>
+
+                                            </strong>
+
+                                            <br/><br/>
+
+                                            <b>Model :</b>
+
+                                            <span t-field="line.product_id.product_tmpl_id.model_no_id"/>
+
+                                            <br/>
+
+                                            <b>MAKE :</b>
+
+                                            <span t-field="line.product_id.product_tmpl_id.tender_make"/>
+
+                                            <br/><br/>
+
+                                            <b>TECHNICAL SPECIFICATION</b>
+
+                                            <br/>
+
+                                            <!-- <div t-field="line.product_id.product_tmpl_id.technical_key_features"/>
+                                            <div t-field="line.product_id.product_tmpl_id.tender_specification"/>
+                                            <div t-field="line.product_id.product_tmpl_id.technical_power_supply"/> -->
+
+                                            <div t-field="line.sale_line_id.technical_key_features"/>
+                                            <div t-field="line.sale_line_id.tender_specification"/>
+                                            <div t-field="line.sale_line_id.technical_power_supply"/>
+
+                                        </td>
+
+                                        <td style="text-align:center; vertical-align:top;">
+
+                                            <span t-field="line.qty"/>
+
+                                        </td>
+
+                                    </tr>
+
+                                </t>
+
+                            </tbody>
+
+                        </table>
+
+                        <br/><br/>
+
+                        <!-- ================= TERMS ================= -->
+
+                        <t t-if="sale_order and sale_order.technical_terms">
+
+                            <h4 style="text-align:center;">
+                                TERMS &amp; CONDITIONS
+                            </h4>
+
+                            <div t-field="sale_order.technical_terms"/>
+
+                        </t>
+
+                    </div>
+
+                </t>
+
+            </t>
+
+        </t>
+
+    </template>
+
+</odoo>

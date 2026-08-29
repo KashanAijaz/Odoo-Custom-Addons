@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Add "Reminder Day" right after the "Payment Terms" field -->
+<record id="view_move_form_reminder_day" model="ir.ui.view">
+    <field name="name">account.move.form.reminder.day</field>
+    <field name="model">account.move</field>
+    <field name="inherit_id" ref="account.view_move_form"/>
+    <field name="arch" type="xml">
+
+        <!-- Move Currency field right under Customer (left column) -->
+        
+
+        <!-- Add Reminder Day right after Payment Terms (right column) -->
+        <field name="invoice_date" position="after">
+            <field name="reminder_day"
+                   invisible="move_type not in ('out_invoice', 'out_refund')"
+                   widget="integer"/>
+        </field>
+
+    </field>
+</record>
+    <!-- Smart button on the invoice showing number of notifications triggered -->
+    <record id="view_move_form_reminder_button" model="ir.ui.view">
+        <field name="name">account.move.form.reminder.button</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button name="action_view_reminder_notifications"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-bell"
+                        invisible="reminder_notification_count == 0">
+                    <field name="reminder_notification_count" widget="statinfo" string="Reminders"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

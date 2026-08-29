@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tdc_import_tariff_user,tdc.import.tariff.user,model_tdc_import_tariff,base.group_user,1,1,1,1
+access_tdc_import_tariff_line_user,tdc.import.tariff.line.user,model_tdc_import_tariff_line,base.group_user,1,1,1,1
+access_tdc_import_tariff_report_wizard_user,tdc.import.tariff.report.wizard.user,model_tdc_import_tariff_report_wizard,base.group_user,1,1,1,1
+access_tdc_master_import_user,tdc.master.import.user,model_tdc_master_import,base.group_user,1,1,1,1
+access_tdc_master_import_charge_line_user,tdc.master.import.charge.line.user,model_tdc_master_import_charge_line,base.group_user,1,1,1,1
+access_tdc_port_user,tdc.port.user,model_tdc_port,base.group_user,1,1,1,1
+access_tdc_vessel_user,tdc.vessel.user,model_tdc_vessel,base.group_user,1,1,1,1
+access_tdc_igm_terminal_user,tdc.igm.terminal.user,model_tdc_igm_terminal,base.group_user,1,1,1,1
+access_tdc_customs_collectorate_user,tdc.customs.collectorate.user,model_tdc_customs_collectorate,base.group_user,1,1,1,1
+access_tdc_master_import_product_line_user,tdc.master.import.product.line.user,model_tdc_master_import_product_line,base.group_user,1,1,1,1

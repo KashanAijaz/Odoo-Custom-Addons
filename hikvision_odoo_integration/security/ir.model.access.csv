@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hikvision_device_user,access.hikvision.device,model_hikvision_device,base.group_user,1,1,1,1
+access_hikvision_management_user,access.hikvision.management,model_hikvision_management,base.group_user,1,1,1,1
+access_hikvision_attendance_wizard_user,access.hikvision.attendance.wizard,model_hikvision_attendance_wizard,base.group_user,1,1,1,1

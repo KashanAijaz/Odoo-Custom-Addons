@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List View -->
+    <record id="tdc_tariff_menu_view_list" model="ir.ui.view">
+        <field name="name">tdc.tariff.menu.list</field>
+        <field name="model">tdc.tariff.menu</field>
+        <field name="arch" type="xml">
+            <list string="Tariff Menus">
+                <field name="gd_number"/>
+                <field name="gd_date"/>
+                <field name="currency_id"/>
+                <field name="gd_exchange_rate"/>
+                <field name="total_assessed_value_pkr" sum="Total Assessed Value (PKR)"/>
+                <field name="total_payable" sum="Grand Total Payable (PKR)"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="tdc_tariff_menu_view_form" model="ir.ui.view">
+        <field name="name">tdc.tariff.menu.form</field>
+        <field name="model">tdc.tariff.menu</field>
+        <field name="arch" type="xml">
+            <form string="Tariff Menu">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="gd_number" placeholder="GD Number"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="gd_date"/>
+                            <field name="currency_id"/>
+                            <field name="gd_exchange_rate"/>
+                        </group>
+                        <group>
+                            <field name="insurance_percent"/>
+                            <field name="landing_charges_percent"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Products" name="products">
+                            <field name="tariff_line_ids">
+                                <list editable="bottom" decoration-muted="False">
+                                    <field name="product_id"/>
+                                    <field name="hs_code"/>
+                                    <field name="qty" sum="Total Qty"/>
+                                    <field name="uom_id"/>
+                                    <field name="assessed_unit_value"/>
+                                    <field name="assessed_total_value" sum="Total (Foreign)"/>
+                                    <field name="assessed_unit_value_pkr"/>
+                                    <field name="assessed_total_value_pkr" sum="Total (PKR)"/>
+                                    <field name="cd" optional="show"/>
+                                    <field name="cd_amount" sum="CD Total"/>
+                                    <field name="rd" optional="show"/>
+                                    <field name="rd_amount" sum="RD Total"/>
+                                    <field name="acd" optional="show"/>
+                                    <field name="acd_amount" sum="ACD Total"/>
+                                    <field name="sales_tax_ids" widget="many2many_tags" optional="hide"/>
+                                    <field name="st_percent" optional="show"/>
+                                    <field name="st_amount" sum="ST Total"/>
+                                    <field name="advance_sales_tax_ids" widget="many2many_tags" optional="hide"/>
+                                    <field name="ast_percent" optional="show"/>
+                                    <field name="ast_amount" sum="AST Total"/>
+                                    <field name="income_tax_ids" widget="many2many_tags" optional="hide"/>
+                                    <field name="it_percent" optional="show"/>
+                                    <field name="it_amount" sum="IT Total"/>
+                                    <field name="total_payable" sum="Grand Total Payable (PKR)"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                    <group string="Grand Total (PKR)" class="oe_subtotal_footer">
+                        <field name="total_assessed_value" string="Total Assessed Value (Foreign)" readonly="1"/>
+                        <field name="total_assessed_value_pkr" string="Total Assessed Value" readonly="1"/>
+                        <field name="total_cd" string="Total CD" readonly="1"/>
+                        <field name="total_rd" string="Total RD" readonly="1"/>
+                        <field name="total_acd" string="Total ACD" readonly="1"/>
+                        <field name="total_st" string="Total ST" readonly="1"/>
+                        <field name="total_ast" string="Total AST" readonly="1"/>
+                        <field name="total_it" string="Total IT" readonly="1"/>
+                        <field name="total_payable" string="Grand Total Payable" readonly="1" class="oe_subtotal_footer_separator"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View
+    <record id="tdc_tariff_menu_view_search" model="ir.ui.view">
+        <field name="name">tdc.tariff.menu.search</field>
+        <field name="model">tdc.tariff.menu</field>
+        <field name="arch" type="xml">
+            <search string="Tariff Menus">
+                <field name="gd_number"/>
+                <field name="currency_id"/>
+                <filter string="GD Date" name="group_gd_date" date="gd_date"/>
+                <group expand="0" string="Group By">
+                    <filter string="Currency" name="group_currency" context="{'group_by': 'currency_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record> -->
+
+    <!-- Action -->
+    <record id="tdc_tariff_menu_action" model="ir.actions.act_window">
+        <field name="name">Tariff Menu</field>
+        <field name="res_model">tdc.tariff.menu</field>
+        <field name="view_mode">list,form</field>
+       
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Tariff Menu
+            </p>
+        </field>
+    </record>
+
+    <!-- Top level menu -->
+    <menuitem id="tdc_tariff_root_menu"
+              name="Tariff Menu"
+              sequence="60"/>
+
+    <menuitem id="tdc_tariff_menu_menu"
+              name="Tariff Menu"
+              parent="tdc_tariff_root_menu"
+              action="tdc_tariff_menu_action"
+              sequence="10"/>
+
+</odoo>

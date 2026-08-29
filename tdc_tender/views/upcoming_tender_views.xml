@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================================
+                            TREE VIEW
+    =========================================================== -->
+
+    <record id="view_upcoming_tender_tree" model="ir.ui.view">
+        <field name="name">tdc.upcoming.tender.tree</field>
+        <field name="model">tdc.upcoming.tender</field>
+        <field name="arch" type="xml">
+            <list string="Upcoming Tenders">
+
+                <field name="name"/>
+
+                <field name="partner_id"/>
+
+                <field name="tender_title"/>
+                <field name="tender_item"/>
+                <field name="source_id"/>
+
+                
+
+                <field name="publish_date_display"/>
+                <field name="due_date_display"/>
+
+                 <field name="priority"
+                                        widget="badge"
+                                        decoration-success="priority == '0'"
+                                        decoration-info="priority == '1'"
+                                        decoration-danger="priority == '2'"/>
+
+                <field name="state"
+                       widget="badge"
+                       decoration-success="state=='confirmed'"
+                       decoration-warning="state=='participated'"
+                       decoration-danger="state=='draft'"/>
+
+            </list>
+        </field>
+    </record>
+
+
+    <!-- ==========================================================
+                            FORM VIEW
+    =========================================================== -->
+
+    <record id="view_upcoming_tender_form" model="ir.ui.view">
+    <field name="name">tdc.upcoming.tender.form</field>
+    <field name="model">tdc.upcoming.tender</field>
+    <field name="arch" type="xml">
+
+        <form string="Upcoming Tender">
+
+            <header>
+
+                <button
+                    name="action_participate"
+                    string="Participate"
+                    type="object"
+                    class="btn-primary"
+                    invisible="state != 'draft'"/>
+
+                <button
+                    name="action_not_participated"
+                    string="Not Participated"
+                    type="object"
+                    class="btn-secondary"
+                    invisible="state in ('not_participated')"/>
+
+                <button
+                    name="action_create_tender"
+                    string="Create Tender"
+                    type="object"
+                    class="btn-success"
+                    invisible="state != 'participated'"/>
+
+                <field
+                    name="state"
+                    widget="statusbar"
+                    statusbar_visible="draft,participated,created,not_participated"/>
+
+            </header>
+
+            <sheet>
+
+                <div class="oe_button_box" name="button_box">
+
+                    <button
+                        name="action_view_tender"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        invisible="tender_count == 0">
+
+                        <field name="tender_count"
+                            widget="statinfo"
+                            string="Tender"/>
+
+                    </button>
+
+                </div>
+
+                <group>
+
+                    <group>
+
+                        <field name="name" readonly="1"/>
+
+                        <field name="partner_id" readonly="state != 'draft'"/>
+
+                        <field name="tender_title" readonly="state != 'draft'"/>
+                        <field name="tender_item" readonly="state != 'draft'"/>
+
+                        <field name="source_id" readonly="state != 'draft'"/>
+                        <field name="incoterm_id" readonly="state != 'draft'"/>
+                        <field name="tender_stage" readonly="state != 'draft'"/>
+                        <field name="tender_ref_note" readonly="state != 'draft'"/>
+
+                    </group>
+
+                    <group>
+
+                        <field name="publish_date" readonly="state != 'draft'"/>
+
+                        <field name="due_date" readonly="state != 'draft'"/>
+
+                        <field name="priority" readonly="state != 'draft'"/>
+
+                        <separator string="Particpated From"/>
+                        <field name="welkin_hitech" readonly="state != 'draft'"/>
+                        <field name="ather_enterprise" readonly="state != 'draft'"/>
+
+                    </group>
+
+                </group>
+
+                <notebook>
+
+                    <page string="Products">
+
+                        <field name="product_line_ids" readonly="state != 'draft'">
+
+                            <list editable="bottom">
+
+                                <field name="sequence" widget="handle"/>
+
+                                <field name="product_id"/>
+
+                                <field name="model" readonly="1"/>
+
+                                <field name="qty"/>
+
+                                <field name="uom_id" readonly="1"/>
+
+                                <field name="remarks"/>
+
+                            </list>
+
+                        </field>
+
+                    </page>
+
+                    <page string="Tender Files">
+
+                        <group>
+
+                            <field name="tender_notice"
+                                   filename="tender_notice_filename"
+                                   readonly="state != 'draft'"/>
+
+                            <field name="tender_notice_filename" readonly="state != 'draft'"/>
+
+                        </group>
+
+                        <group>
+
+                            <field name="tender_docs"
+                                   filename="tender_docs_filename"
+                                   readonly="state != 'draft'"/>
+
+                            <field name="tender_docs_filename" readonly="state != 'draft'"/>
+
+                        </group>
+
+                    </page>
+
+                    <page string="Remarks">
+
+                        <field name="remarks"
+                               nolabel="1"
+                               readonly="state != 'draft'"/>
+
+                    </page>
+
+                    <page string="Not participated reason">
+                        <group>
+
+                            <field
+                                name="not_participated_reason"
+                                required="state == 'not_participated'"
+                                readonly="state != 'draft'"/>
+
+                            <field
+                                name="not_participated_notes"
+                                readonly="state != 'draft'"/>
+                        </group>
+
+                    </page>
+
+                </notebook>
+
+            </sheet>
+
+            <chatter/>
+
+        </form>
+
+    </field>
+</record>
+
+    <!-- ==========================================================
+                            ACTION
+    =========================================================== -->
+
+    <record id="action_upcoming_tender"
+            model="ir.actions.act_window">
+
+        <field name="name">Upcoming Tenders</field>
+
+        <field name="res_model">tdc.upcoming.tender</field>
+
+        <field name="view_mode">list,form</field>
+
+    </record>
+    
+<record id="view_tdc_upcoming_tender_search" model="ir.ui.view">
+    <field name="name">tdc.upcoming.tender.search</field>
+    <field name="model">tdc.upcoming.tender</field>
+    <field name="arch" type="xml">
+
+        <search>
+
+            <field name="name"/>
+            <field name="tender_title"/>
+            <field name="tender_item"/>
+            <field name="source_id"/>
+            <field name="partner_id"/>
+          
+
+            <filter string="Low"
+                    name="low"
+                    domain="[('priority','=','0')]"/>
+
+            <filter string="Normal"
+                    name="normal"
+                    domain="[('priority','=','1')]"/>
+
+            <filter string="Important"
+                    name="important"
+                    domain="[('priority','=','2')]"/>
+
+        </search>
+
+    </field>
+</record>
+
+
+    <!-- ==========================================================
+                            MENUS
+    =========================================================== -->
+
+    <!-- Root Menu -->
+
+   
+
+</odoo>

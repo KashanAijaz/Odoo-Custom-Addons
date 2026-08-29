@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_financial_quotation">
+
+        <t t-call="web.html_container">
+
+            <t t-foreach="docs" t-as="doc">
+
+                <t t-call="web.external_layout">
+
+                    <t t-set="sale_order" t-value="doc.sale_order_ids and doc.sale_order_ids[0]"/>
+
+                    <div class="page">
+
+                        <!-- ================= HEADER ================= -->
+
+                        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+
+                            <tr>
+
+                                <td style="width:60%;vertical-align:top;">
+
+                                    <strong>Attn.</strong><br/>
+
+                                    <span t-esc="doc.upcoming_tender_id.partner_id.name"/>
+
+                                </td>
+
+                                <td style="width:40%;">
+
+                                    <table style="width:100%;">
+
+                                        <tr>
+                                            <td><strong>Date</strong></td>
+                                            <td>
+                                                <span t-field="doc.create_date"
+                                                      t-options='{"widget":"date"}'/>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><strong>Validity</strong></td>
+                                            <td>120 Days</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><strong>Quote No.</strong></td>
+                                            <td>
+                                                <span t-field="sale_order.name"/>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><strong>Reference</strong></td>
+                                            <td>
+                                                <span t-esc="doc.upcoming_tender_id.tender_title"/>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                        <br/>
+
+                        <div style="border-top:2px solid #000;border-bottom:2px solid #000;padding:8px;text-align:center;">
+
+                            <h3 style="margin:0;font-weight:bold;">
+                                FINANCIAL QUOTATION
+                            </h3>
+
+                        </div>
+
+                        <br/>
+
+                        <p>
+
+                            Dear Sir,
+
+                            <br/><br/>
+
+                            Thank you for giving us the opportunity to quote against your requirement.
+                            We are pleased to submit our Technical Quotation as under:
+
+                        </p>
+
+                        <br/>
+
+                        <!-- ================= TABLE ================= -->
+
+<table border="1"
+       style="width:100%;
+              border-collapse:collapse;
+              font-size:11px;">
+
+    <thead>
+
+        <tr style="background:#d9e3f0;">
+
+            <th style="width:5%;text-align:center;font-weight:bold;">
+                S.#
+            </th>
+
+            <th style="width:45%;text-align:center;font-weight:bold;">
+                DESCRIPTION OF ITEMS
+            </th>
+
+            <th style="width:7%;text-align:center;font-weight:bold;">
+                QTY
+            </th>
+
+            <th style="width:11%;text-align:center;font-weight:bold;">
+                Unit Price<br/>
+                (Ex-GST)
+            </th>
+
+            <th style="width:11%;text-align:center;font-weight:bold;">
+                Total Price<br/>
+                (Ex-GST)
+            </th>
+
+            <th style="width:10%;text-align:center;font-weight:bold;">
+                GST @18%
+            </th>
+
+            <th style="width:11%;text-align:center;font-weight:bold;">
+                Total Amount<br/>
+                (Incl. GST)
+            </th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        <t t-foreach="doc.worksheet_ids.line_ids" t-as="line">
+
+            <tr>
+
+                <td style="text-align:center;vertical-align:top;">
+
+                    <span t-field="line.sequence"/>
+
+                </td>
+
+                <td style="padding:8px;">
+
+                    <strong>
+                        <span t-field="line.product_id"/>
+                    </strong>
+
+                    <br/><br/>
+
+                    <b>Model :</b>
+                    <span t-field="line.product_id.product_tmpl_id.model_no_id"/>
+
+                    <br/>
+
+                    <b>Make :</b>
+                    <span t-field="line.product_id.product_tmpl_id.tender_make"/>
+
+                        <t t-if="line.sale_line_id.technical_key_features">
+
+                            <br/><br/>
+
+                            <b>Key Features :</b>
+
+                            <div t-field="line.sale_line_id.technical_key_features"/>
+
+                        </t>
+
+                        <t t-if="line.sale_line_id.tender_specification">
+
+                            <br/>
+
+                            <b>Technical Specification :</b>
+
+                            <div t-field="line.sale_line_id.tender_specification"/>
+
+                        </t>
+
+                        <t t-if="line.sale_line_id.technical_power_supply">
+
+                            <br/>
+
+                            <b>Power Supply :</b>
+
+                            <div t-field="line.sale_line_id.technical_power_supply"/>
+
+                        </t>
+
+                </td>
+
+                <td style="text-align:center;vertical-align:top;">
+
+                    <span t-field="line.qty"/>
+
+                </td>
+
+                <td style="text-align:right;vertical-align:top;">
+
+                    <span t-field="line.unit_ex_gst_corrected"
+                          t-options='{"widget":"float","precision":2}'/>
+
+                </td>
+
+                <td style="text-align:right;vertical-align:top;">
+
+                    <span t-field="line.total_ex_gst"
+                          t-options='{"widget":"float","precision":2}'/>
+
+                </td>
+
+                <td style="text-align:right;vertical-align:top;">
+
+                    <span t-field="line.gst_amount"
+                          t-options='{"widget":"float","precision":2}'/>
+
+                </td>
+
+                <td style="text-align:right;vertical-align:top;">
+
+                    <span t-field="line.total_inc_gst"
+                          t-options='{"widget":"float","precision":2}'/>
+
+                </td>
+
+            </tr>
+
+        </t>
+
+        <!-- Grand Total -->
+
+        <tr style="background:#f2f2f2;">
+
+            <td colspan="4" style="text-align:right;">
+                <strong>Grand Total</strong>
+            </td>
+
+            <td style="text-align:right;">
+
+                <strong>
+                    <span t-esc="sum(doc.worksheet_ids.line_ids.mapped('total_ex_gst'))"/>
+                </strong>
+
+            </td>
+
+            <td style="text-align:right;">
+
+                <strong>
+                    <span t-esc="sum(doc.worksheet_ids.line_ids.mapped('gst_amount'))"/>
+                </strong>
+
+            </td>
+
+            <td style="text-align:right;">
+
+                <strong>
+                    <span t-esc="sum(doc.worksheet_ids.line_ids.mapped('total_inc_gst'))"/>
+                </strong>
+
+            </td>
+
+        </tr>
+
+    </tbody>
+
+</table>
+                        <br/><br/>
+                        <!-- ================= TERMS & CONDITIONS ================= -->
+
+                        <t t-if="sale_order and sale_order.technical_terms">
+
+                            <h4 style="margin-top:20px;font-weight:bold;">
+                                Terms &amp; Conditions
+                            </h4>
+
+                            <div t-field="sale_order.technical_terms"/>
+
+                        </t>
+
+                        <br/><br/>
+
+                        <!-- ================= COMPANY DETAILS ================= -->
+
+                        <!-- <table style="width:100%;border-collapse:collapse;font-size:12px;">
+
+                            <tr>
+
+                                <td style="width:60%;vertical-align:top;">
+
+                                    <strong>
+                                        <span t-field="doc.company_id.name"/>
+                                    </strong>
+
+                                    <br/>
+
+                                    <span t-field="doc.company_id.street"/>
+
+                                    <t t-if="doc.company_id.street2">
+                                        <br/>
+                                        <span t-field="doc.company_id.street2"/>
+                                    </t>
+
+                                    <t t-if="doc.company_id.city">
+                                        <br/>
+                                        <span t-field="doc.company_id.city"/>
+                                    </t>
+
+                                    <t t-if="doc.company_id.country_id">
+                                        ,
+                                        <span t-field="doc.company_id.country_id"/>
+                                    </t>
+
+                                    <br/>
+
+                                    <strong>Phone :</strong>
+                                    <span t-field="doc.company_id.phone"/>
+
+                                    <br/>
+
+                                    <strong>Email :</strong>
+                                    <span t-field="doc.company_id.email"/>
+
+                                    <br/>
+
+                                    <strong>Website :</strong>
+                                    <span t-field="doc.company_id.website"/>
+
+                                </td>
+
+                                <td style="width:40%;text-align:center;vertical-align:bottom;">
+
+                                    <br/><br/><br/><br/><br/>
+
+                                    ___________________________
+
+                                    <br/>
+
+                                    <strong>Authorized Signature</strong>
+
+                                </td>
+
+                            </tr>
+
+                        </table> -->
+
+                    </div>
+
+                </t>
+
+            </t>
+
+        </t>
+
+    </template>
+
+</odoo>

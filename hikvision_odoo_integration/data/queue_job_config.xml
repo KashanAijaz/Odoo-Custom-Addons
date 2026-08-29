@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+     <record id="hikvision_attendance_job_function" model="queue.job.function">
+            <field name="model_id" ref="model_hikvision_device"/>
+            <field name="method">job_download_attendance</field>
+        </record>
+
+        <record id="hikvision_all_attendance_job_function" model="queue.job.function">
+            <field name="model_id" ref="model_hikvision_device"/>
+            <field name="method">job_download_all_attendance</field>
+        </record>
+</odoo>

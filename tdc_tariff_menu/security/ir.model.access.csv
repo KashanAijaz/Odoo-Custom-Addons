@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tdc_tariff_menu_user,tdc.tariff.menu.user,model_tdc_tariff_menu,base.group_user,1,1,1,1
+access_tdc_tariff_line_user,tdc.tariff.line.user,model_tdc_tariff_line,base.group_user,1,1,1,1

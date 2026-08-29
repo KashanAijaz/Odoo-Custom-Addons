@@ -1,0 +1,398 @@
+/* ===========================================
+   TDC Notification Systray
+=========================================== */
+
+.o_tdc_notification_systray {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+/* ===========================================
+   Bell
+=========================================== */
+
+.o_tdc_notif_bell {
+
+    position: relative;
+
+    width: 42px;
+
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+
+    border-radius: 50%;
+
+    transition: all .25s ease;
+
+}
+
+.o_tdc_notif_bell i {
+
+    color: #ffffff;
+
+    font-size: 18px;
+
+}
+
+.o_tdc_notif_bell:hover {
+
+    background: rgba(255,255,255,.12);
+
+    transform: translateY(-1px);
+
+}
+
+/* ===========================================
+   Badge
+=========================================== */
+
+.o_tdc_notif_badge {
+
+    position: absolute;
+
+    top: 6px;
+
+    right: 5px;
+
+    min-width: 18px;
+
+    height: 18px;
+
+    padding: 0 5px;
+
+    border-radius: 30px;
+
+    background: #ff3b30;
+
+    color: white;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    border: 2px solid #714B67;
+
+    animation: notifPulse 2s infinite;
+
+}
+
+@keyframes notifPulse {
+
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+}
+
+/* ===========================================
+   Dropdown
+=========================================== */
+
+.o_tdc_notif_panel {
+
+    position: absolute;
+
+    top: calc(100% + 10px);
+
+    right: 0;
+
+    width: 380px;
+
+    max-height: 500px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    background: white;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.18),
+        0 5px 20px rgba(0,0,0,.08);
+
+    animation: dropdownAnimation .25s ease;
+
+    z-index: 1050;
+
+}
+
+@keyframes dropdownAnimation {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(-12px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0);
+
+    }
+
+}
+
+/* ===========================================
+   Header
+=========================================== */
+
+.o_tdc_notif_panel_header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 18px;
+
+    border-bottom: 1px solid #ececec;
+
+    background: #fafafa;
+
+}
+
+.o_tdc_notif_panel_header strong {
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+}
+
+.o_tdc_notif_count_pill {
+
+    background: #ffe9e7;
+
+    color: #ff3b30;
+
+    border-radius: 20px;
+
+    padding: 5px 12px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+}
+
+/* ===========================================
+   List
+=========================================== */
+
+.o_tdc_notif_list {
+
+    overflow-y: auto;
+
+    max-height: 380px;
+
+}
+
+/* ===========================================
+   Notification Item
+=========================================== */
+
+.o_tdc_notif_item {
+
+    display: flex;
+
+    gap: 14px;
+
+    padding: 14px 18px;
+
+    cursor: pointer;
+
+    transition: .25s;
+
+    border-bottom: 1px solid #f3f3f3;
+
+}
+
+.o_tdc_notif_item:hover {
+
+    background: #f8f9fc;
+
+    transform: translateX(4px);
+
+}
+
+.o_tdc_notif_item_icon {
+
+    width: 42px;
+
+    height: 42px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    font-size: 16px;
+
+}
+
+/* Priority */
+
+.o_tdc_notif_icon_important {
+
+    background: #ffe6e6;
+
+    color: #e53935;
+
+}
+
+.o_tdc_notif_icon_normal {
+
+    background: #fff4d8;
+
+    color: #ff9800;
+
+}
+
+.o_tdc_notif_icon_low {
+
+    background: #e8f8ef;
+
+    color: #16a34a;
+
+}
+
+.o_tdc_notif_item_body {
+
+    flex: 1;
+
+    overflow: hidden;
+
+}
+
+.o_tdc_notif_item_title {
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #222;
+
+    margin-bottom: 4px;
+
+}
+
+.o_tdc_notif_item_message {
+
+    font-size: 12px;
+
+    color: #777;
+
+    line-height: 1.4;
+
+}
+
+.o_tdc_notif_item_date {
+
+    margin-top: 6px;
+
+    color: #999;
+
+    font-size: 11px;
+
+}
+
+/* ===========================================
+   Empty
+=========================================== */
+
+.o_tdc_notif_empty {
+
+    padding: 45px;
+
+    text-align: center;
+
+    color: #999;
+
+}
+
+.o_tdc_notif_empty i {
+
+    font-size: 34px;
+
+    margin-bottom: 10px;
+
+    display: block;
+
+}
+
+/* ===========================================
+   Footer
+=========================================== */
+
+.o_tdc_notif_footer {
+
+    padding: 15px;
+
+    border-top: 1px solid #ececec;
+
+}
+
+.o_tdc_notif_footer button {
+
+    width: 100%;
+
+    border: none;
+
+    background: #714B67;
+
+    color: white;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+    transition: .25s;
+
+}
+
+.o_tdc_notif_footer button:hover {
+
+    background: #5d3d56;
+
+    transform: translateY(-1px);
+
+}

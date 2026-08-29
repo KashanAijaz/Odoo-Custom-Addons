@@ -1,0 +1,21 @@
+<odoo>
+
+    <record id="view_tdc_create_loa_wizard_form" model="ir.ui.view">
+        <field name="name">tdc.create.loa.wizard.form</field>
+        <field name="model">tdc.create.loa.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create More Letter of Acceptance">
+                <group>
+                    <field name="sale_order_id" invisible="1"/>
+                    <field name="loa_count"/>
+                </group>
+                <footer>
+                    <button string="Create" type="object"
+                            name="action_create_loa" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,26 @@
+<odoo>
+    <!-- Report Action -->
+    <record id="action_report_estate_property" model="ir.actions.report">
+        <field name="name">Property PDF</field>
+        <field name="model">estate.property</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">estate.report_estate_property_document</field>
+        <field name="report_file">estate.report_estate_property_document</field>
+        <field name="print_report_name">'Property - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_estate_property"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Blank A4 Template -->
+    <template id="report_estate_property_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        Yahan blank hi rakha hai, jo bhi content chahiye baad me add kar sakte hain
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

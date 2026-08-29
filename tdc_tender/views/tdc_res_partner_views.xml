@@ -1,0 +1,16 @@
+<odoo>
+    <record id="res_partner_view_form_simplified_tdc" model="ir.ui.view">
+        <field name="name">res.partner.view.form.simplified.tdc.tender</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+     
+       
+            <xpath expr=".//page[@name='contact_addresses']/field[@name='child_ids']/form//field[@name='company_id']" position="after">
+                  <field name="end_user"
+                       placeholder="End User"
+                       />
+            </xpath>
+        </field>
+    </record>
+</odoo>

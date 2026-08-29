@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- EARNEST MONEY TREE VIEW -->
+    <!-- ============================================================ -->
+    <record id="view_tdc_earnest_money_tree" model="ir.ui.view">
+        <field name="name">tdc.earnest.money.tree</field>
+        <field name="model">tdc.earnest.money</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state in ['paid','confirm']" 
+                  decoration-info="state in ['approved']"
+                  decoration-warning="state in ['submitted','request_payment']"
+                  decoration-danger="state in ['draft','returned']">
+                <field name="name" string="Reference"/>
+                <field name="tender_no" string="Tender No"/>
+                <field name="tender_title" string="Tender Title"/>
+                <field name="partner_id" string="Organization"/>
+                <field name="earnest_money_amount" sum="Total Amount" string="Amount"/>
+                <field name="validity_date" string="Validity Date"/>
+                <field name="return_date" string="Return Date"/>
+                <field name="payment_state" string="Payment Status"/>
+                <field name="state" string="Status" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- EARNEST MONEY FORM VIEW -->
+    <!-- ============================================================ -->
+    <record id="view_tdc_earnest_money_form" model="ir.ui.view">
+        <field name="name">tdc.earnest.money.form</field>
+        <field name="model">tdc.earnest.money</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                                    <button name="action_request_payment"
+                        string="Request Earnest Payment"
+                        type="object"
+                        invisible="state != 'draft'"
+                        class="btn-primary"/>
+
+                <button name="action_submit_for_approval"
+                        string="Submit for Approval"
+                        type="object"
+                        invisible="state != 'request_payment'"
+                        class="btn-primary"/>
+
+               <button name="action_approve_payment"
+                    string="Approve"
+                    type="object"
+                    invisible="state != 'submitted'"
+                    class="btn-success"
+                    groups="tdc_tender.group_tender_payment_approver"/>
+
+                    <button name="action_pay"
+                            string="Pay Earnest Money"
+                            type="object"
+                            invisible="state != 'approved'"
+                            class="btn-primary"/>
+
+                    <button name="action_request_return"
+                        string="Request Return"
+                        type="object"
+                        invisible="state != 'paid'"
+                        class="btn-warning"/>
+
+                <button name="action_approve_return"
+                        string="Approve Return"
+                        type="object"
+                        invisible="state != 'return_requested'"
+                        class="btn-success"/>
+
+                <button name="action_send_for_bank_review"
+                        string="Send for Bank Review"
+                        type="object"
+                        invisible="state != 'return_approved'"
+                        class="btn-warning"/>
+
+                <button name="action_return_payment"
+                        string="Confirm Return"
+                        type="object"
+                        invisible="state != 'under_bank_review'"
+                        class="btn-success"/>
+                    <!-- <button name="action_confirm"
+                            string="Confirm"
+                            type="object"
+                            invisible="state not in ['paid', 'returned']"
+                            class="btn-success"/> -->
+
+                    <button name="action_view_journal_entries"
+                            string="View Journal Entries"
+                            type="object"
+                            invisible="state not in ['paid', 'returned']"
+                            class="btn-secondary"/>
+
+                    <button name="action_extend_validity"
+                            string="Extend Validity"
+                            type="object"
+                            invisible="state not in ['draft', 'request_payment', 'submitted', 'approved', 'paid']"
+                            class="btn-info"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,request_payment,submitted,approved,paid,return_requested,return_approved,under_bank_review,returned"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                            <field name="state" widget="badge" invisible="1"/>
+                        </h1>
+                    </div>
+                    
+                    <notebook>
+                        <!-- Main Info Tab -->
+                        <page string="Earnest Money Information">
+                            <group>
+                                <group>
+                                    <field name="is_create_earnest_money" />
+                                    <field name="tender_id" required="1" readonly="not is_create_earnest_money"/>
+                                    <field name="upcoming_tender_id" force_save="1"  readonly="1"/>
+                                    <!-- <field name="tender_no"/> -->
+                                    <field name="tender_title"/>
+                                     <!-- <field name="payment_state"/> -->
+                                    <field name="partner_id"/>
+                                </group>
+                                <group>
+                                    <field name="beneficiary"/>
+                                    <field name="amount_calculation_type" widget="radio"/>
+                                    <field name="percentage_value"
+                                        invisible="amount_calculation_type != 'percentage'"
+                                        required="amount_calculation_type == 'percentage'"/>
+                                    <field name="quotation_amount" readonly="1"/>
+                                    <field name="earnest_money_amount" required="1"/>
+                                    <field name="note_remarks" nolabel="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <!-- Quotation & Validity Tab -->
+                        <page string="Quotation &amp; Validity">
+                            <group>
+                                <group>
+                                    <field name="quotation_id" string="Quotation"/>
+                                    <field name="quotation_amount" string="Quotation Amount"/>
+                                    <field name="quotation_validity_date" string="Quotation Validity"/>
+                                </group>
+                                <group>
+                                    <field name="validity_date"/>
+                                    <field name="return_date"/>
+                                    <field name="is_extended" readonly="True"/>
+                                    <field name="previous_validity_date" invisible="not is_extended"/>
+                                    <field name="extension_days" invisible="not is_extended"/>
+                                   
+                                </group>
+                                <group>
+                                <seperator String="Validity Reason"/>
+                                 <field name="extension_notification" invisible="not is_extended" nolabel="1"/>
+                                </group>
+                            </group>
+                        </page>
+                                                <!-- Payment Details Tab -->
+                        <!-- <page string="Payment Details">
+                            <group>
+                                <group>
+                                    <field name="payment_type"/>
+                                    <field name="in_favour_of"/>
+                                    <field name="bank_name"/>
+                                    <field name="account_title"/>
+                                    <field name="account_number"/>
+                                </group>
+                                <group>
+                                   
+                                    <field name="payment_note" nolabel="1"/>
+                                    <field name="journal_id"/>
+                                    <field name="debit_account_id"/>
+                                    <field name="credit_account_id"/>
+                                </group>
+                            </group>
+                        </page> -->
+                        
+                        <!-- Attachments Tab -->
+                       <page string="Accounting">
+                            
+                                <field name="attachment_line_ids"
+                                domain="[('attachment_stage', '=', 'payment')]"
+                                context="{'default_attachment_stage': 'payment', 'default_earnest_money_id': id}">
+                                    <list>
+                                        <field name="payment_attachment_filename" string="Attachment Name"/>
+                                        <field name="payment_attachment" filename="payment_attachment_filename" string="File"/>
+                                        <field name="payment_note" string="Note"/>
+                                        <!-- <field name="payment_type" string="Payment Method"/> -->
+                                        <field name="instrument_type" 
+                                            widget="badge"
+                                            decoration-info="instrument_type == 'online'"
+                                            decoration-bf="instrument_type == 'pay_order'"
+                                            decoration-warning="instrument_type == 'cdr'"
+                                            decoration-success="instrument_type == 'sdr'"
+                                            decoration-danger="instrument_type == 'bank_guarantee'"
+                                            decoration-muted="instrument_type == 'cash'"/>
+                                        <field name="instrument_number" string="Instrument No."/>
+                                        <field name="instrument_date" string="Date"/>
+                                        <field name="bank_name" string="Bank"/>
+                                        <field name="branch_name" string="Branch"/>
+                                    </list>
+                                    <form string="Add Attachment">
+                                        <group>
+                                            <field name="payment_attachment_filename" placeholder="Attachment name"/>
+                                            <field name="payment_attachment" filename="payment_attachment_filename" placeholder="Select file"/>
+                                            <field name="payment_note" placeholder="Note"/>
+                                            <!-- <field name="payment_type" placeholder="Payment Method"/> -->
+                                            <field name="instrument_type" placeholder="Instrument Type"/>
+                                            
+                                            <!-- Only for online -->
+                                            <field name="payment_ref" placeholder="Payment Reference"
+                                                invisible="instrument_type != 'online'"/>
+                                            
+                                            <!-- Only for pay_order, cdr, sdr, bank_guarantee -->
+                                            <field name="instrument_number" placeholder="Instrument Number"
+                                                invisible="instrument_type in ('online', 'cash')"/>
+                                            <field name="instrument_date" placeholder="Instrument Date"
+                                                invisible="instrument_type in ('online', 'cash')"/>
+                                            <field name="bank_name" placeholder="Bank Name"
+                                                invisible="instrument_type in ('online', 'cash')"/>
+                                            <field name="branch_name" placeholder="Branch Name"
+                                                invisible="instrument_type in ('online', 'cash')"/>
+                                        </group>
+                                    </form>
+                                </field>
+                          
+                            
+                            <separator string="Accounting Details"/>
+                            
+                            <group string="Accounting" groups="tdc_tender.group_tender_payment_user,tdc_tender.group_tender_payment_approver">
+                                <group>
+                                    <field name="journal_id" 
+                                        readonly="state in ['paid','confirm']"
+                                        options="{'no_create': True}"/>
+                                </group>
+                                <group>
+                                    <field name="debit_account_id" 
+                                        readonly="state in ['paid','confirm']"
+                                        options="{'no_create': True}"/>
+                                    <field name="credit_account_id" 
+                                        readonly="state in ['paid','confirm']"
+                                        options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- ============================================================ -->
+<!-- BANK REVIEW ATTACHMENTS (bank receiving proof) -->
+<!-- ============================================================ -->
+<page string="Bank Review"
+      invisible="state not in ['return_approved', 'under_bank_review', 'returned']">
+    <field name="attachment_line_ids"
+           domain="[('attachment_stage', '=', 'bank_review')]"
+           context="{'default_attachment_stage': 'bank_review', 'default_earnest_money_id': id}">
+        <list>
+            <field name="payment_attachment_filename" string="Attachment Name"/>
+            <field name="payment_attachment" filename="payment_attachment_filename" string="File"/>
+            <field name="payment_note" string="Note"/>
+            <field name="instrument_type"
+                   widget="badge"
+                   decoration-info="instrument_type == 'online'"
+                   decoration-bf="instrument_type == 'pay_order'"
+                   decoration-warning="instrument_type == 'cdr'"
+                   decoration-success="instrument_type == 'sdr'"
+                   decoration-danger="instrument_type == 'bank_guarantee'"
+                   decoration-muted="instrument_type == 'cash'"/>
+            <field name="instrument_number" string="Instrument No."/>
+            <field name="instrument_date" string="Date"/>
+            <field name="bank_name" string="Bank"/>
+            <field name="branch_name" string="Branch"/>
+        </list>
+        <form string="Add Bank Review Attachment">
+            <group>
+                <field name="attachment_stage" invisible="1"/>
+                <field name="payment_attachment_filename" placeholder="Attachment name"/>
+                <field name="payment_attachment" filename="payment_attachment_filename" placeholder="Select file"/>
+                <field name="payment_note" placeholder="Note"/>
+                <field name="instrument_type" placeholder="Instrument Type"/>
+
+                <field name="payment_ref" placeholder="Payment Reference"
+                       invisible="instrument_type != 'online'"/>
+
+                <field name="instrument_number" placeholder="Instrument Number"
+                       invisible="instrument_type in ('online', 'cash')"/>
+                <field name="instrument_date" placeholder="Instrument Date"
+                       invisible="instrument_type in ('online', 'cash')"/>
+                <field name="bank_name" placeholder="Bank Name"
+                       invisible="instrument_type in ('online', 'cash')"/>
+                <field name="branch_name" placeholder="Branch Name"
+                       invisible="instrument_type in ('online', 'cash')"/>
+            </group>
+        </form>
+    </field>
+</page>
+
+<!-- ============================================================ -->
+<!-- RETURN CONFIRMATION ATTACHMENTS (final bank confirmation) -->
+<!-- ============================================================ -->
+<page string="Return Confirmation"
+      invisible="state not in ['under_bank_review', 'returned']">
+    <field name="attachment_line_ids"
+           domain="[('attachment_stage', '=', 'confirmation')]"
+           context="{'default_attachment_stage': 'confirmation', 'default_earnest_money_id': id}">
+        <list>
+            <field name="payment_attachment_filename" string="Attachment Name"/>
+            <field name="payment_attachment" filename="payment_attachment_filename" string="File"/>
+            <field name="payment_note" string="Note"/>
+            <field name="instrument_type"
+                   widget="badge"
+                   decoration-info="instrument_type == 'online'"
+                   decoration-bf="instrument_type == 'pay_order'"
+                   decoration-warning="instrument_type == 'cdr'"
+                   decoration-success="instrument_type == 'sdr'"
+                   decoration-danger="instrument_type == 'bank_guarantee'"
+                   decoration-muted="instrument_type == 'cash'"/>
+            <field name="instrument_number" string="Instrument No."/>
+            <field name="instrument_date" string="Date"/>
+            <field name="bank_name" string="Bank"/>
+            <field name="branch_name" string="Branch"/>
+        </list>
+        <form string="Add Return Confirmation Attachment">
+            <group>
+                <field name="attachment_stage" invisible="1"/>
+                <field name="payment_attachment_filename" placeholder="Attachment name"/>
+                <field name="payment_attachment" filename="payment_attachment_filename" placeholder="Select file"/>
+                <field name="payment_note" placeholder="Note"/>
+                <field name="instrument_type" placeholder="Instrument Type"/>
+
+                <field name="payment_ref" placeholder="Payment Reference"
+                       invisible="instrument_type != 'online'"/>
+
+                <field name="instrument_number" placeholder="Instrument Number"
+                       invisible="instrument_type in ('online', 'cash')"/>
+                <field name="instrument_date" placeholder="Instrument Date"
+                       invisible="instrument_type in ('online', 'cash')"/>
+                <field name="bank_name" placeholder="Bank Name"
+                       invisible="instrument_type in ('online', 'cash')"/>
+                <field name="branch_name" placeholder="Branch Name"
+                       invisible="instrument_type in ('online', 'cash')"/>
+            </group>
+        </form>
+    </field>
+</page>
+                        <!-- Return Info Tab -->
+                        <!-- Return Info Tab -->
+<page string="Return Information"
+      invisible="state not in ['return_requested', 'return_approved', 'under_bank_review', 'returned']">
+    <group>
+        <group string="Return Request">
+            <field name="return_requested_by_id" readonly="1"/>
+            <field name="return_requested_date" readonly="1"/>
+        </group>
+        <group string="Return Approval">
+            <field name="return_approved_by_id" readonly="1"
+                   invisible="state == 'return_requested'"/>
+            <field name="return_approved_date" readonly="1"
+                   invisible="state == 'return_requested'"/>
+        </group>
+    </group>
+    <group>
+        <group string="Bank Review">
+            <field name="bank_review_by_id" readonly="1"
+                   invisible="state in ('return_requested', 'return_approved')"/>
+            <field name="bank_review_date" readonly="1"
+                   invisible="state in ('return_requested', 'return_approved')"/>
+        </group>
+        <group string="Return Journal Entry"
+               invisible="state != 'returned'">
+            <field name="return_move_id" string="Return Journal Entry"/>
+            <field name="return_date"/>
+        </group>
+    </group>
+    <group invisible="state != 'returned'">
+        <group>
+            <field name="return_debit_account_id"/>
+            <field name="return_credit_account_id"/>
+        </group>
+    </group>
+</page>
+                    </notebook>
+                </sheet>
+                
+               
+            </form>
+        </field>
+    </record>
+
+
+    <!-- earnet money validity  -->
+
+    <record id="view_tdc_earnest_money_extend_wizard" model="ir.ui.view">
+    <field name="name">tdc.earnest.money.extend.wizard.form</field>
+    <field name="model">tdc.earnest.money.extend.wizard</field>
+    <field name="arch" type="xml">
+        <form>
+            <sheet>
+                <group>
+                    <group>
+                        <field name="earnest_money_id" readonly="1"/>
+                        <field name="current_validity" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="new_validity_date" required="1"/>
+                       
+                    </group>
+                     <field name="extension_notification" required="1" nolabel="1" placeholder="Enter reason for extension..."/>
+                </group>
+            </sheet>
+            <footer>
+                <button name="action_extend" 
+                        string="Extend Validity" 
+                        type="object" 
+                        class="btn-primary"/>
+                <button string="Cancel" 
+                        class="btn-secondary" 
+                        special="cancel"/>
+            </footer>
+        </form>
+    </field>
+</record>
+
+
+
+    <!--  -->
+        <!-- ============================================================ -->
+    <!-- RETURN EARNEST MONEY WIZARD VIEW -->
+    <!-- ============================================================ -->
+    <record id="view_tdc_earnest_money_return_wizard" model="ir.ui.view">
+        <field name="name">tdc.earnest.money.return.wizard.form</field>
+        <field name="model">tdc.earnest.money.return.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="earnest_money_id" readonly="1"/>
+                            <field name="return_amount" string="Return Amount"/>
+                            <field name="return_note" string="Return Note"/>
+                        </group>
+                        <group string="Return Accounting">
+                            <field name="return_journal_id" 
+                                options="{'no_create': True}"
+                                required="1"/>
+                            <field name="return_debit_account_id" 
+                                options="{'no_create': True}"
+                                required="1"/>
+                            <field name="return_credit_account_id" 
+                                options="{'no_create': True}"
+                                required="1"/>
+                        </group>
+                    </group>
+                    <group string="Return Attachment">
+                        <field name="return_attachment" filename="return_attachment_filename"/>
+                        <field name="return_attachment_filename"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_confirm_return" 
+                            string="Confirm Return" 
+                            type="object" 
+                            class="btn-primary"/>
+                    <button string="Cancel" 
+                            class="btn-secondary" 
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- SEARCH VIEW -->
+    <!-- ============================================================ -->
+    <record id="view_tdc_earnest_money_search" model="ir.ui.view">
+        <field name="name">tdc.earnest.money.search</field>
+        <field name="model">tdc.earnest.money</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Reference"/>
+                <field name="tender_no" string="Tender No"/>
+                <field name="tender_title" string="Tender Title"/>
+                <field name="partner_id" string="Organization"/>
+              
+                <field name="beneficiary" string="Beneficiary"/>
+                <filter name="draft" string="Draft" domain="[('state','=','draft')]"/>
+                <filter name="submitted" string="Submitted" domain="[('state','=','submitted')]"/>
+                <filter name="approved" string="Approved" domain="[('state','=','approved')]"/>
+                <filter name="paid" string="Paid" domain="[('state','=','paid')]"/>
+                <filter name="returned" string="Returned" domain="[('state','=','returned')]"/>
+                <separator/>
+                <filter name="my_earnest_money" string="My Earnest Money" domain="[('create_uid','=',uid)]"/>
+                <!-- <group expand="0" string="Group By">
+                    <filter name="group_by_state" string="Status" domain="[]" context="{'group_by':'state'}"/>
+                    <filter name="group_by_payment_state" string="Payment Status" domain="[]" context="{'group_by':'payment_state'}"/>
+                    <filter name="group_by_partner" string="Organization" domain="[]" context="{'group_by':'partner_id'}"/>
+                    <filter name="group_by_tender" string="Tender" domain="[]" context="{'group_by':'tender_id'}"/>
+                </group> -->
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- ACTION -->
+    <!-- ============================================================ -->
+    <record id="action_tdc_earnest_money" model="ir.actions.act_window">
+        <field name="name">Earnest Money</field>
+        <field name="res_model">tdc.earnest.money</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create Earnest Money for Tenders
+            </p>
+            <p>
+                Manage earnest money payments for tenders including 
+                payment approval workflow and return processing.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- MENU - This is what you need -->
+    <!-- ============================================================ -->
+ 
+
+</odoo>

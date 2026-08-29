@@ -1,0 +1,30 @@
+<odoo>
+    <record id="product_template_form_custom_changes" model="ir.ui.view">
+        <field name="name">product.template.form.custom.changes</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+
+            <!-- Hide Sales Taxes -->
+            <xpath expr="//field[@name='taxes_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Hide Purchase Taxes -->
+            <xpath expr="//field[@name='supplier_taxes_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Hide Invoice Policy -->
+            <xpath expr="//field[@name='invoice_policy']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Rename SKU label to "Part Number" -->
+            <xpath expr="//field[@name='sku']" position="attributes">
+                <attribute name="string">Part Number</attribute>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

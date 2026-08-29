@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================================
+                        Sale Order Form
+    =========================================================== -->
+<record id="view_quotation_tree_tender_stage" model="ir.ui.view">
+    <field name="name">sale.order.tree.tender.stage</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+    <field name="arch" type="xml">
+        <xpath expr="//field[@name='state']" position="after">
+            <field name="tender_workflow_state"
+                   widget="badge"
+                   decoration-info="tender_workflow_state == 'draft'"
+                   decoration-warning="tender_workflow_state in ('submit_tender','technical_evaluation','financial_evaluation','letter_of_acceptance')"
+                   decoration-success="tender_workflow_state == 'confirmed'"
+                   decoration-danger="tender_workflow_state == 'closed'"
+                   optional="show"
+                   invisible="not is_tender_sale"/>
+        </xpath>
+    </field>
+</record>
+    <record id="view_order_form_tdc_tender"
+            model="ir.ui.view">
+
+        <field name="name">sale.order.form.tdc.tender</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- ==========================
+                    Whole Form Readonly when Tender Sale
+                    (cascades to all fields inside <sheet>,
+                    including order lines, unless a field
+                    below explicitly overrides it)
+            =========================== -->
+
+            <xpath expr="//sheet" position="attributes">
+                <attribute name="readonly">is_tender_sale</attribute>
+            </xpath>
+
+            <!-- ==========================
+                    Smart Button
+            =========================== -->
+
+            <xpath expr="//div[contains(@class,'oe_button_box')]"
+                   position="inside">
+
+                <button name="action_view_working_sheet"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-table"
+                        invisible="not worksheet_id">
+
+                    <field name="worksheet_id"
+                           string="Working Sheet"
+                           widget="statinfo"/>
+
+                </button>
+
+                <button name="action_view_earnest_money"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-money"
+                        string="Earnest Money"
+                        groups="tdc_tender.group_tender_payment_user"
+                        invisible="earnest_money_count == 0 or not is_tender_sale">
+                    <div class="o_stat_info">
+                        <field name="earnest_money_count"/>
+                        <span class="o_stat_text">Earnest Money</span>
+                    </div>
+                </button>
+
+                <button name="action_create_earnest_money"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-plus-circle"
+                        string="Create Earnest Money"
+                        groups="tdc_tender.group_tender_payment_user"
+                        invisible="earnest_money_count > 0 or  not is_tender_sale">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Create Earnest Money</span>
+                    </div>
+                </button>
+
+            <button name="action_view_performance_bond"
+        type="object"
+        class="oe_stat_button"
+        icon="fa-shield"
+        string="Performance Bond"
+        groups="tdc_tender.group_tender_payment_user"
+        invisible="performance_bond_count == 0">
+    <div class="o_stat_info">
+        <field name="performance_bond_count"/>
+        <span class="o_stat_text">Performance Bond</span>
+    </div>
+</button>
+
+<button name="action_create_performance_bond"
+        type="object"
+        class="oe_stat_button"
+        icon="fa-plus-circle"
+        string="Create Performance Bond"
+        groups="tdc_tender.group_tender_payment_user"
+         invisible="performance_bond_count > 0 or not is_tender_sale">
+    <div class="o_stat_info">
+        <span class="o_stat_text">Create Performance Bond</span>
+    </div>
+</button>
+
+            </xpath>
+
+
+            <xpath expr="//header" position="inside">
+
+                    <button name="action_print_technical_quotation"
+                            string="Technical Quotation"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-file-pdf-o"
+                            invisible="not is_tender_sale or tender_stage == 'single_stage_one_envelope'" />
+
+                    <button name="action_print_financial_quotation"
+                            string="Financial Quotation"
+                            type="object"
+                            class="btn-info"
+                            icon="fa-money"
+                            invisible="not is_tender_sale or tender_stage == 'single_stage_one_envelope'"/>
+
+                    <button name="action_print_techno_financial_quotation"
+                            string="Techno Financial"
+                            type="object"
+                            class="btn-secondary"
+                            icon="fa-files-o"
+                            invisible="not is_tender_sale or tender_stage not in ('single_stage_one_envelope','double_stage_two_envelope')"/>
+
+                </xpath>
+
+                    <!-- Statusbar + workflow buttons inside <header> -->
+        <xpath expr="//header" position="inside">
+
+    <!-- Tender Status -->
+    <field name="tender_workflow_state"
+           widget="statusbar"
+           statusbar_visible="draft,submit_tender,technical_evaluation,financial_evaluation,letter_of_acceptance,confirmed,closed"
+           invisible="not is_tender_sale"/>
+
+
+    <!-- SUBMIT TENDER -->
+    <button name="action_submit_tender"
+            string="Submit Tender"
+            type="object"
+            class="btn-primary"
+            invisible="not is_tender_sale or tender_workflow_state != 'draft'"/>
+
+
+    <!-- TECHNICAL EVALUATION -->
+    <button name="action_start_technical_evaluation"
+            string="Start Technical Evaluation"
+            type="object"
+            class="btn-primary"
+            invisible="not is_tender_sale or tender_workflow_state != 'submit_tender'"/>
+
+
+    <!-- FINANCIAL EVALUATION -->
+    <button name="action_start_financial_evaluation"
+            string="Move to Financial Evaluation"
+            type="object"
+            class="btn-primary"
+            invisible="not is_tender_sale or tender_workflow_state != 'technical_evaluation'"/>
+
+
+    <!-- LETTER OF ACCEPTANCE -->
+    <button name="action_start_letter_of_acceptance"
+            string="Move to Letter of Acceptance"
+            type="object"
+            class="btn-primary"
+            invisible="not is_tender_sale or tender_workflow_state != 'financial_evaluation'"/>
+
+
+    <!-- CONFIRM SALE -->
+    <button name="action_confirm_tender_sale"
+            string="Confirm Sale Order"
+            type="object"
+            class="btn-primary"
+            invisible="not is_tender_sale or tender_workflow_state != 'letter_of_acceptance'"/>
+
+
+    <!-- CLOSE TENDER - AVAILABLE AT EVERY STAGE -->
+    <button name="action_close_tender"
+            string="Close Tender"
+            type="object"
+            class="btn-danger"
+            invisible="not is_tender_sale or tender_workflow_state == 'closed'"/>
+
+</xpath>
+        <!-- hide cnfmr btn -->
+        <xpath expr="//button[@name='action_confirm']" position="attributes">
+            <attribute name="invisible">is_tender_sale or state != 'draft'</attribute>
+        </xpath>
+        <xpath expr="//header" position="after">
+
+                <!-- Tender Information -->
+                <group name="tender_information_group"
+                    string="Tender Information"
+                    invisible="not is_tender_sale"/>           
+                
+                 <field name="tender_workflow_state" widget="statusbar"
+                   statusbar_visible="draft,close_tender,submit_tender,technical_evaluation,financial_evaluation,letter_of_acceptance,confirmed"
+                   invisible="not is_tender_sale"/>
+        </xpath>
+
+        <!-- New tabs added at the end of the notebook -->
+        <xpath expr="//notebook" position="inside">
+            <page string="Technical Evaluation" name="technical_evaluation_page" invisible="not is_tender_sale or tender_workflow_state != 'technical_evaluation'">
+                <field name="technical_evaluation_line_ids" context="{'default_stage': 'technical'}">
+                    <list>
+                        <field name="attachment" widget="binary" filename="attachment_filename"/>
+                        <field name="attachment_filename" invisible="1"/>
+                        <!-- <field name="name"/> -->
+                        <field name="notes"/>
+                        <field name="details"/>
+                        <field name="user_id"/>
+                        <field name="date"/>
+                    </list>
+                </field>
+            </page>
+
+            <page string="Financial Evaluation" name="financial_evaluation_page" invisible="not is_tender_sale or tender_workflow_state != 'financial_evaluation'">
+                <field name="financial_evaluation_line_ids" context="{'default_stage': 'financial'}">
+                    <list>
+                        <field name="attachment" widget="binary" filename="attachment_filename"/>
+                        <field name="attachment_filename" invisible="1"/>
+                        <!-- <field name="name"/> -->
+                        <field name="notes"/>
+                        <field name="details"/>
+                        <field name="user_id"/>
+                        <field name="date"/>
+                    </list>
+                </field>
+            </page>
+
+            <page string="Letter of Acceptance" name="loa_page"  invisible="not is_tender_sale or tender_workflow_state != 'letter_of_acceptance'">
+                <field name="loa_line_ids" context="{'default_stage': 'loa'}">
+                    <list>
+                        <field name="attachment" widget="binary" filename="attachment_filename"/>
+                        <field name="attachment_filename" invisible="1"/>
+                        <!-- <field name="name"/> -->
+                        <field name="notes"/>
+                        <field name="details"/>
+                        <field name="user_id"/>
+                        <field name="date"/>
+                    </list>
+                </field>
+            </page>
+        </xpath>
+
+
+            <!-- ==========================
+                
+            =========================== -->
+
+            <xpath expr="//notebook" position="inside">
+
+    <page string="Tender Terms"
+          invisible="not is_tender_sale">
+
+        <group>
+
+            <field name="technical_terms"
+                   widget="html"
+                   colspan="4"/>
+
+            <field name="financial_terms"
+                   widget="html"
+                   colspan="4"/>
+
+            <field name="techno_financial_terms"
+                   widget="html"
+                   colspan="4"/>
+
+        </group>
+
+    </page>
+
+</xpath>
+
+            <xpath expr="//field[@name='partner_id']"
+                   position="after">
+
+                <field name="is_tender_sale"/>
+
+                <field name="tender_id"
+                       invisible="not is_tender_sale"
+                       readonly="1"/>
+
+                <!-- <field name="upcoming_tender_id"
+                       invisible="not is_tender_sale"
+                       readonly="1"/> -->
+
+                <field name="worksheet_id"
+                       invisible="not is_tender_sale"
+                       readonly="1"/>
+
+            </xpath>
+
+            <!-- ==========================
+                Readonly Product
+                (readonly while tender sale, UNLESS
+                 we're at the Letter of Acceptance stage)
+            =========================== -->
+
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_id']"
+                   position="attributes">
+
+                <attribute name="readonly">parent.is_tender_sale and parent.tender_workflow_state != 'letter_of_acceptance'</attribute>
+
+            </xpath>
+
+            <!-- ==========================
+                Readonly Quantity
+                (unlocked at Letter of Acceptance stage)
+            =========================== -->
+
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']"
+                   position="attributes">
+
+                <attribute name="readonly">parent.is_tender_sale and parent.tender_workflow_state != 'letter_of_acceptance'</attribute>
+
+            </xpath>
+
+            <!-- ==========================
+                Readonly Unit Price
+                (unlocked at Letter of Acceptance stage)
+            =========================== -->
+
+            <xpath expr="//field[@name='order_line']/list/field[@name='price_unit']"
+                   position="attributes">
+
+                <attribute name="readonly">parent.is_tender_sale and parent.tender_workflow_state != 'letter_of_acceptance'</attribute>
+
+            </xpath>
+
+            <!-- ==========================
+                Readonly Discount
+                (unlocked at Letter of Acceptance stage)
+            =========================== -->
+
+            <xpath expr="//field[@name='order_line']/list/field[@name='discount']"
+                   position="attributes">
+
+                <attribute name="readonly">parent.is_tender_sale and parent.tender_workflow_state != 'letter_of_acceptance'</attribute>
+
+            </xpath>
+
+
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_template_id']"
+                    position="after">
+                    <field name="technical_key_features"
+                        widget="html" optional="hide"
+                        class="o_tender_html_inline o_key_features_col"
+                        column_invisible="not parent.is_tender_sale"/>
+                    <field name="tender_specification"
+                        widget="html" optional="hide"
+                        class="o_tender_html_inline o_tender_spec_col"
+                        column_invisible="not parent.is_tender_sale"/>
+                    <field name="technical_power_supply"
+                        widget="html" optional="hide"
+                        class="o_tender_html_inline o_power_supply_col"
+                        column_invisible="not parent.is_tender_sale"/>
+            </xpath>
+
+
+        <xpath expr="//sheet/group" position="after">
+
+            <group string="Tender Information"
+                   invisible="not is_tender_sale">
+                <!-- <field name="upcoming_tender_id"/> -->
+                <field name="tender_id"/>
+                <field name="tender_title"/>
+                <field name="tender_item"/>
+                <field name="incoterm_id"/>
+                <field name="source_id"/>
+                <field name="tender_stage"/>
+                <field name="tender_ref_note"/>
+            </group>
+
+            <group string="Participated Firms"
+                   invisible="not is_tender_sale">
+                <field name="welkin_hitech"/>
+                <field name="ather_enterprise"/>
+            </group>
+
+        </xpath>
+
+       
+
+      
+
+        <xpath expr="//field[@name='validity_date']" position="attributes">
+            <attribute name="string">Validity</attribute>
+        </xpath>
+
+            <!-- ==========================
+                Extra Costing Columns
+            =========================== -->
+
+           <xpath expr="//field[@name='order_line']/list/field[@name='price_unit']"
+       position="after">
+
+    <field name="currency_rate"
+           readonly="1"
+           optional="show"
+           column_invisible="not parent.is_tender_sale"/>
+
+    <!-- Sale Order Line Form View -->
+        <field name="is_cnf" 
+            readonly="1" 
+            optional="show" 
+            column_invisible="not parent.is_tender_sale"/>
+
+    <field name="list_price"
+           readonly="1"
+           optional="show"
+           column_invisible="not parent.is_tender_sale"/>
+
+    <field name="discount_margin"
+           readonly="1"
+           optional="show"
+           column_invisible="not parent.is_tender_sale"/>
+
+    <field name="net_discount_price"
+           readonly="1"
+           optional="show"
+           column_invisible="not parent.is_tender_sale"/>
+
+</xpath>
+
+
+<xpath expr="//button[@name='action_quotation_send']" position="before">
+    <button name="action_open_create_loa_wizard"
+            string="Create More LOA"
+            type="object"
+            class="btn-secondary"
+            invisible="not is_tender_sale or tender_workflow_state != 'letter_of_acceptance'"/>
+</xpath>
+
+        </field>
+
+    </record>
+
+</odoo>

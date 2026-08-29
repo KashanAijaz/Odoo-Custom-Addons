@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List View -->
+    <record id="view_tdc_import_tariff_list" model="ir.ui.view">
+        <field name="name">tdc.import.tariff.list</field>
+        <field name="model">tdc.import.tariff</field>
+        <field name="arch" type="xml">
+            <list string="Tariffs">
+                <field name="dg_no"/>
+                <field name="gd_date"/>
+                <field name="partner_id"/>
+                <field name="currency_id"/>
+                <field name="exchange_rate"/>
+                <field name="line_count"/>
+                <field name="amount_total_payable" sum="Total"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tdc_import_tariff_form" model="ir.ui.view">
+        <field name="name">tdc.import.tariff.form</field>
+        <field name="model">tdc.import.tariff</field>
+        <field name="arch" type="xml">
+            <form string="Import GD Tariff">
+                <header>
+                    <button name="action_post_entries" type="object" string="Post Entries"
+                            class="oe_highlight" invisible="move_id"/>
+                </header>
+                <sheet>
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_view_entries" type="object" class="oe_stat_button"
+                            icon="fa-book" invisible="not move_id">
+                        <div class="o_stat_info">
+                            <span class="o_stat_text">View Entries</span>
+                        </div>
+                    </button>
+                </div>
+                    <div class="oe_title">
+                        <label for="dg_no" string="GD No."/>
+                        <h1>
+                            <field name="dg_no" placeholder="e.g. GD-2026-00123"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="GD Information">
+                            <field name="gd_date"/>
+                            <field name="partner_id"/>
+                            <field name="purchase_order_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Currency &amp; Charges">
+                            <field name="currency_id"/>
+                            <field name="exchange_rate"/>
+                            <field name="insurance_percentage"/>
+                            <field name="landing_charges_percentage"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Tariff Lines" name="tariff_lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <!-- <field name="brand_id"/> -->
+                                    <field name="hs_code_id"/>
+                                    <field name="model_no_id"/>
+                                    <field name="qty"/>
+                                    <field name="uom_id"/>
+                                    <field name="price_unit"/>
+
+                                    <field name="tariff_currency_id" column_invisible="1"/>
+                                    <field name="pkr_currency_id" column_invisible="1"/>
+
+                                    <field name="assessed_unit_value"/>
+                                    <field name="assessed_total_value" currency_field="tariff_currency_id" readonly="1"/>
+                                    <field name="assessed_unit_value_pkr" currency_field="pkr_currency_id" readonly="1"/>
+                                    <field name="assessed_total_value_pkr" currency_field="pkr_currency_id" readonly="1"/>
+
+                                    <field name="cd_percentage"/>
+                                    <field name="cd_pkr" currency_field="pkr_currency_id" readonly="1"/>
+                                    <field name="rd_percentage"/>
+                                    <field name="rd_pkr" currency_field="pkr_currency_id" readonly="1"/>
+                                    <field name="acd_percentage"/>
+                                    <field name="acd_pkr" currency_field="pkr_currency_id" readonly="1"/>
+
+                                    <field name="st_tax_id"/>
+                                    <!-- <field name="st_percentage"/> -->
+                                    <field name="st_pkr" currency_field="pkr_currency_id" readonly="1"/>
+                                    <field name="ast_tax_id"/>
+                                    <!-- <field name="ast_percentage"/> -->
+                                    <field name="ast_pkr" currency_field="pkr_currency_id" readonly="1"/>
+                                    <field name="it_tax_id"/>
+                                    <!-- <field name="it_percentage"/> -->
+                                    <field name="it_pkr" currency_field="pkr_currency_id" readonly="1"/>
+
+                                    <field name="total_payable_pkr" currency_field="pkr_currency_id" readonly="1" sum="Total"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="pkr_currency_id" invisible="1"/>
+                                <field name="amount_assessed_total_pkr" currency_field="pkr_currency_id" readonly="1"/>
+                                <field name="amount_cd_total" currency_field="pkr_currency_id" readonly="1"/>
+                                <field name="amount_rd_total" currency_field="pkr_currency_id" readonly="1"/>
+                                <field name="amount_acd_total" currency_field="pkr_currency_id" readonly="1"/>
+                                <field name="amount_st_total" currency_field="pkr_currency_id" readonly="1"/>
+                                <field name="amount_ast_total" currency_field="pkr_currency_id" readonly="1"/>
+                                <field name="amount_it_total" currency_field="pkr_currency_id" readonly="1"/>
+                                <field name="amount_total_payable" currency_field="pkr_currency_id" readonly="1" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Internal notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <!-- <record id="view_tdc_import_tariff_search" model="ir.ui.view">
+        <field name="name">tdc.import.tariff.search</field>
+        <field name="model">tdc.import.tariff</field>
+        <field name="arch" type="xml">
+            <search string="Search Tariffs">
+                <field name="dg_no"/>
+                <field name="partner_id"/>
+                <field name="currency_id"/>
+                <filter string="GD Date" name="filter_gd_date" date="gd_date"/>
+                <group expand="0" string="Group By">
+                    <filter string="Vendor" name="groupby_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Currency" name="groupby_currency" context="{'group_by': 'currency_id'}"/>
+                    <filter string="GD Date" name="groupby_gd_date" context="{'group_by': 'gd_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record> -->
+
+    <!-- Action -->
+    <record id="action_tdc_import_tariff" model="ir.actions.act_window">
+        <field name="name">Tariff</field>
+        <field name="res_model">tdc.import.tariff</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new Import GD Tariff record
+            </p>
+            <p>
+                Record the GD No., vendor, currency of import, exchange rate and add
+                tariff lines to automatically compute CD, RD, ACD, ST, AST, IT and the
+                total sum payable in PKR.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menus -->
+    <menuitem id="menu_tdc_import_root" name="Import" sequence="60"/>
+    <menuitem id="menu_tdc_import_tariff" name="Tariff" parent="menu_tdc_import_root"
+              action="action_tdc_import_tariff" sequence="10"/>
+    <menuitem id="menu_tdc_import_configuration" name="Configuration" parent="menu_tdc_import_root" sequence="90"/>
+
+</odoo>

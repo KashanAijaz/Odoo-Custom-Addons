@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================================
+                            TREE VIEW
+    =========================================================== -->
+
+    <record id="view_tdc_tender_tree" model="ir.ui.view">
+        <field name="name">tdc.tender.tree</field>
+        <field name="model">tdc.tender</field>
+        <field name="arch" type="xml">
+
+            <list string="Tenders">
+
+                <field name="name"/>
+
+                <field name="partner_id"/>
+
+                <field name="tender_title"/>
+
+                <field name="upcoming_tender_id"/>
+
+                <field name="tender_fee_amount"/>
+
+               <field name="payment_state"
+                    widget="badge"
+                    decoration-success="payment_state == 'paid'"
+                    decoration-danger="payment_state == 'not_paid'"/>
+
+                <field name="state"
+                    widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state == 'request_payment'"
+                    decoration-muted="state == 'submitted'"
+                    decoration-success="state in ('approved', 'paid', 'confirm')"/>
+
+                <field name="quotation_state"
+                    widget="badge"
+                    decoration-success="quotation_state == 'created'"
+                    decoration-warning="quotation_state == 'not_created'"/>
+            </list>
+
+        </field>
+    </record>
+
+
+    <!-- ==========================================================
+                            FORM VIEW
+    =========================================================== -->
+
+    <record id="view_tdc_tender_form" model="ir.ui.view">
+        <field name="name">tdc.tender.form</field>
+        <field name="model">tdc.tender</field>
+
+        <field name="arch" type="xml">
+
+            <form string="Tender">
+
+                <header>
+
+                    <!-- Quotation Buttons -->
+                   <button name="action_create_sale_order"
+                            string="Create Quotation"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'confirm' or quotation_state == 'created'"/>
+
+                    <button name="action_create_sale_order"
+                            string="Create More Quotations"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="quotation_state != 'created'"/>
+
+                    <button name="action_view_sale_order_summary"
+                            string="View Quotations"
+                            type="object"
+                            class="btn-info"
+                            invisible="quotation_state != 'created'"/>
+
+                    <!-- Confirm first, from draft only -->
+                    <button name="action_confirm"
+                            string="Confirm"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state not in ('draft', 'paid')"/>
+
+                    <!-- Payment Workflow Buttons -->
+                    <button name="action_request_payment"
+                            string="Request for tender fee"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state not in ('draft', 'confirm') or payment_state == 'paid'"/>
+
+                    <button name="action_submit_for_approval"
+                            string="Submit for Approval"
+                            type="object"
+                            class="btn-warning"
+                            invisible="state != 'request_payment'"
+                            groups="tdc_tender.group_tender_payment_user"/>
+
+                    <button name="action_approve_payment"
+                            string="Approve Payment"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'submitted'"
+                            groups="tdc_tender.group_tender_payment_approver"/>
+
+                    <button name="action_pay"
+                            string="Mark as Paid"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'approved'"
+                            groups="tdc_tender.group_tender_payment_user"/>
+                    <button name="action_reset_to_draft"
+                        string="Reset to Draft"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="state not in ('confirm', 'request_payment')"
+                        confirm="This will reset the record to Draft. Continue?"
+                        />
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,request_payment,submitted,approved,paid,confirm"/>
+
+                </header>
+
+                <sheet>
+
+                    <div class="oe_button_box" name="button_box">
+
+                        <button name="action_view_upcoming_tender"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-calendar"
+                                invisible="not upcoming_tender_id">
+
+                            <span class="o_stat_text">
+                                Upcoming Tender
+                            </span>
+
+                        </button>
+
+                        <button type="object"
+                                name="action_view_journal_entries"
+                                class="oe_stat_button"
+                                icon="fa-book">
+
+                            <field name="journal_entry_count"
+                                widget="statinfo"
+                                string="Journal Entries"/>
+
+                        </button>
+
+                    </div>
+
+                    <group>
+
+                        <group>
+
+                            <field name="name"/>
+
+                            <field name="partner_id" readonly="1"/>
+
+                            <field name="upcoming_tender_id" readonly="1"/>
+
+                        </group>
+
+                        <group>
+
+                            <field name="tender_title" readonly="1"/>
+
+                            <field name="worksheet_ids" widget="many2many_tags"/>
+
+                        </group>
+
+                    </group>
+
+                    <!-- Approval Information -->
+                    <group string="Approval Information" 
+                           groups="tdc_tender.group_tender_payment_approver"
+                           invisible="state not in ['submitted','approved','paid','confirm']">
+                        <group>
+                            <field name="submitted_by_id"/>
+                            <field name="submitted_date"/>
+                        </group>
+                        <group>
+                            <field name="approved_by_id"/>
+                            <field name="approval_date"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+
+                        <!-- ============================= -->
+                        <!-- Tender Fee Page -->
+                        <!-- ============================= -->
+                        <page string="Tender Fee">
+
+                            <group>
+
+                                <group>
+
+                                    <field name="tender_fee_amount" 
+                                          readonly="state not in ['draft','confirm','request_payment']"/>
+
+                                    <!-- <field name="instrument_id" 
+                                           readonly="state not in ['draft','request_payment']"/> -->
+
+                                    <!-- <field name="payment_method_id" 
+                                           readonly="state not in ['draft','request_payment']"/> -->
+
+                                    <field name="payment_state" invisible="1"/>
+
+                                </group>
+
+                                <group>
+
+                                    <field name="in_favour_of" 
+                                           readonly="state not in ['draft','request_payment']"/>
+
+                                    <!-- <field name="bank_name" 
+                                           readonly="state not in ['draft','request_payment']"/>
+
+                                    <field name="account_title" 
+                                           readonly="state not in ['draft','request_payment']"/>
+
+                                    <field name="account_number" 
+                                           readonly="state not in ['draft','request_payment']"/> -->
+
+                                </group>
+
+                            </group>
+
+                        </page>
+
+                        <!-- ============================= -->
+                        <!-- Accounting Page -->
+                        <!-- ============================= -->
+                        <page string="Accounting">
+                            
+                           <seperator string="Payment Attachment"/>
+                            <field name="attachment_line_ids" >
+                                    <list>
+                                        <field name="payment_attachment_filename"/>
+                                        <field name="payment_attachment" filename="payment_attachment_filename"/>
+                                        <field name="payment_note"/>
+                                        <field name="instrument_type" 
+                                            widget="badge"
+                                            decoration-info="instrument_type == 'online'"
+                                            decoration-bf="instrument_type == 'pay_order'"
+                                            decoration-warning="instrument_type == 'cdr'"
+                                            decoration-success="instrument_type == 'sdr'"
+                                            decoration-danger="instrument_type == 'bank_guarantee'"
+                                            decoration-muted="instrument_type == 'cash'"/>
+                                        <field name="instrument_number"/>
+                                        <field name="instrument_date"/>
+                                        <field name="bank_name"/>
+                                        <field name="branch_name"/>
+                                    </list>
+                                    <form string="Add Attachment">
+                                        <group>
+                                            <field name="payment_attachment_filename" placeholder="Attachment name"/>
+                                            <field name="payment_attachment" filename="payment_attachment_filename" placeholder="Select file"/>
+                                            <field name="payment_note" placeholder="Note"/>
+                                            <field name="instrument_type" placeholder="Instrument Type"/>
+
+                                            <!-- Only for online -->
+                                            <field name="payment_ref" placeholder="Payment Reference"
+                                                invisible="instrument_type != 'online'"/>
+
+                                            <!-- Only for pay_order, cdr, sdr, bank_guarantee -->
+                                            <field name="instrument_number" placeholder="Instrument Number"
+                                                invisible="instrument_type in ('online', 'cash')"/>
+                                            <field name="instrument_date" placeholder="Instrument Date"
+                                                invisible="instrument_type in ('online', 'cash')"/>
+                                            <field name="bank_name" placeholder="Bank Name"
+                                                invisible="instrument_type in ('online', 'cash')"/>
+                                            <field name="branch_name" placeholder="Branch Name"
+                                                invisible="instrument_type in ('online', 'cash')"/>
+                                        </group>
+                                                                        
+                            </form>
+                                </field>
+                        
+
+                            
+
+                            <group string="Accounting" groups="tdc_tender.group_tender_payment_user">
+
+                                <group>
+                                    <field name="journal_id" 
+                                        readonly="state in ['paid','confirm']"
+                                        options="{'no_create': True}"/>
+                                </group>
+
+                                <group>
+                                    <field name="debit_account_id" 
+                                        readonly="state in ['paid','confirm']"
+                                        options="{'no_create': True}"/>
+                                    <field name="credit_account_id" 
+                                        readonly="state in ['paid','confirm']"
+                                        options="{'no_create': True}"/>
+                                </group>
+
+                            </group>
+
+                        </page>
+
+                        <!-- ============================= -->
+                        <!-- Working Sheet Page -->
+                        <!-- ============================= -->
+                        <page string="Working Sheet">
+
+                            <group>
+
+                                <field name="worksheet_ids" widget="many2many_tags"/>
+
+                                <field name="project_ids" widget="many2many_tags" readonly="1"/>
+
+                            </group>
+
+                            <field name="worksheet_line_ids"  readonly="1">
+
+                                <list>
+                                    <field name="sheet_id"/>
+                                    <field name="sequence"/>
+
+                                    <field name="qty"/>
+
+                                    <field name="product_id"/>
+
+                                    <field name="model"/>
+
+                                    <field name="currency_rate"/>
+
+                                    <field name="list_price"/>
+
+                                    <field name="discount_margin"/>
+
+                                    <field name="net_discount_price"/>
+
+                                    <field name="freight_per_unit"/>
+
+                                    <field name="factor"/>
+                                    <field name="is_cnf"/>  
+
+                                    <!-- <field name="tax_duty"/>
+
+                                    <field name="unit_ex_gst"/>
+
+                                    <field name="unit_ex_gst_corrected"/>
+
+                                    <field name="total_ex_gst"/>
+
+                                    <field name="gst_amount"/>
+
+                                    <field name="total_inc_gst"/> -->
+                                     <!-- <field name="is_cnf" column_invisible="True"/> -->
+
+                                <!-- NORMAL COSTING -->
+                                       <field name="tax_duty" invisible="is_cnf"/>
+                                    <field name="unit_ex_gst_corrected" invisible="is_cnf"/>
+                                    <field name="total_ex_gst" invisible="is_cnf"/>
+                                    <field name="gst_amount" invisible="is_cnf"/>
+                                    <field name="total_inc_gst" invisible="is_cnf"/>
+
+
+                                <!-- C&F COSTING -->
+                                <field name="unit_cnf_without_taxes" invisible="not is_cnf"/>
+                                <field name="total_cnf_without_taxes" invisible="not is_cnf"/>
+                                <field name="custom_duty_tax_id" invisible="not is_cnf"/>
+                                <field name="custom_duties_taxes_caa" invisible="not is_cnf"/>
+                                <field name="local_transport_tax_id" invisible="not is_cnf"/>
+                                <field name="local_transport_clearance" invisible="not is_cnf"/>
+                                <field name="total_cnf_at_site" invisible="not is_cnf"/>
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+    </record>
+
+
+    <!-- ==========================================================
+                            SEARCH VIEW
+    =========================================================== -->
+
+    <record id="view_tdc_tender_search" model="ir.ui.view">
+        <field name="name">tdc.tender.search</field>
+        <field name="model">tdc.tender</field>
+        <field name="arch" type="xml">
+
+            <search string="Search Tenders">
+
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="tender_title"/>
+
+                <filter string="Draft"
+                        name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+
+                <filter string="Request Payment"
+                        name="filter_request_payment"
+                        domain="[('state', '=', 'request_payment')]"/>
+
+                <filter string="Submitted"
+                        name="filter_submitted"
+                        domain="[('state', '=', 'submitted')]"/>
+
+                <filter string="Approved"
+                        name="filter_approved"
+                        domain="[('state', '=', 'approved')]"/>
+
+                <filter string="Paid"
+                        name="filter_paid"
+                        domain="[('state', '=', 'paid')]"/>
+
+                <filter string="Confirmed"
+                        name="filter_confirmed"
+                        domain="[('state', '=', 'confirm')]"/>
+
+                <!-- <group expand="0" string="Group By">
+                    <filter string="State"
+                            name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Partner"
+                            name="group_partner"
+                            context="{'group_by': 'partner_id'}"/>
+                    <filter string="Project"
+                            name="group_project"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter string="Payment State"
+                            name="group_payment_state"
+                            context="{'group_by': 'payment_state'}"/>
+                </group> -->
+
+            </search>
+
+        </field>
+    </record>
+
+
+    <!-- ==========================================================
+                            ACTION
+    =========================================================== -->
+
+    <record id="action_tdc_tender"
+            model="ir.actions.act_window">
+
+        <field name="name">Tenders</field>
+
+        <field name="res_model">tdc.tender</field>
+
+        <field name="view_mode">list,form</field>
+
+        <field name="search_view_id" ref="view_tdc_tender_search"/>
+
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new tender
+            </p>
+            <p>
+                Manage tender documents, payment requests, and approvals.
+            </p>
+        </field>
+
+    </record>
+
+
+    <!-- ==========================================================
+                            MENU ITEMS
+    =========================================================== -->
+
+    
+
+</odoo>

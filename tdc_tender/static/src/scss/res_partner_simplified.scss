@@ -1,0 +1,12 @@
+.tdc_hide_default_address_types {
+    .o_radio_item[data-value="contact"],
+    .o_radio_item[data-value="invoice"],
+    .o_radio_item[data-value="delivery"] {
+        display: none !important;
+    }
+}
+
+.tdc_end_user_field {
+    display: inline-block;
+    margin-left: 12px;
+}

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inherit the standard Product Template form view.
+         We only ADD a new notebook page; nothing existing is removed,
+         replaced or duplicated. -->
+    <record id="view_product_template_tdc_customization_form" model="ir.ui.view">
+        <field name="name">product.template.tdc.customization.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+
+            <!-- Anchor on the notebook of the Product form and append a
+                 brand new page at the end, after the standard pages
+                 (General Information, Sales, Purchase, Inventory, ...). -->
+            <xpath expr="//notebook" position="inside">
+                <page string="TDC Customization" name="tdc_customization">
+
+                    <group string="Source Information">
+                        <field name="purchase_source"/>
+                    </group>
+
+                    <group string="Pricing">
+                        <group>
+                            <label for="exw_origin_list_price"/>
+                            <div class="o_row">
+                                <field name="exw_origin_list_price"/>
+                                <field name="exw_origin_list_price_currency_id"
+                                       class="oe_inline"
+                                       options="{'no_create': True, 'no_open': True}"/>
+                            </div>
+
+                            <label for="exw_origin_net_transfer_price"/>
+                            <div class="o_row">
+                                <field name="exw_origin_net_transfer_price"/>
+                                <field name="exw_origin_net_transfer_price_currency_id"
+                                       class="oe_inline"
+                                       options="{'no_create': True, 'no_open': True}"/>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="normal_selling_rate"/>
+                            <field name="competitive_selling_rate"/>
+                        </group>
+                    </group>
+
+                    <group string="Packing Details">
+                        <group>
+                            <field name="net_weight"/>
+                            <field name="gross_weight"/>
+                        </group>
+                        <group>
+                            <field name="product_length"/>
+                            <field name="product_width"/>
+                            <field name="product_height"/>
+                            <field name="divisor"/>
+                            <field name="volumetric_weight" readonly="1"/>
+                            <field name="cw_weight" readonly="1"/>
+                        </group>
+                    </group>
+
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

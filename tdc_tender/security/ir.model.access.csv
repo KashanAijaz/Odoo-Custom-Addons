@@ -1,0 +1,32 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_working_sheet,working.sheet,model_tdc_working_sheet,,1,1,1,1
+access_working_sheet_line,working.sheet.line,model_tdc_working_sheet_line,,1,1,1,1
+access_tdc_organization,Tender Organization,model_tdc_organization,,1,1,1,1
+access_tdc_upcoming_tender,Upcoming Tender,model_tdc_upcoming_tender,,1,1,1,1
+access_tdc_tender,tdc.tender,model_tdc_tender,,1,1,1,1
+access_tdc_upcoming_tender_line,tdc.upcoming.tender.line,model_tdc_upcoming_tender_line,,1,1,1,1
+access_tdc_instruments,tdc.instruments,model_tdc_instruments,,1,1,1,1
+access_tdc_payment_method,Tender Payment Method,model_tdc_payment_method,,1,1,1,1
+access_tdc_tender_source,tdc.tender.source,model_tdc_tender_source,,1,1,1,1
+access_tdc_incoterms_user,access.tdc.incoterms.user,model_tdc_incoterms,,1,1,1,1
+access_tdc_tender_user,tdc.tender.user,model_tdc_tender,,1,1,1,0
+access_tdc_tender_approver,tdc.tender.approver,model_tdc_tender,,1,1,1,1
+access_tdc_tender_attachment_line_manager,tdc.tender.attachment.line.manager,model_tdc_tender_attachment_line,,1,1,1,1
+access_tdc_tender_attachment_line_user,tdc.tender.attachment.line.user,model_tdc_tender_attachment_line,,1,0,0,0
+access_tdc_earnest_money_user,tdc.earnest.money.user,model_tdc_earnest_money,,1,1,1,0
+access_tdc_earnest_money_attachment_user,tdc.earnest.money.attachment.user,model_tdc_earnest_money_attachment_line,,1,1,1,0
+access_tdc_earnest_money_approver,tdc.earnest.money.approver,model_tdc_earnest_money,,1,1,1,1
+access_tdc_earnest_money_extend_wizard,tdc.earnest.money.extend.wizard,model_tdc_earnest_money_extend_wizard,,1,1,1,1
+access_tdc_earnest_money_return_wizard,tdc.earnest.money.return.wizard,model_tdc_earnest_money_return_wizard,,1,1,1,1
+access_tdc_performance_bond_user,tdc.performance.bond.user,model_tdc_performance_bond,,1,1,1,0
+access_tdc_performance_bond_attachment_user,tdc.performance.bond.attachment.user,model_tdc_performance_bond_attachment_line,,1,1,1,0
+access_tdc_performance_bond_approver,tdc.performance.bond.approver,model_tdc_performance_bond,,1,1,1,1
+access_tdc_performance_bond_extend_wizard,tdc.performance.bond.extend.wizard,model_tdc_performance_bond_extend_wizard,,1,1,1,1
+access_tdc_performance_bond_return_wizard,tdc.performance.bond.return.wizard,model_tdc_performance_bond_return_wizard,,1,1,1,1
+access_tdc_tender_sale_order_wizard,tdc.tender.sale.order.wizard,model_tdc_tender_sale_order_wizard,base.group_user,1,1,1,1
+access_tdc_tender_sale_order_wizard_line,tdc.tender.sale.order.wizard.line,model_tdc_tender_sale_order_wizard_line,base.group_user,1,1,1,1
+access_tdc_tender_create_so_wizard,tdc.tender.create.so.wizard,model_tdc_tender_create_so_wizard,base.group_user,1,1,1,1
+access_tdc_tender_create_so_wizard_line,tdc.tender.create.so.wizard.line,model_tdc_tender_create_so_wizard_line,base.group_user,1,1,1,1
+access_tdc_sale_evaluation_line_user,tdc.sale.evaluation.line.user,model_tdc_sale_evaluation_line,base.group_user,1,1,1,1
+access_tdc_create_loa_wizard,tdc.create.loa.wizard,model_tdc_create_loa_wizard,base.group_user,1,1,1,1
+access_end_user_user,end.user user,model_end_user,base.group_user,1,1,1,1

@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================= LIST ================= -->
+    <record id="view_tdc_master_import_list" model="ir.ui.view">
+        <field name="name">tdc.master.import.list</field>
+        <field name="model">tdc.master.import</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="tariff_id"/>
+                <field name="gd_date"/>
+                <field name="partner_id"/>
+                <field name="mode_of_transport"/>
+                <field name="total_duty_tax" sum="Total"/>
+                <field name="total_charges" sum="Total"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ================= FORM ================= -->
+    <record id="view_tdc_master_import_form" model="ir.ui.view">
+        <field name="name">tdc.master.import.form</field>
+        <field name="model">tdc.master.import</field>
+        <field name="arch" type="xml">
+            <form string="Import Master (GD Costing)">
+                <sheet>
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_download_excel" type="object"
+                            string="Download Excel" class="btn-secondary" icon="fa-file-excel-o"/>
+                </div>
+                                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="GD Reference">
+                            <field name="tariff_id"/>
+                            <field name="gd_date"/>
+                            <field name="partner_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Exchange Rates">
+                            <field name="origin_payment_exchange_rate_usd"/>
+                            <field name="freight_exch_rate_usd"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Consignee / Parties">
+                            <field name="consignee_id"/>
+                            <field name="notify_party_id"/>
+                            <field name="clearing_agent_id"/>
+                            <field name="freight_forwarder_id"/>
+                            <field name="godown_id"/>
+                        </group>
+                        <group string="Shipment Details">
+                            <field name="mode_of_transport"/>
+                            <field name="consignment_type"/>
+                            <field name="port_of_loading_id"/>
+                            <field name="port_of_discharge_id"/>
+                            <field name="vessel_id"/>
+                            <field name="igm_terminal_id"/>
+                            <field name="customs_collectorate_id"/>
+                            <field name="master_bl_no"/>
+                            <field name="house_bl_no"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                     
+                            
+                        <page string="Local &amp; Other Charges">
+                            <field name="charge_line_ids">
+                                <list editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="amount" sum="Total"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="total_charges"/>
+                            </group>
+                        </page>
+
+                        <page string="Banking Details">
+                            <group>
+                                <field name="bank_involved"/>
+                                <field name="financial_instrument_no" invisible="bank_involved != 'yes'"/>
+                                <field name="financial_instrument_value" invisible="bank_involved != 'yes'"/>
+                                <field name="consignee_bank_name" invisible="bank_involved != 'yes'"/>
+                                <field name="consignee_bank_branch" invisible="bank_involved != 'yes'"/>
+                            </group>
+                        </page>
+                           <page string="Product Detail and Pricing as per Origin">
+                                <field name="product_line_ids">
+                                    <list editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="hs_code_id"/>
+                                        <field name="qty"/>
+                                        <field name="uom_id"/>
+                                        <field name="unit_rate_actual_usd"/>
+                                        <field name="total_amount_actual_usd"/>
+                                        <field name="bank_charges_origin_usd"/>
+                                        <field name="packing_charges_origin_usd"/>
+                                        <field name="total_exw_price_origin_pkr"/>
+                                    </list>
+                                        <!-- % Share Detail -->
+                                </field>
+                            </page>
+                            <page string="% Share Detail">
+                                 <field name="product_line_ids">
+                                  <list editable="bottom">
+                                        <field name="product_id" readonly="1"/>
+                                        <field name="qty" readonly="1"/>
+                                        <field name="value_pct_share" widget="percentage" optional="show"/>
+                                        <field name="unit_cw_kg" optional="show"/>
+                                        <field name="total_cw_kg" optional="show"/>
+                                        <field name="weight_pct_share" widget="percentage" optional="show"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Freight &amp; Handling Charges">
+                                <field name="product_line_ids">
+                                    <list editable="bottom">
+                                        <field name="product_id" readonly="1"/>
+                                        <field name="qty" readonly="1"/>
+                                        <field name="sea_freight_per_unit_usd"/>
+                                        <field name="sea_freight_total_usd"/>
+                                        <field name="sea_freight_total_pkr"/>
+                                        <field name="total_cf_karachi_cost"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="THIRD PARTY UAE SHIPMENT EXPENSE">
+                                <field name="product_line_ids">
+                                    <list editable="bottom">
+                                        <field name="product_id" readonly="1"/>
+                                        <field name="qty" readonly="1"/>
+                                        <field name="freight_expense_origin_uae"/>
+                                        <field name="uae_customs_clearance_expense"/>
+                                        <field name="uae_vat_paid_customs_clearance"/>
+                                        <field name="uae_bank_expenses"/>
+                                        <field name="uae_company_expenses"/>
+                                        <field name="uae_courier_charges"/>
+                                        <field name="uae_any_other_expense"/>
+                                        <field name="total_uae_expenses"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="PAKISTAN CUSTOMS - OTHER DUTY &amp; PENALTY CHARGES">
+                                <field name="product_line_ids">
+                                    <list editable="bottom">
+                                        <field name="product_id" readonly="1"/>
+                                        <field name="qty" readonly="1"/>
+                                        <field name="pc_cess_sindh_excise_duty"/>
+                                        <field name="pc_sindh_stamp_duty"/>
+                                        <field name="pc_psw_gd_fee"/>
+                                        <field name="pc_invoice_not_found_penalty"/>
+                                        <field name="pc_any_other_charges"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="EXPENSES AT DESTINATION PORT/AIRPORT">
+                                <field name="product_line_ids">
+                                    <list editable="bottom">
+                                        <field name="product_id" readonly="1"/>
+                                        <field name="qty" readonly="1"/>
+                                        <field name="dest_godown_shed_charges"/>
+                                        <field name="dest_delivery_order_charges"/>
+                                        <field name="dest_psw_token_gd_submission"/>
+                                        <field name="dest_caa_charges"/>
+                                        <field name="dest_transport_port_warehouse"/>
+                                        <field name="dest_clearing_agent_fees"/>
+                                        <field name="dest_misc_examination_expense"/>
+                                        <field name="dest_misc_assessment_expense"/>
+                                        <field name="dest_misc_delivery_gateout_expense"/>
+                                        <field name="dest_any_other_expense_transport"/>
+                                        <field name="total_customs_clearance_cost_excl_st"/>
+                                        <field name="total_customs_clearance_cost_incl_st"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                       <page string="Pakistan Customs - Duty &amp; Taxes as per GD">
+                            <field name="product_line_ids">
+                                <list editable="bottom">
+                                    <field name="tariff_line_id" invisible="1"/>
+                                    <field name="product_id" readonly="1"/>
+                                    <field name="hs_code_id" readonly="1"/>
+                                    <field name="qty" readonly="1"/>
+                                    <field name="customs_duty_line" readonly="1"/>
+                                    <field name="sales_tax_line" readonly="1"/>
+                                    <field name="income_tax_line" readonly="1"/>
+                                    <field name="total_duty_tax_line" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Grand Total Cost (Item Wise)">
+                            <field name="product_line_ids">
+                                <list editable="bottom">
+                                    <field name="product_id" readonly="1"/>
+                                    <field name="qty" readonly="1"/>
+                                    <field name="total_home_cost_excl_gst"/>
+                                    <field name="unit_home_cost_incl_gst"/>
+                                    <field name="total_home_cost_incl_gst"/>
+                                    
+                                </list>
+                            </field>
+                        </page>
+
+
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tdc_master_import" model="ir.actions.act_window">
+        <field name="name">Import Master</field>
+        <field name="res_model">tdc.master.import</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ================= MENUS ================= -->
+    <menuitem id="menu_tdc_import_root" name="Import"  web_icon="tdc_import,static/description/icon.png" sequence="60"/>
+
+    <menuitem id="menu_tdc_master_import"
+              name="Import Master"
+              parent="menu_tdc_import_root"
+              action="action_tdc_master_import"
+              sequence="10"/>
+
+    <menuitem id="menu_tdc_import_config"
+              name="Configuration"
+              parent="menu_tdc_import_root"
+              sequence="90"/>
+
+    <menuitem id="menu_tdc_port"
+              name="Ports"
+              parent="menu_tdc_import_config"
+              action="action_tdc_port"
+              sequence="10"/>
+
+    <menuitem id="menu_tdc_vessel"
+              name="Ocean Vessels / Flights"
+              parent="menu_tdc_import_config"
+              action="action_tdc_vessel"
+              sequence="20"/>
+
+    <menuitem id="menu_tdc_igm_terminal"
+              name="IGM Collectorate/Terminal"
+              parent="menu_tdc_import_config"
+              action="action_tdc_igm_terminal"
+              sequence="30"/>
+
+    <menuitem id="menu_tdc_customs_collectorate"
+              name="Customs Collectorate"
+              parent="menu_tdc_import_config"
+              action="action_tdc_customs_collectorate"
+              sequence="40"/>
+
+</odoo>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Excel export wizard form -->
+    <record id="view_tdc_import_tariff_report_wizard_form" model="ir.ui.view">
+        <field name="name">tdc.import.tariff.report.wizard.form</field>
+        <field name="model">tdc.import.tariff.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Export Tariff Report">
+                <group>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="partner_id"/>
+                </group>
+                <footer>
+                    <button name="action_export_xlsx" type="object" string="Export to Excel"
+                            class="btn-info"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tdc_import_tariff_report_wizard" model="ir.actions.act_window">
+        <field name="name">Export Tariff Report (Excel)</field>
+        <field name="res_model">tdc.import.tariff.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_tdc_import_tariff_export" name="PCD Report"
+              parent="menu_tdc_import_root"
+              action="action_tdc_import_tariff_report_wizard" sequence="20"/>
+
+</odoo>

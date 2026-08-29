@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_tdc_performance_bond_tree" model="ir.ui.view">
+        <field name="name">tdc.performance.bond.tree</field>
+        <field name="model">tdc.performance.bond</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" string="Reference"/>
+                <field name="tender_no" string="Tender No"/>
+                <field name="tender_title" string="Tender Title"/>
+                <field name="partner_id" string="Organization"/>
+                <field name="performance_bond_amount" sum="Total Amount" string="Amount"/>
+                <field name="delivery_date" string="Delivery Date"/>
+                <field name="validity_date" string="Validity Date"/>
+                <field name="return_date" string="Return Date"/>
+                <field name="payment_state" string="Payment Status"/>
+                <field name="state" string="Status" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tdc_performance_bond_form" model="ir.ui.view">
+        <field name="name">tdc.performance.bond.form</field>
+        <field name="model">tdc.performance.bond</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_request_payment" 
+                            string="Request Perfomance Bond Amount" 
+                            type="object" 
+                            invisible="state != 'draft'"
+                            class="btn-primary"/>
+                    <button name="action_submit_for_approval" 
+                            string="Submit for Approval" 
+                            type="object" 
+                            invisible="state != 'request_payment'"
+                            class="btn-primary"/>
+                    <button name="action_approve_payment" 
+                            string="Approve" 
+                            type="object" 
+                            invisible="state != 'submitted'"
+                            class="btn-success"
+                            groups="tdc_tender.group_tender_payment_approver"/>
+
+                    <button name="action_pay" 
+                            string="Pay Perf. Bond" 
+                            type="object" 
+                            invisible="state != 'approved'"
+                            class="btn-primary"/>
+
+                   <button name="action_request_return"
+                        string="Request Return"
+                        type="object"
+                        invisible="state != 'paid'"
+                        class="btn-warning"/>
+
+                <button name="action_approve_return"
+                        string="Approve Return"
+                        type="object"
+                        invisible="state != 'return_requested'"
+                        class="btn-success"
+                        groups="tdc_tender.group_tender_payment_approver"/>
+
+                <button name="action_send_for_bank_review"
+                        string="Send for Bank Review"
+                        type="object"
+                        invisible="state != 'return_approved'"
+                        class="btn-warning"/>
+
+                <button name="action_return_payment"
+                        string="Confirm Return"
+                        type="object"
+                        invisible="state != 'under_bank_review'"
+                        class="btn-success"/>
+
+                    <button name="action_view_journal_entries" 
+                            string="View Journal Entries" 
+                            type="object" 
+                            invisible="state not in ['paid', 'returned']"
+                            class="btn-secondary"/>
+
+                    <button name="action_extend_validity" 
+                            string="Extend Validity" 
+                            type="object" 
+                            invisible="state not in ['draft', 'request_payment', 'submitted', 'approved', 'paid']"
+                            class="btn-info"/>
+<field name="state" widget="statusbar"
+       statusbar_visible="draft,request_payment,submitted,approved,paid,return_requested,return_approved,under_bank_review,returned"/>                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                            <field name="state" widget="badge" invisible="1"/>
+                        </h1>
+                    </div>
+                    
+                    <notebook>
+                        <!-- Main Info Tab -->
+                        <page string="Performance Bond Information">
+                            <group>
+                                <group>
+                                    <field name="upcoming_tender_id" required="1"/>
+                                    <field name="tender_id" required="1"/>
+                                    <field name="sale_order_id" required="1"/>
+                                    <field name="tender_no"/>
+                                    <field name="tender_title"/>
+                                    <field name="partner_id"/>
+                                </group>
+                                <group>
+                                    <field name="beneficiary"/>
+                                    <field name="amount_calculation_type" widget="radio"/>
+                                    <field name="percentage_value" invisible="amount_calculation_type != 'percentage'"/>
+                                    <field name="quotation_amount" readonly="1"/>
+                                    <field name="performance_bond_amount" required="1"/>
+                                    <field name="note_remarks" nolabel="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <!-- Dates Tab -->
+                        <page string="Dates &amp; Validity">
+                            <group>
+                                <group>
+                                    <field name="quotation_date"/>
+                                    <field name="delivery_date" required="1"/>
+                                </group>
+                                <group>
+                                    <field name="validity_date" readonly="1"/>
+                                    <field name="return_date"/>
+                                    <field name="is_extended"/>
+                                    <field name="previous_validity_date" invisible="not is_extended"/>
+                                    <field name="extension_days" invisible="not is_extended"/>
+                                    <!-- <field name="extension_notification" invisible="not is_extended" nolabel="1"/> -->
+                                </group>
+                                <group>
+                                <seperator String="Validity Reason"/>
+                        <field name="extension_notification" required="1" nolabel="1" placeholder="Enter reason for extension..."/>
+                        </group>
+                            </group>
+                        </page>
+                        
+                        <!-- Accounting Tab -->
+                        <page string="Accounting">
+                            <seperator string="Accounting Attachments"/>
+                                <field name="attachment_line_ids"
+                                    domain="[('attachment_stage', '=', 'payment')]"
+                                    context="{'default_attachment_stage': 'payment', 'default_performance_bond_id': id}">
+                                    <list>
+                                        <field name="payment_attachment_filename" string="Attachment Name"/>
+                                        <field name="payment_attachment" filename="payment_attachment_filename" string="File"/>
+                                        <field name="payment_note" string="Note"/>
+                                        <field name="instrument_type" widget="badge"/>
+                                        <field name="instrument_number" string="Instrument No."/>
+                                        <field name="instrument_date" string="Date"/>
+                                        <field name="bank_name" string="Bank"/>
+                                        <field name="branch_name" string="Branch"/>
+                                    </list>
+                                    <form string="Add Attachment">
+                                        
+                                            <field name="payment_attachment_filename" placeholder="Attachment name"/>
+                                            <field name="payment_attachment" filename="payment_attachment_filename" placeholder="Select file"/>
+                                            <field name="payment_note" placeholder="Note"/>
+                                            <field name="instrument_type" placeholder="Instrument Type"/>
+                                            <field name="payment_ref" placeholder="Payment Reference" invisible="instrument_type != 'online'"/>
+                                            <field name="instrument_number" placeholder="Instrument Number" invisible="instrument_type in ('online', 'cash')"/>
+                                            <field name="instrument_date" placeholder="Instrument Date" invisible="instrument_type in ('online', 'cash')"/>
+                                            <field name="bank_name" placeholder="Bank Name" invisible="instrument_type in ('online', 'cash')"/>
+                                            <field name="branch_name" placeholder="Branch Name" invisible="instrument_type in ('online', 'cash')"/>
+                                        
+                                    </form>
+                                </field>
+                           
+                            
+                            <separator string="Accounting Details"/>
+
+                                <group string="Accounting" groups="tdc_tender.group_tender_payment_user">
+                                    <group>
+                                        <field name="journal_id" readonly="state in ['paid','returned']" options="{'no_create': True}"/>
+                                    </group>
+                                    <group>
+                                        <field name="debit_account_id" readonly="state in ['paid','returned']" options="{'no_create': True}"/>
+                                        <field name="credit_account_id" readonly="state in ['paid','returned']" options="{'no_create': True}"/>
+                                    </group>
+                                </group>
+                        </page>
+
+
+<!-- Bank Review -->
+<page string="Bank Review"
+      invisible="state not in ['return_approved', 'under_bank_review', 'returned']">
+    <field name="attachment_line_ids"
+           domain="[('attachment_stage', '=', 'bank_review')]"
+           context="{'default_attachment_stage': 'bank_review', 'default_performance_bond_id': id}">
+        <list>
+            <field name="payment_attachment_filename" string="Attachment Name"/>
+            <field name="payment_attachment" filename="payment_attachment_filename" string="File"/>
+            <field name="payment_note" string="Note"/>
+            <field name="instrument_type" widget="badge"/>
+            <field name="instrument_number" string="Instrument No."/>
+            <field name="instrument_date" string="Date"/>
+            <field name="bank_name" string="Bank"/>
+            <field name="branch_name" string="Branch"/>
+        </list>
+        <form string="Add Bank Review Attachment">
+            <group>
+                <field name="attachment_stage" invisible="1"/>
+                <field name="payment_attachment_filename" placeholder="Attachment name"/>
+                <field name="payment_attachment" filename="payment_attachment_filename" placeholder="Select file"/>
+                <field name="payment_note" placeholder="Note"/>
+                <field name="instrument_type" placeholder="Instrument Type"/>
+                <field name="payment_ref" placeholder="Payment Reference" invisible="instrument_type != 'online'"/>
+                <field name="instrument_number" placeholder="Instrument Number" invisible="instrument_type in ('online', 'cash')"/>
+                <field name="instrument_date" placeholder="Instrument Date" invisible="instrument_type in ('online', 'cash')"/>
+                <field name="bank_name" placeholder="Bank Name" invisible="instrument_type in ('online', 'cash')"/>
+                <field name="branch_name" placeholder="Branch Name" invisible="instrument_type in ('online', 'cash')"/>
+            </group>
+        </form>
+    </field>
+</page>
+
+<!-- Return Confirmation -->
+<page string="Return Confirmation"
+      invisible="state not in ['under_bank_review', 'returned']">
+    <field name="attachment_line_ids"
+           domain="[('attachment_stage', '=', 'confirmation')]"
+           context="{'default_attachment_stage': 'confirmation', 'default_performance_bond_id': id}">
+        <list>
+            <field name="payment_attachment_filename" string="Attachment Name"/>
+            <field name="payment_attachment" filename="payment_attachment_filename" string="File"/>
+            <field name="payment_note" string="Note"/>
+            <field name="instrument_type" widget="badge"/>
+            <field name="instrument_number" string="Instrument No."/>
+            <field name="instrument_date" string="Date"/>
+            <field name="bank_name" string="Bank"/>
+            <field name="branch_name" string="Branch"/>
+        </list>
+        <form string="Add Return Confirmation Attachment">
+            <group>
+                <field name="attachment_stage" invisible="1"/>
+                <field name="payment_attachment_filename" placeholder="Attachment name"/>
+                <field name="payment_attachment" filename="payment_attachment_filename" placeholder="Select file"/>
+                <field name="payment_note" placeholder="Note"/>
+                <field name="instrument_type" placeholder="Instrument Type"/>
+                <field name="payment_ref" placeholder="Payment Reference" invisible="instrument_type != 'online'"/>
+                <field name="instrument_number" placeholder="Instrument Number" invisible="instrument_type in ('online', 'cash')"/>
+                <field name="instrument_date" placeholder="Instrument Date" invisible="instrument_type in ('online', 'cash')"/>
+                <field name="bank_name" placeholder="Bank Name" invisible="instrument_type in ('online', 'cash')"/>
+                <field name="branch_name" placeholder="Branch Name" invisible="instrument_type in ('online', 'cash')"/>
+            </group>
+        </form>
+    </field>
+</page>
+
+<page string="Return Information"
+      invisible="state not in ['return_requested', 'return_approved', 'under_bank_review', 'returned']">
+    <group>
+        <group string="Return Request">
+            <field name="return_requested_by_id" readonly="1"/>
+            <field name="return_requested_date" readonly="1"/>
+        </group>
+        <group string="Return Approval">
+            <field name="return_approved_by_id" readonly="1" invisible="state == 'return_requested'"/>
+            <field name="return_approved_date" readonly="1" invisible="state == 'return_requested'"/>
+        </group>
+    </group>
+    <group>
+        <group string="Bank Review">
+            <field name="bank_review_by_id" readonly="1" invisible="state in ('return_requested', 'return_approved')"/>
+            <field name="bank_review_date" readonly="1" invisible="state in ('return_requested', 'return_approved')"/>
+        </group>
+        <group string="Return Journal Entry" invisible="state != 'returned'">
+            <field name="return_move_id" string="Return Journal Entry"/>
+            <field name="return_date"/>
+        </group>
+    </group>
+    <group invisible="state != 'returned'">
+        <group>
+            <field name="return_debit_account_id"/>
+            <field name="return_credit_account_id"/>
+        </group>
+    </group>
+</page>
+                    </notebook>
+                </sheet>
+                
+               
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_tdc_performance_bond_search" model="ir.ui.view">
+        <field name="name">tdc.performance.bond.search</field>
+        <field name="model">tdc.performance.bond</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Reference"/>
+                <field name="tender_no" string="Tender No"/>
+                <field name="tender_title" string="Tender Title"/>
+                <field name="partner_id" string="Organization"/>
+                <field name="beneficiary" string="Beneficiary"/>
+                <filter name="draft" string="Draft" domain="[('state','=','draft')]"/>
+                <filter name="submitted" string="Submitted" domain="[('state','=','submitted')]"/>
+                <filter name="approved" string="Approved" domain="[('state','=','approved')]"/>
+                <filter name="paid" string="Paid" domain="[('state','=','paid')]"/>
+                <filter name="returned" string="Returned" domain="[('state','=','returned')]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tdc_performance_bond" model="ir.actions.act_window">
+        <field name="name">Performance Bond</field>
+        <field name="res_model">tdc.performance.bond</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu -->
+    
+
+    <!-- Extend Wizard View -->
+    <record id="view_tdc_performance_bond_extend_wizard" model="ir.ui.view">
+        <field name="name">tdc.performance.bond.extend.wizard.form</field>
+        <field name="model">tdc.performance.bond.extend.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="performance_bond_id" readonly="1"/>
+                            <field name="current_validity" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="new_validity_date" required="1"/>
+                            
+                        </group>
+                       
+                        <field name="extension_notification" required="1" nolabel="1" placeholder="Enter reason for extension..."/>
+                        
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_extend" 
+                            string="Extend Validity" 
+                            type="object" 
+                            class="btn-primary"/>
+                    <button string="Cancel" 
+                            class="btn-secondary" 
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Return Wizard View -->
+    <record id="view_tdc_performance_bond_return_wizard" model="ir.ui.view">
+        <field name="name">tdc.performance.bond.return.wizard.form</field>
+        <field name="model">tdc.performance.bond.return.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="performance_bond_id" readonly="1"/>
+                            <field name="return_amount" string="Return Amount"/>
+                            <field name="return_note" string="Return Note" nolabel="1"/>
+                        </group>
+                        <group string="Return Accounting">
+                            <field name="return_journal_id" options="{'no_create': True}" required="1"/>
+                            <field name="return_debit_account_id" options="{'no_create': True}" required="1"/>
+                            <field name="return_credit_account_id" options="{'no_create': True}" required="1"/>
+                        </group>
+                    </group>
+                    <group string="Return Attachment">
+                        <field name="return_attachment" filename="return_attachment_filename"/>
+                        <field name="return_attachment_filename"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_confirm_return" 
+                            string="Confirm Perf. Bond Return" 
+                            type="object" 
+                            class="btn-primary"/>
+                    <button string="Cancel" 
+                            class="btn-secondary" 
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Root Menu -->
+    <menuitem
+        id="estate_menu_root"
+        name="Real Estate"/>
+
+    <!-- First Level Menu -->
+    <menuitem
+        id="estate_menu_advertisements"
+        name="Advertisements"
+        parent="estate_menu_root"/>
+
+    <!-- Second Level Menu -->
+    <menuitem
+        id="estate_property_menu_action"
+        name="Properties"
+        parent="estate_menu_advertisements"
+        action="action_estate_property"/>
+
+    <!-- First Level Menu -->
+    <menuitem
+        id="estate_menu_settings"
+        name="Settings"
+        parent="estate_menu_root"/>
+
+    <!-- Second Level Menu -->
+    <menuitem
+        id="estate_property_type_menu_action"
+        name="Property Types"
+        parent="estate_menu_settings"
+        action="action_estate_property_type"/>
+    <!-- Second Level Menu -->
+    <menuitem
+        id="estate_property_tag_menu_action"
+        name="Property Tags"
+        parent="estate_menu_settings"
+        action="action_estate_property_tag"/>
+
+</odoo>
