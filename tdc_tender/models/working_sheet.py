@@ -148,8 +148,9 @@ class TenderWorkingSheetLine(models.Model):
     )
 
     sequence = fields.Integer(
-        String = "SNo" , 
-        readonly=True,)
+        string = "SNo" , 
+        readonly=True,
+    )
 
     
 
@@ -158,19 +159,15 @@ class TenderWorkingSheetLine(models.Model):
         sheet_sequences = {}
 
         for vals in vals_list:
-
             sheet_id = vals.get("sheet_id")
 
             if sheet_id and not vals.get("sequence"):
-
                 if sheet_id not in sheet_sequences:
-
                     last_line = self.search(
                         [("sheet_id", "=", sheet_id)],
                         order="sequence desc",
                         limit=1,
                     )
-
                     sheet_sequences[sheet_id] = last_line.sequence or 0
 
                 sheet_sequences[sheet_id] += 1
@@ -178,8 +175,10 @@ class TenderWorkingSheetLine(models.Model):
 
         records = super().create(vals_list)
 
-        # Resequence after creation
-        records._resequence()
+        # Resequence ALL lines of each affected sheet, not just the new batch
+        sheets = records.mapped("sheet_id")
+        for sheet in sheets:
+            sheet.line_ids._resequence()
 
         return records
 
