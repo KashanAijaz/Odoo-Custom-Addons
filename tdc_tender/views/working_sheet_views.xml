@@ -110,16 +110,16 @@
                                     <field name="custom_duties_taxes_caa"
                                         column_invisible="not parent.is_cnf" force_save="1"/>
                                     
-                                    <field name="custom_duty_tax_id"
+                                    <field name="custom_duty_percent"
                                         column_invisible="not parent.is_cnf" force_save="1"/>
 
-                                     <!-- <field name="local_transport_tax_id"
-                                        column_invisible="not parent.is_cnf" force_save="1"/> -->
+                                     <field name="local_transport_percent"
+                                        column_invisible="not parent.is_cnf" force_save="1"/>
                                         
 
                                     <field name="local_transport_clearance"
-                                        column_invisible="not parent.is_cnf" force_save="1" readonly="False"/>
-
+                                        column_invisible="not parent.is_cnf" force_save="1" readonly="True"/>
+                                    <field name="unit_cnf_at_site"  column_invisible="not parent.is_cnf" force_save="1"/>
                                     <field name="total_cnf_at_site"
                                         column_invisible="not parent.is_cnf" force_save="1" />
 

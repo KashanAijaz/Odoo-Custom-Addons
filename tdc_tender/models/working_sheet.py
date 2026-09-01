@@ -336,6 +336,16 @@ class TenderWorkingSheetLine(models.Model):
         help="Tax used to calculate Custom duties, taxes & CAA charges (uses this tax's %)",
     )
 
+    custom_duty_percent = fields.Float(
+    string="Custom Duty %",
+    help="Manually entered percentage used to calculate Custom duties, taxes & CAA charges",
+    )
+
+    local_transport_percent = fields.Float(
+        string="Local Transport %",
+        help="Manually entered percentage used to calculate Local Transportation & Custom Clearance charges",
+    )
+
     local_transport_tax_id = fields.Many2one(
         "account.tax",
         string="Local Transport Tax",
@@ -344,6 +354,24 @@ class TenderWorkingSheetLine(models.Model):
 
     total_cnf_at_site = fields.Float(
         string="Total C&F at site with taxes & Expenses",
+        compute="_compute_amounts",
+        store=True,
+    )
+
+    unit_custom_duties_taxes_caa = fields.Float(
+        string="Unit Custom duties, taxes & CAA charges",
+        compute="_compute_amounts",
+        store=True,
+    )
+
+    unit_local_transport_clearance = fields.Float(
+        string="Unit Local Transportation & Custom Clearance Charges",
+        compute="_compute_amounts",
+        store=True,
+    )
+
+    unit_cnf_at_site = fields.Float(
+        string="Unit C&F at site with taxes & Expenses",
         compute="_compute_amounts",
         store=True,
     )
@@ -361,8 +389,8 @@ class TenderWorkingSheetLine(models.Model):
     "freight_per_unit",
     "factor",
     "tax_duty",
-    "custom_duty_tax_id",
-    "local_transport_tax_id",
+    "custom_duty_percent",
+    "local_transport_percent",
 )
     def _compute_amounts(self):
         Tax = self.env["account.tax"]
@@ -409,25 +437,35 @@ class TenderWorkingSheetLine(models.Model):
             rec.total_cnf_without_taxes = rec.unit_cnf_without_taxes * rec.qty
 
             # Custom duties, taxes & CAA charges (25%)
-            custom_duty_percent = (
-            rec.custom_duty_tax_id.amount if rec.custom_duty_tax_id else 0.0
-            )
+            
             rec.custom_duties_taxes_caa = (
-                rec.total_cnf_without_taxes * (custom_duty_percent / 100.0)
+                rec.total_cnf_without_taxes * (rec.custom_duty_percent / 100.0)
             )
 
-            # --- Local Transportation & Custom Clearance (from tax %, not fixed 5%) ---
-            local_transport_percent = (
-                rec.local_transport_tax_id.amount if rec.local_transport_tax_id else 0.0
-            )
+            # Local Transportation & Custom Clearance
             rec.local_transport_clearance = (
-                rec.total_cnf_without_taxes * (local_transport_percent / 100.0)
+                rec.total_cnf_without_taxes * (rec.local_transport_percent / 100.0)
             )
             # Total C&F at site with taxes & Expenses
             rec.total_cnf_at_site = (
                 rec.total_cnf_without_taxes 
                 + rec.custom_duties_taxes_caa 
                 + rec.local_transport_clearance
+            )
+            rec.unit_custom_duties_taxes_caa = (
+                rec.unit_cnf_without_taxes * (rec.custom_duty_percent / 100.0)
+            )
+
+            # Unit Local Transportation & Custom Clearance
+            rec.unit_local_transport_clearance = (
+                rec.unit_cnf_without_taxes * (rec.local_transport_percent / 100.0)
+            )
+
+            # Unit C&F at site with taxes & Expenses
+            rec.unit_cnf_at_site = (
+                rec.unit_cnf_without_taxes
+                + rec.unit_custom_duties_taxes_caa
+                + rec.unit_local_transport_clearance
             )
 
 

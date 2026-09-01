@@ -112,67 +112,61 @@
                                 </tr>
 
                             </thead>
-
-                            <tbody>
-
-                                <t t-foreach="doc.worksheet_ids.line_ids" t-as="line">
-
+                            
+                           <tbody>
+                                <t t-foreach="sale_order.order_line" t-as="line">
+                                    <t t-if="not line.display_type">
                                     <tr>
 
                                         <td style="text-align:center; vertical-align:top;">
-
-                                            <span t-field="line.sequence"/>
-
+                                            <span t-esc="line_index + 1"/>
                                         </td>
 
-                                        <td style="padding:8px;">
+                                       <td style="padding:8px;">
 
                                             <strong>
-
                                                 <span t-field="line.product_id"/>
-
                                             </strong>
 
                                             <br/><br/>
 
                                             <b>Model :</b>
-
                                             <span t-field="line.product_id.product_tmpl_id.model_no_id"/>
-
                                             <br/>
 
                                             <b>MAKE :</b>
-
                                             <span t-field="line.product_id.product_tmpl_id.tender_make"/>
-
+                                            
+                                            <b>PART NO:</b>
+            <span t-field="line.product_id.product_tmpl_id.sku"/>
                                             <br/><br/>
 
-                                            <b>TECHNICAL SPECIFICATION</b>
+                                            <t t-if="line.technical_key_features">
+                                                <b>Key Features</b>
+                                                <div t-field="line.technical_key_features"/>
+                                                <br/>
+                                            </t>
 
-                                            <br/>
+                                            <t t-if="line.tender_specification">
+                                                <b>Technical Specification</b>
+                                                <div t-field="line.tender_specification"/>
+                                                <br/>
+                                            </t>
 
-                                            <!-- <div t-field="line.product_id.product_tmpl_id.technical_key_features"/>
-                                            <div t-field="line.product_id.product_tmpl_id.tender_specification"/>
-                                            <div t-field="line.product_id.product_tmpl_id.technical_power_supply"/> -->
-
-                                            <div t-field="line.sale_line_id.technical_key_features"/>
-                                            <div t-field="line.sale_line_id.tender_specification"/>
-                                            <div t-field="line.sale_line_id.technical_power_supply"/>
+                                            <!-- <t t-if="line.technical_power_supply">
+                                                <b>Power Supply</b>
+                                                <div t-field="line.technical_power_supply"/>
+                                            </t> -->
 
                                         </td>
-
                                         <td style="text-align:center; vertical-align:top;">
-
-                                            <span t-field="line.qty"/>
-
+                                            <span t-field="line.product_uom_qty"/>
                                         </td>
 
                                     </tr>
-
+                                    </t>
                                 </t>
-
                             </tbody>
-
                         </table>
 
                         <br/><br/>

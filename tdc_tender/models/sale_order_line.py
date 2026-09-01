@@ -24,6 +24,11 @@ class SaleOrderLine(models.Model):
         readonly=True,
     )
 
+    unit_cnf_at_site = fields.Float(
+            string="Total C&F at Site",
+            readonly=True,
+        )
+
     discount_margin = fields.Float(
         string="Discount %",
         readonly=True,

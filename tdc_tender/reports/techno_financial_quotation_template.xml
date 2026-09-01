@@ -9,7 +9,7 @@
 
         <t t-call="web.external_layout">
 
-        <t t-set="sale_order" t-value="doc.sale_order_ids[:1]"/>
+        <t t-set="sale_order" t-value="doc"/>
 
         <div class="page">
 
@@ -135,85 +135,69 @@
 
         </thead>
 
-        <tbody>
+       <tbody>
+    <t t-set="order_lines" t-value="sale_order.order_line.filtered(lambda l: not l.display_type)"/>
 
-        <t t-foreach="doc.worksheet_ids.line_ids" t-as="line">
+    <t t-foreach="sale_order.worksheet_id.line_ids" t-as="line">
+        <t t-set="ol" t-value="order_lines.filtered(lambda l: l.product_id == line.product_id)[:1]"/>
 
         <tr>
+            <td style="vertical-align:top;text-align:center;">
+                <span t-field="line.sequence"/>
+            </td>
 
-        <td style="vertical-align:top;text-align:center;">
+            <td style="padding:8px;">
+                <strong>
+                    <span t-field="line.product_id"/>
+                </strong>
 
-        <span t-field="line.sequence"/>
+                <br/><br/>
 
-        </td>
+                <b>MODEL :</b>
+                <span t-field="line.product_id.product_tmpl_id.model_no_id"/>
+                <br/>
 
-        <td style="padding:8px;">
+                <b>PART NO:</b>
+                <span t-field="line.product_id.product_tmpl_id.sku"/>
 
-        <strong>
+                <b>MAKE :</b>
+                <span t-field="line.product_id.product_tmpl_id.tender_make"/>
 
-        <span t-field="line.product_id"/>
+                <t t-if="ol and ol.technical_key_features">
+                    <br/><br/>
+                    <b>Key Features</b>
+                    <div t-field="ol.technical_key_features"/>
+                </t>
 
-        </strong>
+                <t t-if="ol and ol.tender_specification">
+                    <br/>
+                    <b>Technical Specification</b>
+                    <div t-field="ol.tender_specification"/>
+                </t>
+            </td>
 
-        <br/><br/>
+            <td style="text-align:center;vertical-align:top;">
+                <span t-field="line.qty"/>
+            </td>
 
-        <b>MODEL :</b>
+            <td style="text-align:right;vertical-align:top;">
+                <span t-field="line.unit_ex_gst_corrected"/>
+            </td>
 
-        <span t-field="line.product_id.product_tmpl_id.model_no_id"/>
+            <td style="text-align:right;vertical-align:top;">
+                <span t-field="line.total_ex_gst"/>
+            </td>
 
-        <br/>
+            <td style="text-align:right;vertical-align:top;">
+                <span t-field="line.gst_amount"/>
+            </td>
 
-        <b>MAKE :</b>
-
-        <span t-field="line.product_id.product_tmpl_id.tender_make"/>
-
-        <br/><br/>
-
-        <b>TECHNICAL SPECIFICATION</b>
-
-        <br/><br/>
-
-      <div t-field="line.sale_line_id.technical_key_features"/>
-        
-    
-
-        </td>
-
-        <td style="text-align:center;vertical-align:top;">
-
-        <span t-field="line.qty"/>
-
-        </td>
-
-        <td style="text-align:right;vertical-align:top;">
-
-        <span t-field="line.unit_ex_gst_corrected"/>
-
-        </td>
-
-        <td style="text-align:right;vertical-align:top;">
-
-        <span t-field="line.total_ex_gst"/>
-
-        </td>
-
-        <td style="text-align:right;vertical-align:top;">
-
-        <span t-field="line.gst_amount"/>
-
-        </td>
-
-        <td style="text-align:right;vertical-align:top;">
-
-        <span t-field="line.total_inc_gst"/>
-
-        </td>
-
+            <td style="text-align:right;vertical-align:top;">
+                <span t-field="line.total_inc_gst"/>
+            </td>
         </tr>
-
-        </t>
-
-        </tbody>
+    </t>
+</tbody>
 
         </table>
 
@@ -222,13 +206,13 @@
                                 <!-- ================= GRAND TOTAL ================= -->
 
                                 <t t-set="grand_ex_gst"
-                                t-value="sum(doc.worksheet_ids.line_ids.mapped('total_ex_gst'))"/>
+                                t-value="sum(sale_order.worksheet_id.line_ids.mapped('total_ex_gst'))"/>
 
                                 <t t-set="grand_gst"
-                                t-value="sum(doc.worksheet_ids.line_ids.mapped('gst_amount'))"/>
+                                t-value="sum(sale_order.worksheet_id.line_ids.mapped('gst_amount'))"/>
 
                                 <t t-set="grand_total"
-                                t-value="sum(doc.worksheet_ids.line_ids.mapped('total_inc_gst'))"/>
+                                t-value="sum(sale_order.worksheet_id.line_ids.mapped('total_inc_gst'))"/>
 
                                 <table style="width:100%;
                                             margin-top:10px;
@@ -294,62 +278,6 @@
                                 </t>
 
                                 <br/><br/>
-
-                                <!-- <table style="width:100%;">
-
-                                    <tr>
-
-                                        <td style="width:60%;">
-
-                                            <b>
-                                                <span t-field="doc.company_id.name"/>
-                                            </b>
-
-                                            <br/>
-
-                                            <span t-field="doc.company_id.street"/>
-
-                                            <br/>
-
-                                            <span t-field="doc.company_id.city"/>
-
-                                            <br/>
-
-                                            <strong>Phone :</strong>
-
-                                            <span t-field="doc.company_id.phone"/>
-
-                                            <br/>
-
-                                            <strong>Email :</strong>
-
-                                            <span t-field="doc.company_id.email"/>
-
-                                            <br/>
-
-                                            <strong>Website :</strong>
-
-                                            <span t-field="doc.company_id.website"/>
-
-                                        </td>
-
-                                        <td style="width:40%;
-                                                text-align:center;
-                                                vertical-align:bottom;">
-
-                                            <br/><br/><br/><br/>
-
-                                            _______________________
-
-                                            <br/>
-
-                                            <b>Authorized Signature</b>
-
-                                        </td>
-
-                                    </tr>
-
-                                </table> -->
 
                             </div>
 

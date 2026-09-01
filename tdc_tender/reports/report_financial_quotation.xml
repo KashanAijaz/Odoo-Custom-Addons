@@ -6,7 +6,7 @@
 
         <field name="name">Financial Quotation</field>
 
-        <field name="model">tdc.tender</field>
+        <field name="model">sale.order</field>
 
         <field name="report_type">qweb-pdf</field>
 

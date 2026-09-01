@@ -363,14 +363,14 @@ class SaleOrder(models.Model):
         self.ensure_one()
         return self.env.ref(
             "tdc_tender.action_report_financial_quotation"
-        ).report_action(self.tender_id)
+        ).report_action(self)
 
 
     def action_print_techno_financial_quotation(self):
         self.ensure_one()
         return self.env.ref(
             "tdc_tender.action_report_techno_financial_quotation"
-        ).report_action(self.tender_id)
+        ).report_action(self)
 
     technical_terms = fields.Html(
         string="Technical Quotation Terms & Conditions",

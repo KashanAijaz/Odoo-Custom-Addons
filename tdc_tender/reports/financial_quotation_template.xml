@@ -9,7 +9,8 @@
 
                 <t t-call="web.external_layout">
 
-                    <t t-set="sale_order" t-value="doc.sale_order_ids and doc.sale_order_ids[0]"/>
+                    <t t-set="sale_order" t-value="doc"/>
+                    <t t-set="is_cnf" t-value="sale_order.order_line and any(l.is_cnf for l in sale_order.order_line)"/>
 
                     <div class="page">
 
@@ -23,7 +24,7 @@
 
                                     <strong>Attn.</strong><br/>
 
-                                    <span t-esc="doc.upcoming_tender_id.partner_id.name"/>
+                                    <span t-esc="sale_order.upcoming_tender_id.partner_id.name"/>
 
                                 </td>
 
@@ -34,7 +35,7 @@
                                         <tr>
                                             <td><strong>Date</strong></td>
                                             <td>
-                                                <span t-field="doc.create_date"
+                                                <span t-field="sale_order.create_date"
                                                       t-options='{"widget":"date"}'/>
                                             </td>
                                         </tr>
@@ -54,7 +55,7 @@
                                         <tr>
                                             <td><strong>Reference</strong></td>
                                             <td>
-                                                <span t-esc="doc.upcoming_tender_id.tender_title"/>
+                                                <span t-esc="sale_order.upcoming_tender_id.tender_title"/>
                                             </td>
                                         </tr>
 
@@ -91,187 +92,264 @@
 
                         <br/>
 
-                        <!-- ================= TABLE ================= -->
+                        <!-- ================= TABLE : CNF VERSION ================= -->
 
-<table border="1"
-       style="width:100%;
-              border-collapse:collapse;
-              font-size:11px;">
+                        <t t-if="is_cnf">
 
-    <thead>
+                        <table border="1"
+                               style="width:100%;
+                                      border-collapse:collapse;
+                                      font-size:11px;">
 
-        <tr style="background:#d9e3f0;">
+                            <thead>
 
-            <th style="width:5%;text-align:center;font-weight:bold;">
-                S.#
-            </th>
+                                <tr style="background:#d9e3f0;">
 
-            <th style="width:45%;text-align:center;font-weight:bold;">
-                DESCRIPTION OF ITEMS
-            </th>
+                                    <th style="width:5%;text-align:center;font-weight:bold;">
+                                        S.#
+                                    </th>
 
-            <th style="width:7%;text-align:center;font-weight:bold;">
-                QTY
-            </th>
+                                    <th style="width:49%;text-align:center;font-weight:bold;">
+                                        DESCRIPTION OF ITEMS
+                                    </th>
 
-            <th style="width:11%;text-align:center;font-weight:bold;">
-                Unit Price<br/>
-                (Ex-GST)
-            </th>
+                                    <th style="width:8%;text-align:center;font-weight:bold;">
+                                        QTY
+                                    </th>
 
-            <th style="width:11%;text-align:center;font-weight:bold;">
-                Total Price<br/>
-                (Ex-GST)
-            </th>
+                                    <th style="width:13%;text-align:center;font-weight:bold;">
+                                        Unit Price
+                                    </th>
 
-            <th style="width:10%;text-align:center;font-weight:bold;">
-                GST @18%
-            </th>
+                                    <!-- <th style="width:12%;text-align:center;font-weight:bold;">
+                                        Total Price
+                                    </th> -->
 
-            <th style="width:11%;text-align:center;font-weight:bold;">
-                Total Amount<br/>
-                (Incl. GST)
-            </th>
+                                    <th style="width:13%;text-align:center;font-weight:bold;">
+                                        Total Amount
+                                    </th>
 
-        </tr>
+                                </tr>
 
-    </thead>
+                            </thead>
 
-    <tbody>
+                            <tbody>
 
-        <t t-foreach="doc.worksheet_ids.line_ids" t-as="line">
+                                <t t-foreach="sale_order.worksheet_id.line_ids" t-as="line">
 
-            <tr>
+                                    <tr>
 
-                <td style="text-align:center;vertical-align:top;">
+                                        <td style="text-align:center;vertical-align:top;">
+                                            <span t-field="line.sequence"/>
+                                        </td>
 
-                    <span t-field="line.sequence"/>
+                                        <td style="padding:8px;">
 
-                </td>
+                                            <strong>
+                                                <span t-field="line.product_id"/>
+                                            </strong>
 
-                <td style="padding:8px;">
+                                            <br/><br/>
 
-                    <strong>
-                        <span t-field="line.product_id"/>
-                    </strong>
+                                            <b>Model :</b>
+                                            <span t-field="line.product_id.product_tmpl_id.model_no_id"/>
 
-                    <br/><br/>
+                                            <br/>
 
-                    <b>Model :</b>
-                    <span t-field="line.product_id.product_tmpl_id.model_no_id"/>
+                                            <b>Make :</b>
+                                            <span t-field="line.product_id.product_tmpl_id.tender_make"/>
 
-                    <br/>
+                                        </td>
 
-                    <b>Make :</b>
-                    <span t-field="line.product_id.product_tmpl_id.tender_make"/>
+                                        <td style="text-align:center;vertical-align:top;">
+                                            <span t-field="line.qty"/>
+                                        </td>
 
-                        <t t-if="line.sale_line_id.technical_key_features">
+                                        <td style="text-align:right;vertical-align:top;">
+                                            <span t-field="line.unit_cnf_at_site"
+                                                  t-options='{"widget":"float","precision":2}'/>
+                                        </td>
 
-                            <br/><br/>
+                                        <!-- <td style="text-align:right;vertical-align:top;">
+                                            <span t-field="line.total_ex_gst"
+                                                  t-options='{"widget":"float","precision":2}'/>
+                                        </td> -->
 
-                            <b>Key Features :</b>
+                                        <td style="text-align:right;vertical-align:top;">
+                                            <span t-field="line.total_cnf_at_site"
+                                                  t-options='{"widget":"float","precision":2}'/>
+                                        </td>
 
-                            <div t-field="line.sale_line_id.technical_key_features"/>
+                                    </tr>
+
+                                </t>
+
+                                <!-- Grand Total -->
+
+                                <tr style="background:#f2f2f2;">
+
+                                    <td colspan="3" style="text-align:right;">
+                                        <strong>Grand Total</strong>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <strong>
+                                            <span t-esc="sum(sale_order.worksheet_id.line_ids.mapped('unit_cnf_at_site'))"/>
+                                        </strong>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <strong>
+                                            <span t-esc="sum(sale_order.worksheet_id.line_ids.mapped('total_cnf_at_site'))"/>
+                                        </strong>
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
 
                         </t>
 
-                        <t t-if="line.sale_line_id.tender_specification">
+                        <!-- ================= TABLE : NORMAL VERSION (with GST) ================= -->
 
-                            <br/>
+                        <t t-else="">
 
-                            <b>Technical Specification :</b>
+                        <table border="1"
+                               style="width:100%;
+                                      border-collapse:collapse;
+                                      font-size:11px;">
 
-                            <div t-field="line.sale_line_id.tender_specification"/>
+                            <thead>
+
+                                <tr style="background:#d9e3f0;">
+
+                                    <th style="width:5%;text-align:center;font-weight:bold;">
+                                        S.#
+                                    </th>
+
+                                    <th style="width:45%;text-align:center;font-weight:bold;">
+                                        DESCRIPTION OF ITEMS
+                                    </th>
+
+                                    <th style="width:7%;text-align:center;font-weight:bold;">
+                                        QTY
+                                    </th>
+
+                                    <th style="width:11%;text-align:center;font-weight:bold;">
+                                        Unit Price<br/>
+                                        (Ex-GST)
+                                    </th>
+
+                                    <th style="width:11%;text-align:center;font-weight:bold;">
+                                        Total Price<br/>
+                                        (Ex-GST)
+                                    </th>
+
+                                    <th style="width:10%;text-align:center;font-weight:bold;">
+                                        GST @18%
+                                    </th>
+
+                                    <th style="width:11%;text-align:center;font-weight:bold;">
+                                        Total Amount<br/>
+                                        (Incl. GST)
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <t t-foreach="sale_order.worksheet_id.line_ids" t-as="line">
+
+                                    <tr>
+
+                                        <td style="text-align:center;vertical-align:top;">
+                                            <span t-field="line.sequence"/>
+                                        </td>
+
+                                        <td style="padding:8px;">
+
+                                            <strong>
+                                                <span t-field="line.product_id"/>
+                                            </strong>
+
+                                            <br/><br/>
+
+                                            <b>Model :</b>
+                                            <span t-field="line.product_id.product_tmpl_id.model_no_id"/>
+
+                                            <br/>
+
+                                            <b>Make :</b>
+                                            <span t-field="line.product_id.product_tmpl_id.tender_make"/>
+
+                                        </td>
+
+                                        <td style="text-align:center;vertical-align:top;">
+                                            <span t-field="line.qty"/>
+                                        </td>
+
+                                        <td style="text-align:right;vertical-align:top;">
+                                            <span t-field="line.unit_ex_gst_corrected"
+                                                  t-options='{"widget":"float","precision":2}'/>
+                                        </td>
+
+                                        <td style="text-align:right;vertical-align:top;">
+                                            <span t-field="line.total_ex_gst"
+                                                  t-options='{"widget":"float","precision":2}'/>
+                                        </td>
+
+                                        <td style="text-align:right;vertical-align:top;">
+                                            <span t-field="line.gst_amount"
+                                                  t-options='{"widget":"float","precision":2}'/>
+                                        </td>
+
+                                        <td style="text-align:right;vertical-align:top;">
+                                            <span t-field="line.total_inc_gst"
+                                                  t-options='{"widget":"float","precision":2}'/>
+                                        </td>
+
+                                    </tr>
+
+                                </t>
+
+                                <!-- Grand Total -->
+
+                                <tr style="background:#f2f2f2;">
+
+                                    <td colspan="4" style="text-align:right;">
+                                        <strong>Grand Total</strong>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <strong>
+                                            <span t-esc="sum(sale_order.worksheet_id.line_ids.mapped('total_ex_gst'))"/>
+                                        </strong>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <strong>
+                                            <span t-esc="sum(sale_order.worksheet_id.line_ids.mapped('gst_amount'))"/>
+                                        </strong>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <strong>
+                                            <span t-esc="sum(sale_order.worksheet_id.line_ids.mapped('total_inc_gst'))"/>
+                                        </strong>
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
 
                         </t>
 
-                        <t t-if="line.sale_line_id.technical_power_supply">
-
-                            <br/>
-
-                            <b>Power Supply :</b>
-
-                            <div t-field="line.sale_line_id.technical_power_supply"/>
-
-                        </t>
-
-                </td>
-
-                <td style="text-align:center;vertical-align:top;">
-
-                    <span t-field="line.qty"/>
-
-                </td>
-
-                <td style="text-align:right;vertical-align:top;">
-
-                    <span t-field="line.unit_ex_gst_corrected"
-                          t-options='{"widget":"float","precision":2}'/>
-
-                </td>
-
-                <td style="text-align:right;vertical-align:top;">
-
-                    <span t-field="line.total_ex_gst"
-                          t-options='{"widget":"float","precision":2}'/>
-
-                </td>
-
-                <td style="text-align:right;vertical-align:top;">
-
-                    <span t-field="line.gst_amount"
-                          t-options='{"widget":"float","precision":2}'/>
-
-                </td>
-
-                <td style="text-align:right;vertical-align:top;">
-
-                    <span t-field="line.total_inc_gst"
-                          t-options='{"widget":"float","precision":2}'/>
-
-                </td>
-
-            </tr>
-
-        </t>
-
-        <!-- Grand Total -->
-
-        <tr style="background:#f2f2f2;">
-
-            <td colspan="4" style="text-align:right;">
-                <strong>Grand Total</strong>
-            </td>
-
-            <td style="text-align:right;">
-
-                <strong>
-                    <span t-esc="sum(doc.worksheet_ids.line_ids.mapped('total_ex_gst'))"/>
-                </strong>
-
-            </td>
-
-            <td style="text-align:right;">
-
-                <strong>
-                    <span t-esc="sum(doc.worksheet_ids.line_ids.mapped('gst_amount'))"/>
-                </strong>
-
-            </td>
-
-            <td style="text-align:right;">
-
-                <strong>
-                    <span t-esc="sum(doc.worksheet_ids.line_ids.mapped('total_inc_gst'))"/>
-                </strong>
-
-            </td>
-
-        </tr>
-
-    </tbody>
-
-</table>
                         <br/><br/>
                         <!-- ================= TERMS & CONDITIONS ================= -->
 
@@ -286,70 +364,6 @@
                         </t>
 
                         <br/><br/>
-
-                        <!-- ================= COMPANY DETAILS ================= -->
-
-                        <!-- <table style="width:100%;border-collapse:collapse;font-size:12px;">
-
-                            <tr>
-
-                                <td style="width:60%;vertical-align:top;">
-
-                                    <strong>
-                                        <span t-field="doc.company_id.name"/>
-                                    </strong>
-
-                                    <br/>
-
-                                    <span t-field="doc.company_id.street"/>
-
-                                    <t t-if="doc.company_id.street2">
-                                        <br/>
-                                        <span t-field="doc.company_id.street2"/>
-                                    </t>
-
-                                    <t t-if="doc.company_id.city">
-                                        <br/>
-                                        <span t-field="doc.company_id.city"/>
-                                    </t>
-
-                                    <t t-if="doc.company_id.country_id">
-                                        ,
-                                        <span t-field="doc.company_id.country_id"/>
-                                    </t>
-
-                                    <br/>
-
-                                    <strong>Phone :</strong>
-                                    <span t-field="doc.company_id.phone"/>
-
-                                    <br/>
-
-                                    <strong>Email :</strong>
-                                    <span t-field="doc.company_id.email"/>
-
-                                    <br/>
-
-                                    <strong>Website :</strong>
-                                    <span t-field="doc.company_id.website"/>
-
-                                </td>
-
-                                <td style="width:40%;text-align:center;vertical-align:bottom;">
-
-                                    <br/><br/><br/><br/><br/>
-
-                                    ___________________________
-
-                                    <br/>
-
-                                    <strong>Authorized Signature</strong>
-
-                                </td>
-
-                            </tr>
-
-                        </table> -->
 
                     </div>
 

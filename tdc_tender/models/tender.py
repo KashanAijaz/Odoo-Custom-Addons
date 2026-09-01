@@ -150,38 +150,123 @@ class TDCTender(models.Model):
         for rec in self:
             rec.sale_order_count = len(rec.sale_order_ids)
 
-    def action_create_sale_order(self):
-        """Open a wizard to let the user specify how many Sale Orders to
-        create for each Working Sheet."""
-        self.ensure_one()
+    # def action_create_sale_order(self):
+    #     """Open a wizard to let the user specify how many Sale Orders to
+    #     create for each Working Sheet."""
+    #     self.ensure_one()
 
+    #     if not self.worksheet_ids:
+    #         raise ValidationError("No Working Sheets found on this tender.")
+
+    #     line_vals = []
+    #     for worksheet in self.worksheet_ids:
+    #         existing_count = self.env["sale.order"].search_count([
+    #             ("tender_id", "=", self.id),
+    #             ("worksheet_id", "=", worksheet.id),
+    #         ])
+    #         line_vals.append((0, 0, {
+    #             "worksheet_id": worksheet.id,
+    #             "existing_count": existing_count,
+    #             "so_count": 0,
+    #         }))
+
+    #     wizard = self.env["tdc.tender.create.so.wizard"].create({
+    #         "tender_id": self.id,
+    #         "line_ids": line_vals,
+    #     })
+
+    #     return {
+    #         "type": "ir.actions.act_window",
+    #         "name": "Create Sale Orders",
+    #         "res_model": "tdc.tender.create.so.wizard",
+    #         "view_mode": "form",
+    #         "res_id": wizard.id,
+    #         "target": "new",
+    #     }
+    def action_create_sale_order(self):
+        
+        """Directly create one Sale Order per Working Sheet that doesn't
+        already have one — no wizard step, no popup."""
+        self.ensure_one()
+ 
         if not self.worksheet_ids:
             raise ValidationError("No Working Sheets found on this tender.")
-
-        line_vals = []
+ 
+        gst_tax = self.env["account.tax"].search(
+            [("tax_group_id.name", "=", "GST 18%")], limit=1,
+        )
+ 
+        created = self.env["sale.order"]
+ 
         for worksheet in self.worksheet_ids:
             existing_count = self.env["sale.order"].search_count([
                 ("tender_id", "=", self.id),
                 ("worksheet_id", "=", worksheet.id),
             ])
-            line_vals.append((0, 0, {
+            if existing_count:
+                # Already has a Sale Order — skip it.
+                continue
+ 
+            if not worksheet.line_ids:
+                raise ValidationError(
+                    f"Working Sheet {worksheet.name} has no lines — cannot create Sale Orders."
+                )
+ 
+            sale = self.env["sale.order"].create({
+                "partner_id": self.upcoming_tender_id.partner_id.id,
+                "is_tender_sale": True,
+                "tender_id": self.id,
+                "upcoming_tender_id": self.upcoming_tender_id.id,
                 "worksheet_id": worksheet.id,
-                "existing_count": existing_count,
-                "so_count": 0,
-            }))
+            })
+ 
+            for wl in worksheet.line_ids:
+                price_unit = wl.unit_cnf_at_site if worksheet.is_cnf else wl.unit_ex_gst_corrected
 
-        wizard = self.env["tdc.tender.create.so.wizard"].create({
-            "tender_id": self.id,
-            "line_ids": line_vals,
-        })
+                if worksheet.is_cnf:
+                    tax_ids = [(6, 0, [])]  # duty & transport already included manually, no separate tax
+                else:
+                    tax_ids = [(6, 0, gst_tax.ids)]
 
+                self.env["sale.order.line"].create({
+                    "order_id": sale.id,
+                    "product_id": wl.product_id.id,
+                    "name": wl.product_id.get_product_multiline_description_sale(),
+                    "product_uom_qty": wl.qty,
+                    "price_unit": price_unit,
+                    "currency_rate": wl.currency_rate,
+                    "list_price": wl.list_price,
+                    "discount_margin": wl.discount_margin,
+                    "net_discount_price": wl.net_discount_price,
+                    "tax_ids": tax_ids,
+                    "is_cnf": worksheet.is_cnf,
+                    "unit_cnf_at_site" : wl.unit_cnf_at_site,
+                    "total_cnf_at_site": wl.total_cnf_at_site,
+                })
+    
+                created |= sale
+    
+        if not created:
+            raise ValidationError(
+                "No Sale Orders created — every Working Sheet already has one."
+            )
+ 
+        if len(created) == 1:
+            return {
+                "type": "ir.actions.act_window",
+                "res_model": "sale.order",
+                "view_mode": "form",
+                "res_id": created.id,
+                "target": "current",
+            }
+ 
         return {
             "type": "ir.actions.act_window",
-            "name": "Create Sale Orders",
-            "res_model": "tdc.tender.create.so.wizard",
-            "view_mode": "form",
-            "res_id": wizard.id,
-            "target": "new",
+            "name": "Quotations",
+            "res_model": "sale.order",
+            "view_mode": "list,form",
+            "domain": [("id", "in", created.ids)],
+            "target": "current",
         }
     def action_view_sale_order_summary(self):
         """Show all Sale Orders created under this tender."""
@@ -588,7 +673,7 @@ class TDCTenderCreateSOWizard(models.TransientModel):
                 })
 
                 for wl in worksheet.line_ids:
-                    price_unit = wl.unit_cnf_without_taxes if worksheet.is_cnf else wl.unit_ex_gst_corrected
+                    price_unit = wl.total_cnf_at_site if worksheet.is_cnf else wl.unit_ex_gst_corrected
                     if worksheet.is_cnf:
                         cnf_taxes = wl.custom_duty_tax_id | wl.local_transport_tax_id
                         tax_ids = [(6, 0, cnf_taxes.ids)]
