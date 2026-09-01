@@ -35,6 +35,11 @@ record Goods Declaration (GD) based import tariff calculations:
         'views/tariff_report_views.xml',
         'reports/tariff_report_template.xml',
     ],
+    'assets': {
+    'web.assets_backend': [
+        'tdc_import/static/src/css/list_header.css',
+    ],
+},
     'installable': True,
     'application': True,
     'auto_install': False,

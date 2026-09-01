@@ -71,7 +71,7 @@
                             
                         <page string="Local &amp; Other Charges">
                             <field name="charge_line_ids">
-                                <list editable="bottom">
+                                <list editable="bottom" class="tdc_truncate_list" >
                                     <field name="product_id"/>
                                     <field name="currency_id" column_invisible="1"/>
                                     <field name="amount" sum="Total"/>
@@ -93,7 +93,7 @@
                         </page>
                            <page string="Product Detail and Pricing as per Origin">
                                 <field name="product_line_ids">
-                                    <list editable="bottom">
+                                    <list editable="bottom" class="tdc_truncate_list">
                                         <field name="product_id"/>
                                         <field name="hs_code_id"/>
                                         <field name="qty"/>
@@ -109,7 +109,7 @@
                             </page>
                             <page string="% Share Detail">
                                  <field name="product_line_ids">
-                                  <list editable="bottom">
+                                  <list editable="bottom" class="tdc_truncate_list">
                                         <field name="product_id" readonly="1"/>
                                         <field name="qty" readonly="1"/>
                                         <field name="value_pct_share" widget="percentage" optional="show"/>
@@ -121,7 +121,7 @@
                             </page>
                             <page string="Freight &amp; Handling Charges">
                                 <field name="product_line_ids">
-                                    <list editable="bottom">
+                                    <list editable="bottom" class="tdc_truncate_list">
                                         <field name="product_id" readonly="1"/>
                                         <field name="qty" readonly="1"/>
                                         <field name="sea_freight_per_unit_usd"/>
@@ -134,7 +134,7 @@
 
                             <page string="THIRD PARTY UAE SHIPMENT EXPENSE">
                                 <field name="product_line_ids">
-                                    <list editable="bottom">
+                                    <list editable="bottom" class="tdc_truncate_list">
                                         <field name="product_id" readonly="1"/>
                                         <field name="qty" readonly="1"/>
                                         <field name="freight_expense_origin_uae"/>
@@ -149,9 +149,25 @@
                                 </field>
                             </page>
 
+                            <page string="Pakistan Customs - Duty &amp; Taxes as per GD">
+                            <field name="product_line_ids">
+                                <list editable="bottom" class="tdc_truncate_list">
+                                    <field name="tariff_line_id" invisible="1"/>
+                                    <field name="product_id" readonly="1"/>
+                                    <field name="hs_code_id" readonly="1"/>
+                                    <field name="qty" readonly="1"/>
+                                    <field name="customs_duty_line" readonly="1"/>
+                                    <field name="sales_tax_line" readonly="1"/>
+                                    <field name="income_tax_line" readonly="1"/>
+                                    <field name="total_duty_tax_line" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+
+
                             <page string="PAKISTAN CUSTOMS - OTHER DUTY &amp; PENALTY CHARGES">
                                 <field name="product_line_ids">
-                                    <list editable="bottom">
+                                    <list editable="bottom" class="tdc_truncate_list">
                                         <field name="product_id" readonly="1"/>
                                         <field name="qty" readonly="1"/>
                                         <field name="pc_cess_sindh_excise_duty"/>
@@ -165,7 +181,7 @@
 
                             <page string="EXPENSES AT DESTINATION PORT/AIRPORT">
                                 <field name="product_line_ids">
-                                    <list editable="bottom">
+                                    <list editable="bottom" class="tdc_truncate_list">
                                         <field name="product_id" readonly="1"/>
                                         <field name="qty" readonly="1"/>
                                         <field name="dest_godown_shed_charges"/>
@@ -184,24 +200,10 @@
                                 </field>
                             </page>
 
-                       <page string="Pakistan Customs - Duty &amp; Taxes as per GD">
-                            <field name="product_line_ids">
-                                <list editable="bottom">
-                                    <field name="tariff_line_id" invisible="1"/>
-                                    <field name="product_id" readonly="1"/>
-                                    <field name="hs_code_id" readonly="1"/>
-                                    <field name="qty" readonly="1"/>
-                                    <field name="customs_duty_line" readonly="1"/>
-                                    <field name="sales_tax_line" readonly="1"/>
-                                    <field name="income_tax_line" readonly="1"/>
-                                    <field name="total_duty_tax_line" readonly="1"/>
-                                </list>
-                            </field>
-                        </page>
-
+                       
                         <page string="Grand Total Cost (Item Wise)">
                             <field name="product_line_ids">
-                                <list editable="bottom">
+                                <list editable="bottom" class="tdc_truncate_list">
                                     <field name="product_id" readonly="1"/>
                                     <field name="qty" readonly="1"/>
                                     <field name="total_home_cost_excl_gst"/>
@@ -232,7 +234,7 @@
     <menuitem id="menu_tdc_import_root" name="Import"  web_icon="tdc_import,static/description/icon.png" sequence="60"/>
 
     <menuitem id="menu_tdc_master_import"
-              name="Import Master"
+              name="Import Costing Sheet"
               parent="menu_tdc_import_root"
               action="action_tdc_master_import"
               sequence="10"/>

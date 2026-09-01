@@ -24,19 +24,7 @@
         <field name="model">tdc.import.tariff</field>
         <field name="arch" type="xml">
             <form string="Import GD Tariff">
-                <header>
-                    <button name="action_post_entries" type="object" string="Post Entries"
-                            class="oe_highlight" invisible="move_id"/>
-                </header>
                 <sheet>
-                <div class="oe_button_box" name="button_box">
-                    <button name="action_view_entries" type="object" class="oe_stat_button"
-                            icon="fa-book" invisible="not move_id">
-                        <div class="o_stat_info">
-                            <span class="o_stat_text">View Entries</span>
-                        </div>
-                    </button>
-                </div>
                     <div class="oe_title">
                         <label for="dg_no" string="GD No."/>
                         <h1>
@@ -157,7 +145,7 @@
 
     <!-- Menus -->
     <menuitem id="menu_tdc_import_root" name="Import" sequence="60"/>
-    <menuitem id="menu_tdc_import_tariff" name="Tariff" parent="menu_tdc_import_root"
+    <menuitem id="menu_tdc_import_tariff" name="Pakistan GD Calc." parent="menu_tdc_import_root"
               action="action_tdc_import_tariff" sequence="10"/>
     <menuitem id="menu_tdc_import_configuration" name="Configuration" parent="menu_tdc_import_root" sequence="90"/>
 

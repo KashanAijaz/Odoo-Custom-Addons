@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
 from math import floor
-from odoo.exceptions import ValidationError, UserError
 
 
 def _round_half_up(value):
@@ -52,10 +51,6 @@ class TdcImportTariff(models.Model):
         'res.company', string='Company', default=lambda self: self.env.company
     )
     notes = fields.Text(string='Notes')
-    move_id = fields.Many2one(
-        'account.move', string='Journal Entry', readonly=True, copy=False,
-        help='Journal entry created when duties & taxes are posted to accounting.'
-    )
 
     line_ids = fields.One2many(
         'tdc.import.tariff.line', 'tariff_id', string='Tariff Lines', copy=True
@@ -145,104 +140,6 @@ class TdcImportTariff(models.Model):
             rec.amount_it_total = sum(lines.mapped('it_pkr'))
             rec.amount_total_payable = sum(lines.mapped('total_payable_pkr'))
 
-    #############################################################
-    ########## Journal Entry  ###################################
-    def _get_tax_account(self, tax):
-        """Return the account configured on the tax's invoice repartition line."""
-        repartition = tax.invoice_repartition_line_ids.filtered(
-            lambda r: r.repartition_type == 'tax' and r.account_id
-        )
-        return repartition[0].account_id if repartition else False
-
-    def action_post_entries(self):
-        self.ensure_one()
-        if self.move_id:
-            raise UserError('A journal entry has already been posted for this GD.')
-        if not self.line_ids:
-            raise UserError('Add at least one tariff line before posting.')
-        if not self.partner_id.property_account_payable_id:
-            raise UserError(f'No Accounts Payable configured for vendor {self.partner_id.name}.')
-
-        journal = self.env['account.journal'].search([
-            ('type', '=', 'general'), ('company_id', '=', self.company_id.id)
-        ], limit=1)
-        if not journal:
-            raise UserError('No Miscellaneous Operations journal found for this company.')
-
-        move_lines = []
-        total_debit = 0.0
-
-        for line in self.line_ids:
-            hs = line.hs_code_id
-            product_name = line.product_id.display_name or line.description or ''
-
-            for amount, account, label in (
-                (line.cd_pkr, hs.cd_account_id if hs else False, 'CD'),
-                (line.rd_pkr, hs.rd_account_id if hs else False, 'RD'),
-                (line.acd_pkr, hs.acd_account_id if hs else False, 'ACD'),
-            ):
-                if not amount:
-                    continue
-                if not account:
-                    raise UserError(f'HS Code {hs.code if hs else "?"} has no {label} Chart of Account configured.')
-                move_lines.append((0, 0, {
-                    'account_id': account.id,
-                    'name': f'{label} - {product_name}',
-                    'debit': amount,
-                    'credit': 0.0,
-                }))
-                total_debit += amount
-
-            for amount, tax, label in (
-                (line.st_pkr, line.st_tax_id, 'ST'),
-                (line.ast_pkr, line.ast_tax_id, 'AST'),
-                (line.it_pkr, line.it_tax_id, 'IT'),
-            ):
-                if not amount:
-                    continue
-                if not tax:
-                    raise UserError(f'{label} amount exists on line "{product_name}" but no {label} tax is set.')
-                account = self._get_tax_account(tax)
-                if not account:
-                    raise UserError(f'Tax "{tax.name}" has no account configured on its Invoice repartition line.')
-                move_lines.append((0, 0, {
-                    'account_id': account.id,
-                    'name': f'{label} - {product_name}',
-                    'debit': amount,
-                    'credit': 0.0,
-                }))
-                total_debit += amount
-
-        if not total_debit:
-            raise UserError('There is nothing to post — all duty/tax amounts are zero.')
-
-        move_lines.append((0, 0, {
-            'account_id': self.partner_id.property_account_payable_id.id,
-            'partner_id': self.partner_id.id,
-            'name': f'GD {self.dg_no} - Duties & Taxes Payable',
-            'debit': 0.0,
-            'credit': total_debit,
-        }))
-
-        move = self.env['account.move'].create({
-            'move_type': 'entry',
-            'journal_id': journal.id,
-            'date': self.gd_date,
-            'ref': self.dg_no,
-            'line_ids': move_lines,
-        })
-        move.action_post()
-        self.move_id = move.id
-
-    def action_view_entries(self):
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Journal Entry',
-            'res_model': 'account.move',
-            'view_mode': 'form',
-            'res_id': self.move_id.id,
-        }
 
 class TdcImportTariffLine(models.Model):
     _name = 'tdc.import.tariff.line'

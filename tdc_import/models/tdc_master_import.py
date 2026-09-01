@@ -149,6 +149,20 @@ class TdcMasterImport(models.Model):
         string='Product Detail and Pricing as per Origin',
     )
 
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        if 'charge_line_ids' in fields_list:
+            charge_products = self.env['product.product'].search([
+                ('categ_id', '=', self.env.ref('tdc_import.product_category_tdc_import_charges').id),
+                ('type', '=', 'service'),
+            ])
+            res['charge_line_ids'] = [
+                (0, 0, {'product_id': p.id, 'amount': 0.0})
+                for p in charge_products
+            ]
+        return res
+
     @api.onchange('tariff_id')
     def _onchange_tariff_id(self):
         for rec in self:
@@ -533,7 +547,7 @@ class TdcMasterImportProductLine(models.Model):
         for line in self:
             charges = line.master_id.charge_line_ids
             bank_total = sum(
-                charges.filtered(lambda c: c.product_id.name == 'Bank Charges').mapped('amount')
+                charges.filtered(lambda c: c.product_id.name == 'Bank Charges At Origin (USD)').mapped('amount')
             )
             packing_total = sum(
                 charges.filtered(lambda c: c.product_id.name == 'Packing Charges at Origin').mapped('amount')

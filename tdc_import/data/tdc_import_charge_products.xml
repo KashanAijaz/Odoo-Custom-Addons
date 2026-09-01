@@ -5,7 +5,7 @@
     </record>
 
     <record id="product_tdc_charge_bank_charges" model="product.product">
-        <field name="name">Bank Charges</field>
+        <field name="name">Bank Charges At Origin (USD)</field>
         <field name="type">service</field>
         <field name="categ_id" ref="product_category_tdc_import_charges"/>
         <field name="purchase_ok" eval="True"/>
