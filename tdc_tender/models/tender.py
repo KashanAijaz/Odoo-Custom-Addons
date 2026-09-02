@@ -462,10 +462,10 @@ class TDCTender(models.Model):
                 "You can only submit for approval when in 'Request to Tender Fee' state."
             )
 
-        if not any(line.payment_attachment for line in self.attachment_line_ids):
-            raise ValidationError(
-                "Please attach payment proof before submitting for approval."
-            )
+        # if not any(line.payment_attachment for line in self.attachment_line_ids):
+        #     raise ValidationError(
+        #         "Please attach payment proof before submitting for approval."
+        #     )
 
         self.write({
             "state": "submitted",
@@ -510,7 +510,11 @@ class TDCTender(models.Model):
 
         if self.tender_fee_amount <= 0:
             raise ValidationError("Tender Fee Amount must be greater than zero.")
-
+        
+        if not any(line.payment_attachment for line in self.attachment_line_ids):
+                    raise ValidationError(
+                        "Please attach payment proof before submitting for approval."
+                    )
         move = self.env["account.move"].create({
             "move_type": "entry",
             "journal_id": self.journal_id.id,

@@ -10,6 +10,7 @@
         <t t-call="web.external_layout">
 
         <t t-set="sale_order" t-value="doc"/>
+        <t t-set="is_cnf" t-value="sale_order.order_line and any(l.is_cnf for l in sale_order.order_line)"/>
 
         <div class="page">
 
@@ -23,7 +24,7 @@
 
         <b>Attn.</b><br/>
 
-        <span t-esc="doc.upcoming_tender_id.partner_id.name"/>
+        <span t-esc="sale_order.upcoming_tender_id.partner_id.name"/>
 
         </td>
 
@@ -34,7 +35,7 @@
         <tr>
         <td><b>Date</b></td>
         <td>
-        <span t-field="doc.create_date"
+        <span t-field="sale_order.create_date"
         t-options='{"widget":"date"}'/>
         </td>
         </tr>
@@ -54,7 +55,7 @@
         <tr>
         <td><b>Reference</b></td>
         <td>
-        <span t-esc="doc.upcoming_tender_id.tender_title"/>
+        <span t-esc="sale_order.upcoming_tender_id.tender_title"/>
         </td>
         </tr>
 
@@ -90,6 +91,132 @@
         </p>
 
         <br/>
+
+        <!-- ================= TABLE : CNF VERSION ================= -->
+
+        <t t-if="is_cnf">
+
+        <table border="1"
+        style="width:100%;
+        border-collapse:collapse;
+        font-size:11px;">
+
+        <thead>
+
+        <tr style="background:#D9EAD3;">
+
+        <th style="width:5%;text-align:center;">
+        S#
+        </th>
+
+        <th style="width:51%;text-align:center;">
+        DESCRIPTION OF ITEMS
+        </th>
+
+        <th style="width:7%;text-align:center;">
+        QTY
+        </th>
+
+        <th style="width:16%;text-align:center;">
+        UNIT PRICE
+        </th>
+
+        <th style="width:16%;text-align:center;">
+        TOTAL AMOUNT
+        </th>
+
+        </tr>
+
+        </thead>
+
+       <tbody>
+    <t t-set="order_lines" t-value="sale_order.order_line.filtered(lambda l: not l.display_type)"/>
+
+    <t t-foreach="sale_order.worksheet_id.line_ids" t-as="line">
+        <t t-set="ol" t-value="order_lines.filtered(lambda l: l.product_id == line.product_id)[:1]"/>
+
+        <tr>
+            <td style="vertical-align:top;text-align:center;">
+                <span t-field="line.sequence"/>
+            </td>
+
+            <td style="padding:8px;">
+                <strong>
+                    <span t-field="line.product_id"/>
+                </strong>
+
+                <br/><br/>
+
+                <b>MODEL :</b>
+                <span t-field="line.product_id.product_tmpl_id.model_no_id"/>
+                <br/>
+
+                <b>PART NO:</b>
+                <span t-field="line.product_id.product_tmpl_id.sku"/>
+
+                <b>MAKE :</b>
+                <span t-field="line.product_id.product_tmpl_id.tender_make"/>
+
+                <t t-if="ol and ol.technical_key_features">
+                    <br/><br/>
+                    <b>Key Features</b>
+                    <div t-field="ol.technical_key_features"/>
+                </t>
+
+                <t t-if="ol and ol.tender_specification">
+                    <br/>
+                    <b>Technical Specification</b>
+                    <div t-field="ol.tender_specification"/>
+                </t>
+            </td>
+
+            <td style="text-align:center;vertical-align:top;">
+                <span t-field="line.qty"/>
+            </td>
+
+            <td style="text-align:right;vertical-align:top;">
+                <span t-field="line.unit_cnf_at_site"
+                      t-options='{"widget":"float","precision":2}'/>
+            </td>
+
+            <td style="text-align:right;vertical-align:top;">
+                <span t-field="line.total_cnf_at_site"
+                      t-options='{"widget":"float","precision":2}'/>
+            </td>
+        </tr>
+    </t>
+
+    <!-- Grand Total -->
+
+    <tr style="background:#D9EAD3;">
+
+        <td colspan="3" style="text-align:right;">
+            <b>Grand Total</b>
+        </td>
+
+        <td style="text-align:right;">
+            <strong>
+                <span t-esc="sum(sale_order.worksheet_id.line_ids.mapped('unit_cnf_at_site'))"/>
+            </strong>
+        </td>
+
+        <td style="text-align:right;">
+            <strong>
+                <span t-esc="sum(sale_order.worksheet_id.line_ids.mapped('total_cnf_at_site'))"/>
+            </strong>
+        </td>
+
+    </tr>
+
+</tbody>
+
+        </table>
+
+        </t>
+
+        <!-- ================= TABLE : NORMAL VERSION (with GST) ================= -->
+
+        <t t-else="">
 
         <table border="1"
         style="width:100%;
@@ -201,9 +328,43 @@
 
         </table>
 
+        </t>
+
         <br/><br/>
 
-                                <!-- ================= GRAND TOTAL ================= -->
+                                <!-- ================= GRAND TOTAL SUMMARY ================= -->
+
+                                <t t-if="is_cnf">
+
+                                <t t-set="grand_total_cnf"
+                                t-value="sum(sale_order.worksheet_id.line_ids.mapped('total_cnf_at_site'))"/>
+
+                                <table style="width:100%;
+                                            margin-top:10px;
+                                            border-collapse:collapse;"
+                                    border="1">
+
+                                    <tr style="background:#D9EAD3;">
+
+                                        <td style="width:76%;border:none;"></td>
+
+                                        <td style="width:24%;text-align:right;">
+                                            <b>Grand Total</b>
+                                        </td>
+
+                                        <td style="text-align:right;">
+                                            <b>
+                                                <span t-esc="grand_total_cnf"/>
+                                            </b>
+                                        </td>
+
+                                    </tr>
+
+                                </table>
+
+                                </t>
+
+                                <t t-else="">
 
                                 <t t-set="grand_ex_gst"
                                 t-value="sum(sale_order.worksheet_id.line_ids.mapped('total_ex_gst'))"/>
@@ -264,6 +425,8 @@
                                     </tr>
 
                                 </table>
+
+                                </t>
 
                                 <br/><br/>
 

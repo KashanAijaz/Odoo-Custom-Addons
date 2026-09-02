@@ -63,13 +63,15 @@
                             string="Create Quotation"
                             type="object"
                             class="btn-primary"
+                            confirm="Do you want to create quotation?"
                             invisible="state != 'confirm' or quotation_state == 'created'"/>
 
-                    <button name="action_create_sale_order"
+                    <!-- <button name="action_create_sale_order"
                             string="Create More Quotations"
                             type="object"
                             class="btn-secondary"
-                            invisible="quotation_state != 'created'"/>
+                            confirm="Do you want to create quotation?"
+                            invisible="quotation_state != 'created'"/> -->
 
                     <button name="action_view_sale_order_summary"
                             string="View Quotations"
@@ -82,6 +84,7 @@
                             string="Confirm"
                             type="object"
                             class="btn-primary"
+                            confirm="Do you want to confirm?"
                             invisible="state not in ('draft', 'paid')"/>
 
                     <!-- Payment Workflow Buttons -->
@@ -89,6 +92,7 @@
                             string="Request for tender fee"
                             type="object"
                             class="btn-primary"
+                            confirm="Do you want to req for payment?"
                             invisible="state not in ('draft', 'confirm') or payment_state == 'paid'"/>
 
                     <button name="action_submit_for_approval"
@@ -96,6 +100,7 @@
                             type="object"
                             class="btn-warning"
                             invisible="state != 'request_payment'"
+                            confirm="Do you want to send for approval?"
                             groups="tdc_tender.group_tender_payment_user"/>
 
                     <button name="action_approve_payment"
@@ -103,6 +108,7 @@
                             type="object"
                             class="btn-primary"
                             invisible="state != 'submitted'"
+                            confirm="Do you want to approve tender fee?"
                             groups="tdc_tender.group_tender_payment_approver"/>
 
                     <button name="action_pay"
@@ -110,13 +116,16 @@
                             type="object"
                             class="btn-success"
                             invisible="state != 'approved'"
+                            confirm="Do you want to pay tender fee?"
                             groups="tdc_tender.group_tender_payment_user"/>
+                    
                     <button name="action_reset_to_draft"
                         string="Reset to Draft"
                         type="object"
                         class="btn-secondary"
+                        confirm="Do you want to reset to draft?"
                         invisible="state not in ('confirm', 'request_payment')"
-                        confirm="This will reset the record to Draft. Continue?"
+                       
                         />
                     <field name="state"
                            widget="statusbar"

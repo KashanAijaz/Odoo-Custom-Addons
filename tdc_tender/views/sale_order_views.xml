@@ -64,7 +64,6 @@
                         class="oe_stat_button"
                         icon="fa-money"
                         string="Earnest Money"
-                        groups="tdc_tender.group_tender_payment_user"
                         invisible="earnest_money_count == 0 or not is_tender_sale">
                     <div class="o_stat_info">
                         <field name="earnest_money_count"/>
@@ -77,33 +76,35 @@
                         class="oe_stat_button"
                         icon="fa-plus-circle"
                         string="Create Earnest Money"
-                        groups="tdc_tender.group_tender_payment_user"
-                        invisible="earnest_money_count > 0 or  not is_tender_sale">
+                        confirm="Do you want to craete earnest money?"
+                        invisible="earnest_money_count > 0 or not is_tender_sale or tender_workflow_state in ('submit_tender', 'technical_evaluation', 'financial_evaluation', 'letter_of_acceptance', 'confirmed', 'closed')">
+
+
                     <div class="o_stat_info">
                         <span class="o_stat_text">Create Earnest Money</span>
                     </div>
                 </button>
 
             <button name="action_view_performance_bond"
-        type="object"
-        class="oe_stat_button"
-        icon="fa-shield"
-        string="Performance Bond"
-        groups="tdc_tender.group_tender_payment_user"
-        invisible="performance_bond_count == 0">
-    <div class="o_stat_info">
-        <field name="performance_bond_count"/>
-        <span class="o_stat_text">Performance Bond</span>
-    </div>
-</button>
+                type="object"
+                class="oe_stat_button"
+                icon="fa-shield"
+                string="Performance Bond"
+                invisible="performance_bond_count == 0">
+            <div class="o_stat_info">
+                <field name="performance_bond_count"/>
+                <span class="o_stat_text">Performance Bond</span>
+            </div>
+        </button>
 
-<button name="action_create_performance_bond"
+    <button name="action_create_performance_bond"
         type="object"
         class="oe_stat_button"
         icon="fa-plus-circle"
         string="Create Performance Bond"
-        groups="tdc_tender.group_tender_payment_user"
-         invisible="performance_bond_count > 0 or not is_tender_sale">
+        confirm="Do you want to craete perfomance bond?"
+        invisible="performance_bond_count > 0 or not is_tender_sale or tender_workflow_state != 'letter_of_acceptance'">
+
     <div class="o_stat_info">
         <span class="o_stat_text">Create Performance Bond</span>
     </div>
@@ -152,6 +153,7 @@
             string="Submit Tender"
             type="object"
             class="btn-primary"
+            confirm="Do you want to Submit tender?"
             invisible="not is_tender_sale or tender_workflow_state != 'draft'"/>
 
 
@@ -160,6 +162,7 @@
             string="Start Technical Evaluation"
             type="object"
             class="btn-primary"
+            confirm="Do you want to Start Technical Evaluation?"
             invisible="not is_tender_sale or tender_workflow_state != 'submit_tender'"/>
 
 
@@ -168,6 +171,7 @@
             string="Move to Financial Evaluation"
             type="object"
             class="btn-primary"
+            confirm="Do you want to Start Financial Evaluation"
             invisible="not is_tender_sale or tender_workflow_state != 'technical_evaluation'"/>
 
 
@@ -176,6 +180,7 @@
             string="Move to Letter of Acceptance"
             type="object"
             class="btn-primary"
+            confirm="Do you want to start LOA?"
             invisible="not is_tender_sale or tender_workflow_state != 'financial_evaluation'"/>
 
 

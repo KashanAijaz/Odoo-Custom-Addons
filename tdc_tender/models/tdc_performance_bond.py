@@ -522,16 +522,12 @@ class TDCPerformanceBond(models.Model):
     def action_approve_payment(self):
         self.ensure_one()
         
-        if self.state != 'submitted':
-            raise ValidationError(
-                "You can only approve when in 'Submitted for Approval' state."
-            )
+        # if self.state != 'submitted':
+        #     raise ValidationError(
+        #         "You can only approve when in 'Submitted for Approval' state."
+        #     )
 
-                
-        if not any(line.payment_attachment for line in self.attachment_line_ids):
-            raise ValidationError(
-                "Please attach payment proof before submitting for approval."
-            )
+      
       
         
         if not self.env.user.has_group('tdc_tender.group_tender_payment_approver'):
@@ -565,7 +561,11 @@ class TDCPerformanceBond(models.Model):
 
         if self.performance_bond_amount <= 0:
             raise ValidationError("Performance Bond Amount must be greater than zero.")
-
+                  
+        if not any(line.payment_attachment for line in self.attachment_line_ids):
+            raise ValidationError(
+                "Please attach payment proof before submitting for approval."
+            )
         move = self.env["account.move"].create({
             "move_type": "entry",
             "journal_id": self.journal_id.id,
@@ -670,8 +670,8 @@ class TDCPerformanceBond(models.Model):
             'target': 'new',
             'context': {
                 'default_performance_bond_id': self.id,
-                'default_return_amount': self.performance_bond_amount,
-                'default_return_journal_id': self.journal_id.id,
+                'default_return_amount': self.journal_id.id,
+                'default_return_journal_id': self.performance_bond_amount,
                 'default_return_debit_account_id': self.return_debit_account_id.id or self.credit_account_id.id,
                 'default_return_credit_account_id': self.return_credit_account_id.id or self.debit_account_id.id,
             }

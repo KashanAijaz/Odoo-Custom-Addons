@@ -37,50 +37,64 @@
                         string="Request Earnest Payment"
                         type="object"
                         invisible="state != 'draft'"
+                        confirm="Do you want to req for earnest money?"
                         class="btn-primary"/>
 
                 <button name="action_submit_for_approval"
                         string="Submit for Approval"
                         type="object"
                         invisible="state != 'request_payment'"
-                        class="btn-primary"/>
+                        confirm="Do you want to submit earnest money approval?"
+                        class="btn-primary"
+                        groups="tdc_tender.group_tender_payment_user"/>
 
                <button name="action_approve_payment"
                     string="Approve"
                     type="object"
                     invisible="state != 'submitted'"
                     class="btn-success"
+                    confirm="Do you want to approve earnest money?"
                     groups="tdc_tender.group_tender_payment_approver"/>
 
                     <button name="action_pay"
                             string="Pay Earnest Money"
                             type="object"
                             invisible="state != 'approved'"
-                            class="btn-primary"/>
+                            confirm="Do you want to confirm?"
+                            class="btn-primary"
+                            groups="tdc_tender.group_tender_payment_user"/>
 
                     <button name="action_request_return"
                         string="Request Return"
                         type="object"
                         invisible="state != 'paid'"
-                        class="btn-warning"/>
+                        confirm="Do you want to confirm?"
+                        class="btn-warning"
+                        groups="tdc_tender.group_tender_payment_user"/>
 
                 <button name="action_approve_return"
                         string="Approve Return"
                         type="object"
                         invisible="state != 'return_requested'"
-                        class="btn-success"/>
+                        class="btn-success"
+                        confirm="Do you want to approve return earnest money?"
+                        groups="tdc_tender.group_tender_payment_approver"/>
 
                 <button name="action_send_for_bank_review"
                         string="Send for Bank Review"
                         type="object"
                         invisible="state != 'return_approved'"
-                        class="btn-warning"/>
+                        confirm="Do you want to send for bank review?"
+                        class="btn-warning"
+                        groups="tdc_tender.group_tender_payment_user"/>
 
                 <button name="action_return_payment"
                         string="Confirm Return"
                         type="object"
                         invisible="state != 'under_bank_review'"
-                        class="btn-success"/>
+                        confirm="Do you want to return earnest money?"
+                        class="btn-success"
+                        groups="tdc_tender.group_tender_payment_user"/>
                     <!-- <button name="action_confirm"
                             string="Confirm"
                             type="object"
@@ -91,14 +105,17 @@
                             string="View Journal Entries"
                             type="object"
                             invisible="state not in ['paid', 'returned']"
-                            class="btn-secondary"/>
+                            class="btn-secondary"
+                            groups="tdc_tender.group_tender_payment_user"/>
 
                     <button name="action_extend_validity"
                             string="Extend Validity"
                             type="object"
-                            invisible="state not in ['draft', 'request_payment', 'submitted', 'approved', 'paid']"
+                            confirm="Do you want to extend earnets money?"
+                            invisible="state not in ['draft', 'request_payment', 'submitted', 'approved', 'paid']  or not is_validity_expiring"
                             class="btn-info"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,request_payment,submitted,approved,paid,return_requested,return_approved,under_bank_review,returned"/>
+                    <field name="is_validity_expiring" invisible="1"/>
                 </header>
                 <sheet>
                     <div class="oe_title">

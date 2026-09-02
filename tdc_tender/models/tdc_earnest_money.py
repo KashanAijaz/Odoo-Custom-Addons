@@ -240,6 +240,21 @@ class TDCEarnestMoney(models.Model):
         string="Return Date",
         tracking=True,
     )
+    is_validity_expiring = fields.Boolean(
+        string="Validity Expiring Soon",
+        compute="_compute_is_validity_expiring",
+    )
+
+    @api.depends('validity_date')
+    def _compute_is_validity_expiring(self):
+        """True jab validity_date mein sirf 1 din (ya kam) reh jaye"""
+        today = fields.Date.today()
+        for rec in self:
+            if rec.validity_date:
+                remaining_days = (rec.validity_date - today).days
+                rec.is_validity_expiring = remaining_days <= 1
+            else:
+                rec.is_validity_expiring = False
 
     # Extended Validity Tracking
     is_extended = fields.Boolean(
@@ -542,10 +557,7 @@ class TDCEarnestMoney(models.Model):
                 "Please contact your system administrator."
             )
         
-        if not any(line.payment_attachment for line in self.attachment_line_ids):
-            raise ValidationError(
-                "Please attach payment proof before approving."
-            )
+      
         
         self.write({
             "state": "approved",
@@ -573,7 +585,11 @@ class TDCEarnestMoney(models.Model):
 
         if self.earnest_money_amount <= 0:
             raise ValidationError("Earnest Money Amount must be greater than zero.")
-
+                  
+        if not any(line.payment_attachment for line in self.attachment_line_ids):
+            raise ValidationError(
+                "Please attach payment proof before submitting for approval."
+            )
         # Create accounting entry
         move = self.env["account.move"].create({
             "move_type": "entry",

@@ -11,4 +11,15 @@
         <field name="implied_ids" eval="[(4, ref('group_tender_payment_user'))]"/>
     </record>
 
+    <!-- 
+        Admin Control group is INDEPENDENT — it does NOT imply/link to
+        group_tender_payment_approver or group_tender_payment_user.
+        Purpose: Users with this group get special access in the Sale Order
+        view (bypass readonly restrictions on order lines), unrelated to
+        the Payment User/Approver hierarchy.
+    -->
+    <record id="group_tender_payment_admin" model="res.groups">
+        <field name="name">Admin Control</field>
+    </record>
+
 </odoo>
