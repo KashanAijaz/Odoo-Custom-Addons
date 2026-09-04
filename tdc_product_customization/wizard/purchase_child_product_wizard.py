@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 
 class PurchaseOrderChildProductWizard(models.TransientModel):
@@ -43,9 +44,7 @@ class PurchaseOrderChildProductWizardLine(models.TransientModel):
     wizard_id = fields.Many2one(
         'purchase.order.child.product.wizard', ondelete='cascade'
     )
-    product_tmpl_id = fields.Many2one(
-        'product.template', string='Product', readonly=True
-    )
+    product_tmpl_id = fields.Many2one('product.template', string='Product')
     name = fields.Char(related='product_tmpl_id.name', readonly=True)
     list_price = fields.Float(related='product_tmpl_id.list_price', readonly=True)
     added = fields.Boolean(string='Added', default=False, readonly=True)
@@ -71,12 +70,17 @@ class PurchaseOrderChildProductWizardLine(models.TransientModel):
         self.ensure_one()
         wizard = self.wizard_id
         product = self.product_tmpl_id.product_variant_id
+        if not product:
+            # multiple variants case - pehla variant utha lo
+            product = self.product_tmpl_id.product_variant_ids[:1]
+        if not product:
+            raise UserError(f"Product '{self.product_tmpl_id.name}' has no variant available.")
         self.env['purchase.order.line'].create({
             'order_id': wizard.order_id.id,
             'product_id': product.id,
-            # 'name': product.name,          # required hai
+            'name': product.name,
             'product_qty': 1,
-            'product_uom_id': product.uom_id.id,   # required
+            'product_uom_id': product.uom_id.id,
             'price_unit': product.standard_price,
             'date_planned': fields.Datetime.now(),
         })

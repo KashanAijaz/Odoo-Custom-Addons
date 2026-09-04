@@ -10,11 +10,10 @@
                 <field name="parent_product_tmpl_id" invisible="1"/>
                 <field name="line_ids">
                     <list editable="bottom" create="1" delete="1">
-                        <field name="to_add" string="Select" widget="boolean_toggle"/>
-                        <field name="name" string="Product"/>
-                        <field name="list_price" string="Price"/>
-                        <!-- <field name="added" string="Added" widget="boolean_toggle" readonly="1"/> -->
-                    </list>
+                            <field name="to_add" string="Select" widget="boolean_toggle"/>
+                            <field name="product_tmpl_id" string="Product" required="1"/>
+                            <field name="list_price" string="Price"/>
+                        </list>
                 </field>
                 <footer>
                     <button name="action_add_selected" type="object" string="Add Selected to Order" class="btn-primary"/>
