@@ -24,3 +24,7 @@ class ProductTemplate(models.Model):
     technical_power_supply = fields.Html(
         string="Power Supply",
     )
+    country_of_origin = fields.Many2one(
+        'res.country',
+        string='Country of Origin'
+    )

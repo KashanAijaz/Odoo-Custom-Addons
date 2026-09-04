@@ -42,7 +42,9 @@
 
                                         <tr>
                                             <td><b>Validity</b></td>
-                                            <td>120 Days</td>
+                                            <td>
+                                                <p>30days</p>
+                                            </td>
                                         </tr>
 
                                         <tr>
@@ -55,7 +57,7 @@
                                         <tr>
                                             <td><b>Reference</b></td>
                                             <td>
-                                                <span t-esc="doc.upcoming_tender_id.tender_title"/>
+                                                <span t-esc="doc.upcoming_tender_id.tender_ref_note"/>
                                             </td>
                                         </tr>
 
@@ -77,7 +79,11 @@
                             <h3>TECHNICAL QUOTATION</h3>
 
                         </div>
-
+                        <div style="margin-top:15px; margin-bottom:10px;">
+                            <strong>
+                                <span t-esc="doc.upcoming_tender_id.tender_title"/>
+                            </strong>
+                        </div>
                         <p>
 
                             Dear Correspondent,
@@ -136,10 +142,19 @@
 
                                             <b>MAKE :</b>
                                             <span t-field="line.product_id.product_tmpl_id.tender_make"/>
-                                            
-                                            <b>PART NO:</b>
-            <span t-field="line.product_id.product_tmpl_id.sku"/>
-                                            <br/><br/>
+                                           
+                                            <br/>
+                                            <t t-if="line.product_id.product_tmpl_id.sku">
+                                                <b>PART NO:</b>
+                                                <span t-field="line.product_id.product_tmpl_id.sku"/>
+                                            </t>
+                                            <br/>
+                                            <t t-if="line.product_id.product_tmpl_id.country_of_origin">
+                                                <b>Country Of Origin:</b>
+                                                <span t-field="line.product_id.product_tmpl_id.country_of_origin"/>
+                                            </t>
+                                                                                    
+                                                                                        <br/><br/>
 
                                             <t t-if="line.technical_key_features">
                                                 <b>Key Features</b>

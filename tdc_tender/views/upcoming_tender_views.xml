@@ -59,6 +59,7 @@
                     string="Participate"
                     type="object"
                     class="btn-primary"
+                    confirm="Do you want to participate?"
                     invisible="state != 'draft'"/>
 
                 <button
@@ -66,6 +67,7 @@
                     string="Not Participated"
                     type="object"
                     class="btn-secondary"
+                    confirm="Do you want not to participate?"
                     invisible="state in ('not_participated')"/>
 
                 <button
@@ -73,6 +75,7 @@
                     string="Create Tender"
                     type="object"
                     class="btn-success"
+                    confirm="Do you want to create tender?"
                     invisible="state != 'participated'"/>
 
                 <field

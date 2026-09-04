@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import fields, models, api
 from odoo.exceptions import ValidationError, UserError
 
 class TDCSaleEvaluationLine(models.Model):
@@ -400,7 +400,32 @@ class SaleOrder(models.Model):
         tracking=True,
         copy=False,
     )
+    is_tender_locked = fields.Boolean(
+        string="Tender Locked",
+        compute="_compute_is_tender_locked",
+        store=False,
+    )
 
+    @api.depends("is_tender_sale")
+    def _compute_is_tender_locked(self):
+        # CHANGED (per new requirement):
+        # - group_tender_payment_admin ("Admin Control") users -> NEVER readonly, on
+        #   the form OR the lines, regardless of tender_workflow_state.
+        # - group_tender_manager keeps its old bypass too (not asked to remove it).
+        # - Everyone else -> the whole form/sheet stays locked for the ENTIRE
+        #   tender lifecycle now (draft/letter_of_acceptance exception removed).
+        #   Only the Order Lines unlock at 'letter_of_acceptance' - see
+        #   sale.order.line.is_line_locked below, which handles that separately.
+        is_manager = self.env.user.has_group("tdc_tender.group_tender_manager")
+        is_admin_control = self.env.user.has_group("tdc_tender.group_tender_payment_admin")
+        has_bypass = is_manager or is_admin_control
+
+        for order in self:
+            if has_bypass:
+                order.is_tender_locked = False
+            else:
+                order.is_tender_locked = bool(order.is_tender_sale)
+                
     technical_evaluation_line_ids = fields.One2many(
         "tdc.sale.evaluation.line",
         "sale_order_id",

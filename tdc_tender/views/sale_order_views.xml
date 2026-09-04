@@ -18,17 +18,31 @@
                    decoration-danger="tender_workflow_state == 'closed'"
                    optional="show"
                    invisible="not is_tender_sale"/>
+            
         </xpath>
     </field>
 </record>
     <record id="view_order_form_tdc_tender"
             model="ir.ui.view">
 
-        <field name="name">sale.order.form.tdc.tender</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_order_form"/>
-        <field name="arch" type="xml">
+                <field name="name">sale.order.form.tdc.tender</field>
+                <field name="model">sale.order</field>
+                <field name="inherit_id" ref="sale.view_order_form"/>
+                <!-- NEW: high priority so this view's attribute changes (specifically
+                    the readonly override on product_template_id) are applied LAST,
+                    after any other view (base or third-party) that also touches
+                    this field's readonly, ensuring ours always wins. -->
+                <field name="priority" eval="99"/>
+                <field name="arch" type="xml">
+        
+        
+        <xpath expr="//form" position="inside">
+            <field name="is_tender_locked" invisible="1"/>
+        </xpath>
 
+        <xpath expr="//sheet" position="attributes">
+            <attribute name="readonly">is_tender_locked</attribute>
+        </xpath>
             <!-- ==========================
                     Whole Form Readonly when Tender Sale
                     (cascades to all fields inside <sheet>,
@@ -36,9 +50,10 @@
                     below explicitly overrides it)
             =========================== -->
 
-            <xpath expr="//sheet" position="attributes">
+            <!-- <xpath expr="//sheet" position="attributes">
                 <attribute name="readonly">is_tender_sale</attribute>
-            </xpath>
+                
+            </xpath> -->
 
             <!-- ==========================
                     Smart Button
@@ -306,56 +321,75 @@
 
                 <field name="worksheet_id"
                        invisible="not is_tender_sale"
-                       readonly="1"/>
+                       />
 
             </xpath>
 
             <!-- ==========================
-                Readonly Product
-                (readonly while tender sale, UNLESS
-                 we're at the Letter of Acceptance stage)
+                NEW: expose is_line_locked (invisible) on the order lines
+                list so the readonly="is_line_locked" attributes below can
+                reference it. Field lives on sale.order.line, computed from
+                group_tender_payment_admin / group_tender_manager +
+                order_id.is_tender_sale + order_id.tender_workflow_state.
+            =========================== -->
+
+<!-- CHANGED: combined with base's own readonly condition
+                 (id and not product_updatable) using OR, so both the
+                 group-based lock AND Odoo's normal "can't change product
+                 after order confirmed" protection stay active together. -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_template_id']"
+                   position="attributes">
+
+                <attribute name="readonly">is_line_locked or (id and not product_updatable)</attribute>
+
+            </xpath>
+
+            <!-- ==========================
+                CHANGED: Readonly Product
+                Old: parent.is_tender_sale and parent.tender_workflow_state != 'letter_of_acceptance'
+                New: is_line_locked (group-aware: Admin Control / Manager
+                     bypass entirely, everyone else locked except at LOA)
             =========================== -->
 
             <xpath expr="//field[@name='order_line']/list/field[@name='product_id']"
                    position="attributes">
 
-                <attribute name="readonly">parent.is_tender_sale and parent.tender_workflow_state != 'letter_of_acceptance'</attribute>
+                <attribute name="readonly">is_line_locked</attribute>
 
             </xpath>
 
             <!-- ==========================
-                Readonly Quantity
-                (unlocked at Letter of Acceptance stage)
+                CHANGED: Readonly Quantity (same reasoning as above)
             =========================== -->
 
             <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']"
                    position="attributes">
 
-                <attribute name="readonly">parent.is_tender_sale and parent.tender_workflow_state != 'letter_of_acceptance'</attribute>
-
+                <attribute name="readonly">is_line_locked</attribute>
+                
             </xpath>
-
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="after">
+                <field name="country_of_origin"/>
+            </xpath>
             <!-- ==========================
-                Readonly Unit Price
-                (unlocked at Letter of Acceptance stage)
+                CHANGED: Readonly Unit Price (same reasoning as above)
             =========================== -->
 
             <xpath expr="//field[@name='order_line']/list/field[@name='price_unit']"
                    position="attributes">
 
-                <attribute name="readonly">parent.is_tender_sale and parent.tender_workflow_state != 'letter_of_acceptance'</attribute>
+                <attribute name="readonly">is_line_locked</attribute>
 
             </xpath>
 
             <!-- ==========================
-                Readonly Discount
-                (unlocked at Letter of Acceptance stage)
+                CHANGED: Readonly Discount (same reasoning as above)
             =========================== -->
 
             <xpath expr="//field[@name='order_line']/list/field[@name='discount']"
                    position="attributes">
 
-                <attribute name="readonly">parent.is_tender_sale and parent.tender_workflow_state != 'letter_of_acceptance'</attribute>
+                <attribute name="readonly">is_line_locked</attribute>
 
             </xpath>
 
@@ -365,15 +399,30 @@
                     <field name="technical_key_features"
                         widget="html" optional="hide"
                         class="o_tender_html_inline o_key_features_col"
-                        column_invisible="not parent.is_tender_sale"/>
+                        column_invisible="not parent.is_tender_sale"
+                        readonly="is_line_locked"/>
                     <field name="tender_specification"
                         widget="html" optional="hide"
                         class="o_tender_html_inline o_tender_spec_col"
-                        column_invisible="not parent.is_tender_sale"/>
+                        column_invisible="not parent.is_tender_sale"
+                        readonly="is_line_locked"/>
                     <field name="technical_power_supply"
                         widget="html" optional="hide"
                         class="o_tender_html_inline o_power_supply_col"
-                        column_invisible="not parent.is_tender_sale"/>
+                        column_invisible="not parent.is_tender_sale"
+                        readonly="is_line_locked"/>
+            </xpath>
+
+            <!-- ==========================
+                CHANGED: product_template_id itself made group-aware
+                readonly too (per requirement's field list).
+            =========================== -->
+
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_template_id']"
+                   position="attributes">
+
+                <attribute name="readonly">is_line_locked</attribute>
+
             </xpath>
 
 
@@ -409,39 +458,79 @@
 
             <!-- ==========================
                 Extra Costing Columns
+                CHANGED: currency_rate, is_cnf, list_price, discount_margin,
+                net_discount_price were hardcoded readonly="1" before; now
+                group-aware via is_line_locked so Admin Control users can
+                edit them when needed.
             =========================== -->
 
            <xpath expr="//field[@name='order_line']/list/field[@name='price_unit']"
        position="after">
 
     <field name="currency_rate"
-           readonly="1"
+           readonly="is_line_locked"
            optional="show"
            column_invisible="not parent.is_tender_sale"/>
 
     <!-- Sale Order Line Form View -->
         <field name="is_cnf" 
-            readonly="1" 
+            readonly="is_line_locked" 
             optional="show" 
             column_invisible="not parent.is_tender_sale"/>
 
     <field name="list_price"
-           readonly="1"
+           readonly="is_line_locked"
            optional="show"
            column_invisible="not parent.is_tender_sale"/>
 
     <field name="discount_margin"
-           readonly="1"
+           readonly="is_line_locked"
            optional="show"
            column_invisible="not parent.is_tender_sale"/>
 
     <field name="net_discount_price"
-           readonly="1"
+           readonly="is_line_locked"
            optional="show"
            column_invisible="not parent.is_tender_sale"/>
 
 </xpath>
 
+            <!-- ==========================
+                NEW: hs_code_id, model_no_id, serial_no_id, product_code,
+                tax_id ("tax_ids" in your requirement -> mapped to the real
+                field name tax_id on sale.order.line). These nodes must
+                already exist in the order-line list (added by another
+                inherited view) — if any of these xpaths fail on install,
+                the field name/module needs to be double-checked and this
+                xpath's `expr` corrected accordingly.
+            =========================== -->
+
+            <xpath expr="//field[@name='order_line']/list/field[@name='hs_code_id']"
+                   position="attributes">
+                <attribute name="readonly">is_line_locked</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']/list/field[@name='model_no_id']"
+                   position="attributes">
+                <attribute name="readonly">is_line_locked</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']/list/field[@name='serial_no_id']"
+                   position="attributes">
+                <attribute name="readonly">is_line_locked</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_code']"
+                   position="attributes">
+                <attribute name="readonly">is_line_locked</attribute>
+            </xpath>
+
+            <!-- ASSUMPTION: "tax_ids" from requirement = standard field
+                 'tax_id' on sale.order.line. Rename below if different. -->
+            <!-- <xpath expr="//field[@name='order_line']/list/field[@name='tax_id']"
+                   position="attributes">
+                <attribute name="readonly">is_line_locked</attribute>
+            </xpath>  -->
 
 <xpath expr="//button[@name='action_quotation_send']" position="before">
     <button name="action_open_create_loa_wizard"

@@ -1,0 +1,5 @@
+<odoo>
+    <record id="group_tender_manager" model="res.groups">
+        <field name="name">Tender Manager</field>
+    </record>
+</odoo>

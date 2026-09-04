@@ -105,15 +105,15 @@ class ProductTemplate(models.Model):
     # Since no reusable standard field exists at the product.template
     # level, we create them here as requested.
     product_length = fields.Float(
-        string="Length",
+        string="Length (cm)",
         help="Product length, used to compute the Volumetric Weight.",
     )
     product_width = fields.Float(
-        string="Width",
+        string="Width (cm)",
         help="Product width, used to compute the Volumetric Weight.",
     )
     product_height = fields.Float(
-        string="Height",
+        string="Height (cm)",
         help="Product height, used to compute the Volumetric Weight.",
     )
     divisor = fields.Float(
@@ -123,7 +123,7 @@ class ProductTemplate(models.Model):
             "(commonly 5000 for courier, 6000 for air freight).",
     )
     volumetric_weight = fields.Float(
-        string="Volumetric Weight",
+        string="Volumetric Weight (kg)",
         digits='Stock Weight',
         compute='_compute_volumetric_weight',
         store=True,
@@ -133,7 +133,7 @@ class ProductTemplate(models.Model):
              "'%s' without any code change." % VOLUMETRIC_DIVISOR_PARAM,
     )
     cw_weight = fields.Float(
-        string="Chargeable Weight (CW)",
+        string="Chargeable Weight (kg)",
         digits='Stock Weight',
         compute='_compute_cw_weight',
         store=True,
@@ -160,3 +160,30 @@ class ProductTemplate(models.Model):
                 product.gross_weight,
                 product.volumetric_weight,
             )
+
+    ################################################################
+    ################Child Product##################################
+
+        # Self-referencing Many2many: ek parent product k multiple child products
+    # ho sakte hain, aur aik product multiple parents ka child bhi ban sakta hai.
+    
+    child_product_ids = fields.Many2many(
+        comodel_name='product.template',
+        relation='product_template_child_rel',
+        column1='parent_id',
+        column2='child_id',
+        string='Child Products',
+        domain="[('id', '!=', id)]",
+        help='Ye products is (parent) product k child hain. Sale/Purchase order '
+             'mein parent product add hone par in child products ka wizard khulta hai.',
+    )
+
+    # Reverse field - optional, useful agar dekhna ho k ye product kis parent ka child hai
+    parent_product_ids = fields.Many2many(
+        comodel_name='product.template',
+        relation='product_template_child_rel',
+        column1='child_id',
+        column2='parent_id',
+        string='Parent Products',
+    )
+

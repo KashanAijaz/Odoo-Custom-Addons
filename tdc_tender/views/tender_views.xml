@@ -85,7 +85,7 @@
                             type="object"
                             class="btn-primary"
                             confirm="Do you want to confirm?"
-                            invisible="state not in ('draft', 'paid')"/>
+                            invisible="state in ('draft')"/>
 
                     <!-- Payment Workflow Buttons -->
                     <button name="action_request_payment"

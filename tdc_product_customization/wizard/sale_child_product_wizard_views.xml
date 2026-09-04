@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sale_order_child_product_wizard_form" model="ir.ui.view">
+        <field name="name">sale.order.child.product.wizard.form</field>
+        <field name="model">sale.order.child.product.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Add Child Products">
+                <field name="order_id" invisible="1"/>
+                <field name="parent_product_tmpl_id" invisible="1"/>
+<!-- BAAD MEIN -->
+                    <field name="line_ids">
+                        <list editable="bottom" create="1" delete="1">
+                            <field name="to_add" string="Select" widget="boolean_toggle"/>
+                            <field name="product_tmpl_id" string="Product" required="1"/>
+                            <field name="list_price" string="Price" readonly="1"/>
+                            <!-- <field name="added" string="Added" widget="boolean_toggle" readonly="1"/> -->
+                        </list>
+                    </field>
+                    <footer>
+                        <button name="action_add_selected" type="object" string="Add Selected to Order" class="btn-primary"/>
+                        <button string="Close" class="btn-secondary" special="cancel"/>
+                    </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sale_order_child_product_wizard" model="ir.actions.act_window">
+        <field name="name">Child Products</field>
+        <field name="res_model">sale.order.child.product.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

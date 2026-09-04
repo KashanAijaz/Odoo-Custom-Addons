@@ -17,7 +17,7 @@
     ],
 
     "data": [
-        
+        "security/tender_security.xml",
         "security/tdc_tender_security.xml",
         "security/ir.model.access.csv",
         "data/sequence.xml",

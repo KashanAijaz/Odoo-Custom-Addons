@@ -1,1 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sale_order_child_product_wizard,sale.order.child.product.wizard,model_sale_order_child_product_wizard,base.group_user,1,1,1,1
+access_sale_order_child_product_wizard_line,sale.order.child.product.wizard.line,model_sale_order_child_product_wizard_line,base.group_user,1,1,1,1
+access_purchase_order_child_product_wizard,purchase.order.child.product.wizard,model_purchase_order_child_product_wizard,base.group_user,1,1,1,1
+access_purchase_order_child_product_wizard_line,purchase.order.child.product.wizard.line,model_purchase_order_child_product_wizard_line,base.group_user,1,1,1,1
