@@ -46,7 +46,10 @@
 
                                         <tr>
                                             <td style="padding:3px 0; font-size:14px; font-weight:bold; color:#555;">Validity</td>
-                                            <td style="padding:3px 0; font-size:14px;">30 days</td>
+                                            <td style="padding:3px 0; font-size:14px;">
+                                                <span t-field="sale_order.validity_date"
+                                                      t-options='{"widget":"date"}'/>
+                                            </td>
                                         </tr>
 
                                         <tr>

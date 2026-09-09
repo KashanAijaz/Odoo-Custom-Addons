@@ -46,7 +46,10 @@
 
                                         <tr>
                                             <td style="padding:3px 0; font-size:14px; font-weight:bold; color:#555;">Validity</td>
-                                            <td style="padding:3px 0; font-size:14px;">120 Days</td>
+                                            <td style="padding:3px 0; font-size:14px;">
+                                                <span t-field="sale_order.validity_date"
+                                                      t-options='{"widget":"date"}'/>
+                                            </td>
                                         </tr>
 
                                         <tr>
@@ -80,6 +83,9 @@
                                 FINANCIAL QUOTATION
                             </h3>
 
+                        </div>
+                        <div style="margin-top:10px; margin-bottom:12px; font-size:16px; font-weight:bold; color:#1a1a1a; border-left:4px solid #1a1a1a; padding-left:8px;">
+                            <span t-esc="doc.upcoming_tender_id.tender_title"/>
                         </div>
 
                         <p style="font-size:14px; line-height:1.5;">
@@ -160,6 +166,22 @@
                                                         <span t-field="line.product_id.product_tmpl_id.tender_make"/>
                                                     </td>
                                                 </tr>
+                                                <t t-if="line.product_id.product_tmpl_id.sku">
+                                                    <tr>
+                                                        <td style="width:35%; font-size:13px; font-weight:bold; color:#444; padding:5px 8px; background:#f2f2f2; border:1px solid #999;">Part No. :</td>
+                                                        <td style="font-size:13px; padding:5px 8px; border:1px solid #999;">
+                                                            <span t-field="line.product_id.product_tmpl_id.sku"/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                                <t t-if="line.product_id.product_tmpl_id.country_of_origin">
+                                                    <tr>
+                                                        <td style="width:35%; font-size:13px; font-weight:bold; color:#444; padding:5px 8px; background:#f2f2f2; border:1px solid #999;">Country Of Origin :</td>
+                                                        <td style="font-size:13px; padding:5px 8px; border:1px solid #999;">
+                                                            <span t-field="line.product_id.product_tmpl_id.country_of_origin"/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
                                             </table>
 
                                         </td>
@@ -288,6 +310,22 @@
                                                         <span t-field="line.product_id.product_tmpl_id.tender_make"/>
                                                     </td>
                                                 </tr>
+                                                 <t t-if="line.product_id.product_tmpl_id.sku">
+                                                    <tr>
+                                                        <td style="width:35%; font-size:13px; font-weight:bold; color:#444; padding:5px 8px; background:#f2f2f2; border:1px solid #999;">Part No. :</td>
+                                                        <td style="font-size:13px; padding:5px 8px; border:1px solid #999;">
+                                                            <span t-field="line.product_id.product_tmpl_id.sku"/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                                <t t-if="line.product_id.product_tmpl_id.country_of_origin">
+                                                    <tr>
+                                                        <td style="width:35%; font-size:13px; font-weight:bold; color:#444; padding:5px 8px; background:#f2f2f2; border:1px solid #999;">Country Of Origin :</td>
+                                                        <td style="font-size:13px; padding:5px 8px; border:1px solid #999;">
+                                                            <span t-field="line.product_id.product_tmpl_id.country_of_origin"/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
                                             </table>
 
                                         </td>
