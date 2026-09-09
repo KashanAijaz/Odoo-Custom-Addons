@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Report action: appears under the Print menu of the Delivery
+         Order (stock.picking) because binding_model_id points to it. -->
+    <record id="action_report_tdc_satisfactory_completion_certificate" model="ir.actions.report">
+        <field name="name">Satisfactory Completion Certificate</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tdc_delivery_customization.report_tdc_satisfactory_completion_certificate</field>
+        <field name="report_file">tdc_delivery_customization.report_tdc_satisfactory_completion_certificate</field>
+        <field name="print_report_name">'Satisfactory Completion Certificate - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Blank placeholder template. Fill this in later with the actual
+         certificate fields/layout. -->
+    <template id="report_tdc_satisfactory_completion_certificate">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- BLANK FORMAT - content to be added later -->
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_order_form_child_products_button" model="ir.ui.view">
+        <field name="name">sale.order.form.child.products.button</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_id']"
+                   position="after">
+                <field name="has_child_products" column_invisible="1"/>
+                <button name="action_open_child_products_wizard"
+                    type="object"
+                    string="Child Products"
+                    icon="fa-plus-square"
+                    title="Add Child Products"
+                    invisible="not has_child_products or not id"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

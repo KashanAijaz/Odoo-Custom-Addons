@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_tariff_document" model="ir.actions.report">
+        <field name="name">GD Tariff Report</field>
+        <field name="model">tdc.import.tariff</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tdc_import.report_tariff_document</field>
+        <field name="report_file">tdc_import.report_tariff_document</field>
+        <field name="print_report_name">'Tariff - %s' % (object.dg_no)</field>
+        <field name="binding_model_id" ref="model_tdc_import_tariff"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_tariff_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Import GD Tariff</h2>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <strong>GD No.:</strong> <span t-field="o.dg_no"/><br/>
+                                <strong>GD Date:</strong> <span t-field="o.gd_date"/><br/>
+                                <strong>Vendor:</strong> <span t-field="o.partner_id.name"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Currency of Import:</strong> <span t-field="o.currency_id.name"/><br/>
+                                <strong>Exchange Rate:</strong> <span t-field="o.exchange_rate"/><br/>
+                                <strong>Insurance %:</strong> <span t-field="o.insurance_percentage"/> |
+                                <strong>Landing %:</strong> <span t-field="o.landing_charges_percentage"/>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>HS Code</th>
+                                    <th>Qty</th>
+                                    <th>UOM</th>
+                                    <th>Assessed Total (PKR)</th>
+                                    <th>CD</th>
+                                    <th>RD</th>
+                                    <th>ACD</th>
+                                    <th>ST</th>
+                                    <th>AST</th>
+                                    <th>IT</th>
+                                    <th>Total Payable (PKR)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.line_ids" t-as="line">
+                                    <td><span t-field="line.product_id.display_name"/></td>
+                                    <td><span t-field="line.hs_code_id.code"/></td>
+                                    <td><span t-field="line.qty"/></td>
+                                    <td><span t-field="line.uom_id.name"/></td>
+                                    <td><span t-field="line.assessed_total_value_pkr"/></td>
+                                    <td><span t-field="line.cd_pkr"/></td>
+                                    <td><span t-field="line.rd_pkr"/></td>
+                                    <td><span t-field="line.acd_pkr"/></td>
+                                    <td><span t-field="line.st_pkr"/></td>
+                                    <td><span t-field="line.ast_pkr"/></td>
+                                    <td><span t-field="line.it_pkr"/></td>
+                                    <td><span t-field="line.total_payable_pkr"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="row">
+                            <div class="col-6 offset-6">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td><strong>Total Assessed Value (PKR)</strong></td>
+                                        <td><span t-field="o.amount_assessed_total_pkr"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total CD (PKR)</strong></td>
+                                        <td><span t-field="o.amount_cd_total"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total RD (PKR)</strong></td>
+                                        <td><span t-field="o.amount_rd_total"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total ACD (PKR)</strong></td>
+                                        <td><span t-field="o.amount_acd_total"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total ST (PKR)</strong></td>
+                                        <td><span t-field="o.amount_st_total"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total AST (PKR)</strong></td>
+                                        <td><span t-field="o.amount_ast_total"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total IT (PKR)</strong></td>
+                                        <td><span t-field="o.amount_it_total"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total Sum Payable (PKR)</strong></td>
+                                        <td><strong><span t-field="o.amount_total_payable"/></strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

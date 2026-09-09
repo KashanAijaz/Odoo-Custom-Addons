@@ -1,0 +1,35 @@
+/* ===== TEST BLOCK — proves whether CSS is loading at all ===== */
+.o_tender_html_inline {
+    background-color: yellow !important;
+    color: red !important;
+    font-size: 20px !important;
+    font-weight: bold !important;
+    border: 3px solid blue !important;
+}
+
+.o_tender_html_inline * {
+    color: red !important;
+    font-size: 20px !important;
+}
+
+/* ===== Actual layout fix (kept, so once color proves it works, layout also applies) ===== */
+.o_tender_html_inline {
+    ul {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        list-style: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+
+        li {
+            display: inline-block !important;
+            white-space: nowrap !important;
+            margin-right: 10px !important;
+        }
+    }
+
+    p {
+        display: inline !important;
+        margin: 0 8px 0 0 !important;
+    }
+}

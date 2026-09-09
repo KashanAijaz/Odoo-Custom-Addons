@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Sequence for Quotation states: draft / sent / cancel -->
+        <record id="seq_tdc_quotation_qt" model="ir.sequence">
+            <field name="name">TDC Quotation Sequence (QT)</field>
+            <field name="code">tdc.quotation.qt</field>
+            <field name="prefix">QT</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="implementation">standard</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Sequence for Sale Order state: sale -->
+        <record id="seq_tdc_quotation_so" model="ir.sequence">
+            <field name="name">TDC Sale Order Sequence (SO)</field>
+            <field name="code">tdc.quotation.so</field>
+            <field name="prefix">SO</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="implementation">standard</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

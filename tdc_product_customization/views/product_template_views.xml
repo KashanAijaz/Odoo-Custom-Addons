@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         VIEW 1: Import Data tab (Pricing / Packing Details) +
+         moved standard_price + new selling rate fields in General Info
+         ================================================================ -->
+    <record id="view_product_template_tdc_customization_form" model="ir.ui.view">
+        <field name="name">product.template.tdc.customization.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+
+            <!-- ============================================================
+                 1) Add the new "Dimensions Information" page at the end
+                    of the notebook (after General Information, Sales,
+                    Purchase, Inventory, ...)
+                 ============================================================ -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Import Data" name="tdc_customization">
+
+                    <!-- <group string="Source Information">
+                        <field name="purchase_source"/>
+                    </group> -->
+
+                    <group string="Pricing">
+                        <group>
+                            <label for="exw_origin_list_price"/>
+                            <div class="o_row">
+                                <field name="exw_origin_list_price"/>
+                                <field name="exw_origin_list_price_currency_id"
+                                       class="oe_inline"
+                                       options="{'no_create': True, 'no_open': True}"/>
+                            </div>
+
+                            <label for="exw_origin_net_transfer_price"/>
+                            <div class="o_row">
+                                <field name="exw_origin_net_transfer_price"/>
+                                <field name="exw_origin_net_transfer_price_currency_id"
+                                       class="oe_inline"
+                                       options="{'no_create': True, 'no_open': True}"/>
+                            </div>
+
+                            <!-- standard_price will be MOVED in right here,
+                                 immediately after exw_origin_net_transfer_price,
+                                 by the xpath block further below. -->
+                        </group>
+                    </group>
+
+                    <group string="Packing Details">
+                        <group>
+                            <field name="net_weight"/>
+                            <field name="gross_weight"/>
+                        </group>
+                        <group>
+                            <field name="product_length"/>
+                            <field name="product_width"/>
+                            <field name="product_height"/>
+                            <field name="divisor"/>
+                            <field name="volumetric_weight" readonly="1"/>
+                            <field name="cw_weight" readonly="1"/>
+                        </group>
+                    </group>
+
+                </page>
+            </xpath>
+
+            <!-- ============================================================
+                 2) MOVE standard_price (currently in General Information
+                    tab) to the new tdc_customization tab, right after
+                    exw_origin_net_transfer_price's div.
+
+                    NOTE: this xpath runs AFTER step 1 above (Odoo applies
+                    the arch diffs in order), so the target div already
+                    exists in the tree by the time this runs.
+                 ============================================================ -->
+            <xpath expr="//div[field[@name='exw_origin_net_transfer_price']]" position="after">
+                <xpath expr="//field[@name='standard_price']" position="move"/>
+            </xpath>
+
+            <!-- ============================================================
+                 3) Add normal_selling_rate and competitive_selling_rate
+                    into the General Information tab, right below
+                    list_price.
+
+                    NOTE: these are NEW custom fields (not present anywhere
+                    in the base/parent view), so they can't be "moved" via
+                    xpath — position="move" only works on nodes that already
+                    exist in the view being inherited from. So we just
+                    define them directly here instead.
+                 ============================================================ -->
+            <xpath expr="//div[field[@name='list_price']]" position="after">
+                <field name="normal_selling_rate"/>
+                <field name="competitive_selling_rate"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <!-- ================================================================
+         VIEW 2: Child Products tab (after Attributes & Variants tab)
+         ================================================================ -->
+    <record id="product_template_child_products_form_view" model="ir.ui.view">
+        <field name="name">product.template.child.products.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <!-- 'Attributes &amp; Variants' tab k baad naya tab -->
+             <xpath expr="//page[@name='general_information']" position="after">
+                <page string="Child Products" name="child_products">
+                    <field name="child_product_ids" context="{'default_type': 'consu'}">
+                        <list>
+                            <field name="name"/>
+                            <field name="list_price"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="seq_tdc_tender"
+            model="ir.sequence">
+
+        <field name="name">Tender</field>
+
+        <field name="code">tdc.tender</field>
+
+        <!-- <field name="prefix">TDR/%(year)s/</field> -->
+
+        <field name="padding">5</field>
+
+        <field name="number_increment">1</field>
+
+        <field name="number_next">1</field>
+
+    </record>
+
+</odoo>

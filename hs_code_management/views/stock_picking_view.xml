@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="stock_picking_form_view_hs_code" model="ir.ui.view">
+        <field name="name">stock.picking.form.hs.code</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='package_ids']" position="after">
+                <field name="hs_code_id" optional="show"/>
+                <field name="model_no_id" optional="show" invisible="not model_no_id"/>
+                <field name="serial_no_id" optional="show" invisible="not serial_no_id"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_estate_property_form_inherit_account" model="ir.ui.view">
+        <field name="name">estate.property.form.inherit.account</field>
+        <field name="model">estate.property</field>
+        <field name="inherit_id" ref="estate.view_estate_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+               
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

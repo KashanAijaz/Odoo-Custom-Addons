@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        IMPORTANT: "hr_payroll_community.view_hr_payslip_form" is my best
+        guess at Cybrosys' community payroll module's main payslip form
+        view ID (they mirror Odoo Enterprise's own naming convention in
+        most of their modules). If module installation fails again with
+        an error like "View error ... external ID not found", the ID is
+        different in your build. To find the correct one in 60 seconds:
+          1. Turn on Developer Mode (Settings > General Settings > bottom
+             of the page, or add ?debug=1 to the URL).
+          2. Open any Payslip form (Payroll > Employee Payslips > any
+             record).
+          3. Click the bug icon (top right) > "Edit View: Form".
+          4. The "External ID" shown at the top of that editor is the
+             value to put in inherit_id below (format: module.view_id).
+        Replace the ref value below with whatever you find there.
+    -->
+    <record id="view_hr_payslip_form_shariah_international" model="ir.ui.view">
+        <field name="name">hr.payslip.form.shariah.international</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="hr_payroll_community.view_hr_payslip_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Radio choice, placed right after the employee/contract fields -->
+            <field name="contract_id" position="after">
+                <field name="payroll_type" widget="radio" options="{'horizontal': true}"/>
+            </field>
+
+            <!-- Read-only breakdown of what the system computed, shown as a
+                 new notebook page so it doesn't clutter the main form. -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Attendance Deductions" name="attendance_deductions">
+                    <group>
+                        <group string="Wage Basis">
+                            <field name="daily_wage"/>
+                            <field name="minute_wage"/>
+                        </group>
+                        <group string="Late Minutes">
+                            <field name="late_minutes"/>
+                            <field name="late_minute_deduction"/>
+                        </group>
+                        <group string="Day-Off / Absence">
+                            <field name="day_off_count"/>
+                            <field name="day_off_deduction"/>
+                        </group>
+                        <group string="Sandwich Leave (International only)"
+                               attrs="{'invisible': [('payroll_type', '!=', 'international')]}">
+                            <field name="sandwich_leave_days"/>
+                            <field name="sandwich_leave_deduction"/>
+                        </group>
+                        <group string="Total">
+                            <field name="attendance_total_deduction"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_hr_contract_form_payroll_type" model="ir.ui.view">
+        <field name="name">hr.contract.form.payroll.type</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="arch" type="xml">
+            <field name="wage" position="after">
+                <field name="payroll_type" widget="radio" options="{'horizontal': true}"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

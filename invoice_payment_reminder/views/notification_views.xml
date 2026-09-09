@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_payment_reminder_notification_tree" model="ir.ui.view">
+        <field name="name">payment.reminder.notification.tree</field>
+        <field name="model">payment.reminder.notification</field>
+        <field name="arch" type="xml">
+            <list string="Notifications" decoration-bf="not is_read">
+                <field name="create_date" string="Triggered On"/>
+                <field name="move_id"/>
+                <field name="partner_id"/>
+                <field name="invoice_date_due"/>
+                <field name="reminder_day"/>
+                <field name="days_remaining"/>
+                <field name="message"/>
+                <field name="is_read" widget="boolean_toggle"/>
+                <button name="action_open_invoice" type="object"
+                        string="Open Invoice" icon="fa-external-link" class="btn-link"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_payment_reminder_notification_form" model="ir.ui.view">
+        <field name="name">payment.reminder.notification.form</field>
+        <field name="model">payment.reminder.notification</field>
+        <field name="arch" type="xml">
+            <form string="Notification">
+                <sheet>
+                    <group>
+                        <field name="move_id"/>
+                        <field name="partner_id"/>
+                        <field name="invoice_date_due"/>
+                        <field name="reminder_day"/>
+                        <field name="days_remaining"/>
+                        <field name="is_read"/>
+                        <field name="message"/>
+                    </group>
+                    <footer>
+                        <button name="action_open_invoice" type="object"
+                                string="Open Invoice" class="btn-info"/>
+                        <button name="action_mark_as_read" type="object"
+                                string="Mark as Read" class="btn-secondary"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_payment_reminder_notification_search" model="ir.ui.view">
+        <field name="name">payment.reminder.notification.search</field>
+        <field name="model">payment.reminder.notification</field>
+        <field name="arch" type="xml">
+            <search string="Search Notifications">
+                <field name="move_id"/>
+                <field name="partner_id"/>
+                <filter string="Unread" name="unread" domain="[('is_read', '=', False)]"/>
+                <filter string="Read" name="read" domain="[('is_read', '=', True)]"/>
+                <!-- <group expand="0" string="Group By">
+                    <filter string="Customer" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Invoice" name="group_move" context="{'group_by': 'move_id'}"/>
+                </group> -->
+            </search>
+        </field>
+    </record>
+
+    <record id="action_payment_reminder_notification" model="ir.actions.act_window">
+        <field name="name">Notification</field>
+        <field name="res_model">payment.reminder.notification</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_payment_reminder_notification_search"/>
+        <field name="context">{'search_default_unread': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No payment reminder notifications yet.
+            </p>
+            <p>
+                Notifications appear here automatically when an invoice's
+                remaining days until due date matches its "Reminder Day".
+            </p>
+        </field>
+    </record>
+
+    <!--
+        Menu item placed in the Apps technical bar, right after "Import Module".
+        NOTE: "base.menu_apps" is the parent of Apps / Update Apps List /
+        Apply Scheduled Upgrades / Import Module in this bar. If your Odoo 19
+        instance uses a different parent xmlid for that bar, open Developer
+        Mode > Settings > Technical > User Interface > Menu Items, search
+        "Import Module", copy its Parent Menu, and replace the parent_id
+        below with that value.
+    -->
+    <menuitem id="menu_payment_reminder_notification"
+          name="Notification"
+          parent="base.menu_management"
+          action="action_payment_reminder_notification"
+          sequence="100"/>
+
+</odoo>

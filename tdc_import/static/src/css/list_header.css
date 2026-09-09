@@ -1,0 +1,40 @@
+/* .tdc_truncate_list th .o_list_number_th,
+.tdc_truncate_list th span.text-truncate {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    word-wrap: break-word !important;
+    display: block !important;
+    max-width: 200px !important;
+} */
+
+/* Header - wrap long labels nicely across 2 lines */
+.tdc_truncate_list th .o_list_number_th,
+.tdc_truncate_list th span.text-truncate {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    word-wrap: break-word !important;
+    display: block !important;
+    max-width: 160px !important;
+    line-height: 1.3 !important;
+}
+
+.tdc_truncate_list th {
+    vertical-align: bottom !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    text-align: left !important;
+}
+
+/* Keep numeric columns right-aligned like Odoo default */
+.tdc_truncate_list th.o_list_number_th,
+.tdc_truncate_list th:has(.o_list_number_th) {
+    text-align: right !important;
+}
+
+/* Give data cells a touch more breathing room to match wider headers */
+.tdc_truncate_list td {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+}

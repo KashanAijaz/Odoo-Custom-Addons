@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Category groups this module's access levels under one heading in Settings > Users > Groups
+    <record id="module_category_estate" model="ir.module.category">
+        <field name="name">Real Estate</field>
+        <field name="description">Access rights for the Real Estate module</field>
+        <field name="sequence">20</field>
+    </record> -->
+
+    <!-- Basic user: regular agents, everyday access -->
+    <record id="group_estate_user" model="res.groups">
+        <field name="name">Agent</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Manager: extends Agent, gets elevated permissions -->
+    <record id="group_estate_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <!-- <field name="category_id" ref="module_category_estate"/> -->
+        <field name="implied_ids" eval="[(4, ref('group_estate_user'))]"/>
+    </record>
+
+</odoo>

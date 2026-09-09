@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ir_cron_tender_notifications" model="ir.cron">
+        <field name="name">Tender: Check Notifications</field>
+        <field name="model_id" ref="model_tdc_tender_notification"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_check_tender_notifications()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">True</field>
+    </record>
+
+</odoo>

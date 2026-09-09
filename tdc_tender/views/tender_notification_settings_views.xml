@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================================
+                            FORM VIEW
+    =========================================================== -->
+
+    <record id="view_tdc_tender_notification_settings_form" model="ir.ui.view">
+        <field name="name">tdc.tender.notification.settings.form</field>
+        <field name="model">tdc.tender.notification.settings</field>
+        <field name="arch" type="xml">
+            <form string="Notification Settings">
+                <sheet>
+                    <group>
+                        <group string="Reminder Timing">
+                            <field name="notify_before_due"/>
+                            <field name="priority_extra_days"/>
+                            <field name="daily_reminder"/>
+                        </group>
+                        <group string="Delivery Channels">
+                            <field name="enable_popup_notification"/>
+                            <field name="enable_dashboard_counter"/>
+                            <field name="enable_activity_notification"/>
+                            <field name="enable_email_notification"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==========================================================
+                            SERVER ACTION (opens the singleton record)
+    =========================================================== -->
+
+    <record id="action_tdc_tender_notification_settings" model="ir.actions.server">
+        <field name="name">Notification Settings</field>
+        <field name="model_id" ref="model_tdc_tender_notification_settings"/>
+        <field name="state">code</field>
+        <field name="code">action = env["tdc.tender.notification.settings"].action_open_settings()</field>
+    </record>
+
+    <!-- ==========================================================
+                            MENU
+    =========================================================== -->
+
+    
+
+</odoo>

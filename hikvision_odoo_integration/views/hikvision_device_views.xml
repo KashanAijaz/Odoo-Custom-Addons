@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="hikvision_device_view_form" model="ir.ui.view">
+        <field name="name">hikvision.device.view.form</field>
+        <field name="model">hikvision.device</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="test_connection"
+                            string="Test Connection"
+                            type="object" class="oe_highlight"
+                    />
+                    <button name="fetch_and_create_attendance"
+                            string="Download Todays Attendance"
+                            type="object" class="oe_highlight"
+                    />
+                    <button name="%(hikvision_odoo_integration.action_hikvision_attendance_wizard)d"
+                            string="Download All Attendance"
+                            type="action" class="oe_highlight"
+                    />
+                    <button name="fetch_employees"
+                            string="Fetch Employees"
+                            type="object" class="oe_highlight"
+                    />
+                
+                    <button name="set_time"
+                            string="Set Time"
+                            type="object" class="oe_highlight"
+                    />
+                    <button name="%(hikvision_odoo_integration.action_view_hikvision_management)d"
+                            string="User Management"
+                            type="action" class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="ip_address"/>
+                        <field name="username"/>
+                        <field name="password"/>
+                        <field name="image" widget="image" invisible="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Device Information">
+                            <group>
+                                <field name="device_name"/>
+                                <field name="device_id"/>
+                                <field name="device_model"/>
+                                <field name="device_serial_no"/>
+                                <field name="device_mac_address"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <!--    Defined all menus here -->
+    <record id="hikvision_device_details_action" model="ir.actions.act_window">
+        <field name="name">Hikvision Device</field>
+        <field name="res_model">hikvision.device</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         NEW: list/action to browse downloaded attendance any time.
+         (This is the same model the buttons already open dynamically;
+         this just gives you a permanent menu entry to reach it later.)
+       ═══════════════════════════════════════════════════════════════ -->
+    <record id="action_hikvision_attendance" model="ir.actions.act_window">
+        <field name="name">Attendance Logs</field>
+        <field name="res_model">hr.attendance</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('employee_id.hikvision_number', '!=', False)]</field>
+    </record>
+
+    <menuitem id="hikvision_menu"
+              name="Hikvision Device"
+              parent="hr_attendance.menu_hr_attendance_root"
+              sequence="21"/>
+    <menuitem id="hikvision_sub_menu"
+              action="hikvision_device_details_action"
+              parent="hikvision_menu"
+              sequence="21"/>
+   
+</odoo>

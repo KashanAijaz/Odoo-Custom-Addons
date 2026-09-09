@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_technical_quotation"
+            model="ir.actions.report">
+
+        <field name="name">Technical Quotation</field>
+        <field name="model">tdc.tender</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tdc_tender.report_technical_quotation</field>
+        <field name="report_file">tdc_tender.report_technical_quotation</field>
+        <field name="print_report_name">'Technical Quotation - %s' % object.name</field>
+
+    </record>
+
+</odoo>

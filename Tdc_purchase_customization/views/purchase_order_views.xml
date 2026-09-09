@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="purchase_order_form_tdc_customization" model="ir.ui.view">
+        <field name="name">purchase.order.form.tdc.customization</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- 1) Purchase Order Type field, before Vendor.
+                 Hidden once the order leaves draft/proforma (Part 2 fix). -->
+            <xpath expr="//field[@name='partner_id']" position="before">
+                <field name="purchase_type" widget="radio" options="{'horizontal': true}"
+                    invisible="state not in ('draft', 'proforma')"/>
+            </xpath>
+
+            <!-- 2) Replace the single statusbar with two: one for Local,
+                 one for Import, toggled by purchase_type. A selection
+                 value's label/order is fixed on the field, so we show
+                 the correct subset via statusbar_visible, per type. -->
+            <xpath expr="//field[@name='state'][@widget='statusbar']" position="replace">
+                <field name="state" widget="statusbar"
+                       statusbar_visible="draft,sent,to approve,purchase"
+                       invisible="purchase_type == 'import'"/>
+                <field name="state" widget="statusbar"
+                       statusbar_visible="proforma,purchase,payment_under_process,payment_completed,order_confirmation,shipment_pickup"
+                       invisible="purchase_type != 'import'"/>
+            </xpath>
+
+            <!-- 3) NOTE: core "Confirm Order" (button_confirm) button is
+                 left completely untouched - do not edit its attributes
+                 here, that previously caused a duplicate button to
+                 appear. It still works exactly as before for Local
+                 Purchase (state=draft/sent). -->
+
+            <!-- 4) New button for Import orders sitting at Proforma INV.
+                 Placed right before the core Confirm Order button; only
+                 one of the two is ever visible at a time. -->
+            <xpath expr="//button[@name='button_confirm']" position="before">
+                <button name="action_confirm_proforma" string="Confirm Order"
+                        type="object" class="btn-primary"
+                        invisible="not (purchase_type == 'import' and state == 'proforma')"/>
+            </xpath>
+
+            <!-- 5) New workflow buttons, next to Confirm Order, Import only -->
+            <xpath expr="//button[@name='button_confirm']" position="after">
+                <button name="action_payment_under_process" string="Payment Under Process"
+                        type="object" class="btn-primary"
+                        invisible="not (purchase_type == 'import' and state == 'purchase')"/>
+                <button name="action_payment_completed" string="Complete Payment"
+                        type="object" class="btn-primary"
+                        invisible="not (purchase_type == 'import' and state == 'payment_under_process')"/>
+                <button name="action_order_confirmation" string="Order Confirmation"
+                        type="object" class="btn-primary"
+                        invisible="not (purchase_type == 'import' and state == 'payment_completed')"/>
+                <button name="action_shipment_pickup" string="Shipment Pickup"
+                        type="object" class="btn-primary"
+                        invisible="not (purchase_type == 'import' and state == 'order_confirmation')"/>
+            </xpath>
+
+            <!-- 6) New notebook tabs, visible only for Import purchases -->
+            <xpath expr="//notebook" position="inside">
+
+                <page string="Order Confirmation" name="order_confirmation_page"
+                      invisible="purchase_type != 'import'">
+                    <group>
+                        <group>
+                            <field name="expected_manufacturing_time"/>
+                            <field name="expected_transportation_date"/>
+                        </group>
+                        <group>
+                            <field name="custom_clearance_date"/>
+                            <field name="mode_of_transport"/>
+                        </group>
+                    </group>
+                    <label for="order_confirmation_note"/>
+                    <field name="order_confirmation_note" placeholder="Note..."/>
+                    <label for="order_confirmation_attachment_ids" string="Attachment Lines"/>
+                    <field name="order_confirmation_attachment_ids">
+                        <list editable="bottom">
+                            <field name="payment_attachment_filename"/>
+                            <field name="payment_attachment" filename="payment_attachment_filename"/>
+                            <field name="payment_note"/>
+                        </list>
+                    </field>
+                </page>
+
+                <page string="Shipment Pickup" name="shipment_pickup_page"
+                      invisible="purchase_type != 'import'">
+                    <group>
+                        <group>
+                            <field name="shipment_pickup_status"/>
+                            <field name="expected_departure_time"/>
+                            <field name="expected_arrival_time"/>
+                        </group>
+                        <group>
+                            <field name="notification_date"/>
+                            <field name="arrived_at_destination_id"/>
+                        </group>
+                    </group>
+                    <label for="shipment_pickup_note"/>
+                    <field name="shipment_pickup_note" placeholder="Note..."/>
+                    <label for="shipment_pickup_attachment_ids" string="Attachment Lines"/>
+                    <field name="shipment_pickup_attachment_ids">
+                        <list editable="bottom">
+                            <field name="payment_attachment_filename"/>
+                            <field name="payment_attachment" filename="payment_attachment_filename"/>
+                            <field name="payment_note"/>
+                        </list>
+                    </field>
+                </page>
+
+            </xpath>
+
+            <!-- 7) Fix Receive button: core invisible only allows state='purchase',
+                 but Import flow keeps moving state forward after receiving stock.
+                 Extend it to stay visible across all post-purchase Import states. -->
+            <xpath expr="//button[@name='action_view_picking']" position="attributes">
+                <attribute name="invisible">state in ('draft', 'send', 'to approve')</attribute>
+            </xpath>
+
+           <!-- 8) Fix Upload Bill widget: extend visibility across Import flow states -->
+            <xpath expr="//widget[@name='purchase_file_uploader']" position="attributes">
+                <attribute name="invisible">state in ('draft', 'send', 'to approve')</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

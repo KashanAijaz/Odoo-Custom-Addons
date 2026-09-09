@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tree -->
+
+    <record id="view_tdc_payment_method_tree"
+            model="ir.ui.view">
+
+        <field name="name">tdc.payment.method.tree</field>
+        <field name="model">tdc.payment.method</field>
+
+        <field name="arch" type="xml">
+
+            <list>
+
+                <field name="sequence"/>
+
+                <field name="name"/>
+
+                <field name="active"/>
+
+            </list>
+
+        </field>
+
+    </record>
+
+    <!-- Form -->
+
+    <record id="view_tdc_payment_method_form"
+            model="ir.ui.view">
+
+        <field name="name">tdc.payment.method.form</field>
+
+        <field name="model">tdc.payment.method</field>
+
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <group>
+
+                        <field name="sequence"/>
+
+                        <field name="name"/>
+
+                        <field name="active"/>
+
+                    </group>
+
+                </sheet>
+
+            </form>
+
+        </field>
+
+    </record>
+
+    <!-- Action -->
+
+    <record id="action_tdc_payment_method"
+            model="ir.actions.act_window">
+
+        <field name="name">Payment Methods</field>
+
+        <field name="res_model">tdc.payment.method</field>
+
+        <field name="view_mode">list,form</field>
+
+    </record>
+
+    <!-- Menu -->
+
+    
+</odoo>

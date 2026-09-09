@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<record id="view_picking_form_inherit_states" model="ir.ui.view">
+    <field name="name">stock.picking.form.inherit.custom.states</field>
+    <field name="model">stock.picking</field>
+    <field name="inherit_id" ref="stock.view_picking_form"/>
+    <field name="arch" type="xml">
+
+        <!-- Core mein DO statusbar fields hain (incoming ke liye alag, outgoing/internal ke liye alag).
+             Hum sirf OUTGOING/INTERNAL wala replace karenge (ye wahi hai jahan aapka custom flow chalta hai),
+             INCOMING wala jaisa hai waisa hi rehne dete hain.
+             Match ambiguous na ho isliye @invisible attribute se bhi filter kiya hai. -->
+        <xpath expr="//field[@name='state'][@widget='statusbar'][@invisible=&quot;picking_type_code == 'incoming'&quot;]" position="replace">
+            <field name="state"
+                   widget="statusbar"
+                   invisible="picking_type_code == 'incoming'"
+                   statusbar_visible="draft,confirmed,assigned,done,delivery_reciept,installation_under_process,installation_complete,satisfactory_complete,cancel"/>
+        </xpath>
+
+        <xpath expr="//header" position="inside">
+            <button name="action_set_delivery_receipt"
+                    string="Mark Delivery Receipt"
+                    type="object"
+                    class="oe_highlight"
+                    invisible="state != 'done'"/>
+
+            <button name="action_set_installation_under_process"
+                    string="Start Installation"
+                    type="object"
+                    class="oe_highlight"
+                    invisible="state != 'delivery_reciept'"/>
+
+            <button name="action_set_installation_complete"
+                    string="Complete Installation"
+                    type="object"
+                    class="oe_highlight"
+                    invisible="state != 'installation_under_process'"/>
+
+            <button name="action_set_satisfactory_complete"
+                    string="Mark Satisfactory Completed"
+                    type="object"
+                    class="oe_highlight"
+                    invisible="state != 'installation_complete'"/>
+        </xpath>
+
+        <!-- Core ke DO button_validate mein se pehla (highlighted wala, class="oe_highlight") -->
+        <xpath expr="//button[@name='button_validate'][@class='oe_highlight']" position="attributes">
+            <attribute name="invisible">state in ('draft','confirmed','done','cancel','delivery_reciept','installation_under_process','installation_complete','satisfactory_complete')</attribute>
+        </xpath>
+
+        <!-- Core ke DO button_validate mein se doosra (class="o_btn_validate") -->
+        <xpath expr="//button[@name='button_validate'][@class='o_btn_validate']" position="attributes">
+            <attribute name="invisible">state in ('waiting','assigned','done','cancel','delivery_reciept','installation_under_process','installation_complete','satisfactory_complete')</attribute>
+        </xpath>
+
+        <!-- Delivery Type field neechay location_id k (Delivery Receipt state) -->
+        <xpath expr="//field[@name='location_id']" position="after">
+            <field name="delivery_type"
+                   invisible="state != 'delivery_reciept'"/>
+
+            <!-- Installation Under Process fields neechay location_id k -->
+            <field name="installation_by"
+                   invisible="state != 'installation_under_process'"/>
+            <field name="technical_person_name"
+                   invisible="state != 'installation_under_process'"/>
+            <field name="installation_city"
+                   invisible="state != 'installation_under_process'"/>
+            <field name="installation_office"
+                   invisible="state != 'installation_under_process'"/>
+            <field name="installation_designation"
+                   invisible="state != 'installation_under_process'"/>
+            <field name="installation_department"
+                   invisible="state != 'installation_under_process'"/>
+            <field name="installation_start_date"
+                   invisible="state != 'installation_under_process'"/>
+            <field name="installation_notes"
+                   invisible="state != 'installation_under_process'"
+                   nolabel="0"
+                   colspan="2"/>
+
+            <!-- Installation Complete fields neechay location_id k -->
+            <field name="installation_completion_date"
+                   invisible="state != 'installation_complete'"/>
+            <field name="installation_total_days"
+                   invisible="state != 'installation_complete'"
+                   readonly="1"/>
+            <field name="customer_feedback"
+                   invisible="state != 'installation_complete'"
+                   nolabel="0"
+                   colspan="2"/>
+        </xpath>
+
+        <!-- Delivery Type tab - Note tab k baad, sirf delivery_reciept state mn -->
+        <xpath expr="//page[@name='note']" position="after">
+            <page string="Delivery Type"
+                  name="delivery_type_tab"
+                  invisible="state != 'delivery_reciept'">
+
+                <group string="By Hand Details" invisible="delivery_type != 'by_hand'">
+                    <field name="responsible_person_name"/>
+                    <field name="receiver_name"/>
+                    <field name="receiver_designation"/>
+                    <field name="receiver_department"/>
+                    <field name="receiver_contact_info"/>
+                    <field name="delivery_date"/>
+                    <field name="delivery_address_note"/>
+                </group>
+
+                <group string="By Courier Details" invisible="delivery_type != 'by_courier'">
+                    <field name="courier_company_id"/>
+                    <field name="courier_service_type"/>
+                    <field name="courier_tracking_number"/>
+                    <field name="courier_booking_date"/>
+                    <field name="receiver_name"/>
+                    <field name="receiver_designation"/>
+                    <field name="receiver_department"/>
+                    <field name="receiver_contact_info"/>
+                    <field name="delivery_date"/>
+                    <field name="delivery_address_note"/>
+                    <field name="courier_shipping_amount"/>
+                </group>
+
+                <group string="Bilti Transport Details" invisible="delivery_type != 'bilti_transport'">
+                            <field name="bilti_service_provider_name"/>
+                            <field name="bilti_truck_train_number"/>
+                            <field name="bilti_receipt_date"/>
+                            <field name="bilti_delivery_date"/>
+                            <field name="bilti_expected_arrival_date"/>
+                </group>
+
+                <group string="Customer Self Pickup Details" invisible="delivery_type != 'customer_pickup'">
+                    <field name="receiver_name"/>
+                    <field name="receiver_designation"/>
+                    <field name="receiver_department"/>
+                    <field name="receiver_contact_info"/>
+                    <field name="delivery_date"/>
+                    <field name="delivery_address_note"/>
+                    <field name="pickup_location"/>
+                </group>
+
+            </page>
+        </xpath>
+
+        <!-- Attachments tab - installation_under_process AND installation_complete dono mn visible -->
+        <xpath expr="//page[@name='delivery_type_tab']" position="after">
+            <page string="Attachments"
+                  name="tdc_attachments_page"
+                  invisible="state not in ('delivery_reciept', 'installation_under_process', 'installation_complete')">
+                <field name="tdc_attachment_line_ids" context="{}">
+                    <list editable="bottom">
+                        <field name="attachment" widget="binary" filename="attachment_filename"/>
+                        <field name="attachment_filename" invisible="1"/>
+                        <field name="name"/>
+                        <field name="notes"/>
+                        <field name="details"/>
+                        <field name="user_id"/>
+                        <field name="date"/>
+                    </list>
+                </field>
+            </page>
+        </xpath>
+
+    </field>
+</record>
+</odoo>

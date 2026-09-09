@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Applies to both Customer Invoices and Vendor Bills, since they share this view -->
+    <record id="account_move_form_view_hs_code" model="ir.ui.view">
+        <field name="name">account.move.form.hs.code</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_line_ids']//field[@name='product_id']" position="after">
+                <field name="hs_code_id" optional="show"/>
+                <field name="model_no_id" optional="show" invisible="not model_no_id"/>
+                <field name="serial_no_id" optional="show" invisible="not serial_no_id"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
