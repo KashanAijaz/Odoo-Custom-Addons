@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from datetime import timedelta
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 class UpcomingTender(models.Model):
@@ -261,3 +262,92 @@ class UpcomingTender(models.Model):
 
     def action_participate(self):
         self.state = "participated"
+    
+    ########################################################
+    def _get_notify_limit_date(self):
+        """Aaj + N din. N ka default 1 hai, System Parameter se change ho sakta hai."""
+        today = fields.Date.context_today(self)
+        param = self.env["ir.config_parameter"].sudo().get_param(
+            "tdc.tender_notify_days", "1"
+        )
+        days = int(param) if str(param).isdigit() else 1
+        return today + timedelta(days=days)
+
+    @api.model
+    def get_due_notifications(self):
+        """Systray bell + popup ke liye data."""
+        today = fields.Date.context_today(self)
+        limit_date = self._get_notify_limit_date()
+
+        tenders = self.search(
+            [
+                ("state", "in", ["draft", "participated"]),
+                ("due_date", "!=", False),
+                ("due_date", "<=", limit_date),
+            ],
+            order="due_date asc, priority desc",
+        )
+
+        prio_labels = dict(self._fields["priority"].selection)
+        result = []
+        for rec in tenders:
+            left = (rec.due_date - today).days
+            if left < 0:
+                msg = _("Overdue by %s day(s)", abs(left))
+            elif left == 0:
+                msg = _("Due today!")
+            elif left == 1:
+                msg = _("Due tomorrow")
+            else:
+                msg = _("Due in %s days", left)
+
+            result.append({
+                "id": rec.id,
+                "name": rec.name,
+                "tender_title": rec.tender_title,
+                "partner": rec.partner_id.display_name or "",
+                "due_date": rec.due_date.strftime("%d %b %Y"),
+                "days_left": left,
+                "message": msg,
+                "priority": rec.priority or "1",
+                "priority_label": prio_labels.get(rec.priority, ""),
+            })
+        return result
+
+    @api.model
+    def action_open_due_tenders(self):
+        """'View All Notifications' button: due tenders ki poori list kholta hai."""
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Tender Notifications"),
+            "res_model": "tdc.upcoming.tender",
+            "view_mode": "list,form",
+            "views": [[False, "list"], [False, "form"]],
+            "domain": [
+                ("state", "in", ["draft", "participated"]),
+                ("due_date", "!=", False),
+                ("due_date", "<=", self._get_notify_limit_date()),
+            ],
+            "target": "current",
+        }
+
+    @api.model
+    def _cron_due_reminder(self):
+        """Roz chalega: due date se 1 din pehle creator ko Odoo activity (to-do) bhejta hai."""
+        today = fields.Date.context_today(self)
+        tenders = self.search([
+            ("state", "in", ["draft", "participated"]),
+            ("due_date", "=", today + timedelta(days=1)),
+        ])
+        summary = _("Tender due tomorrow")
+        for rec in tenders:
+            # duplicate activity na bane
+            if rec.activity_ids.filtered(lambda a: a.summary == summary):
+                continue
+            rec.activity_schedule(
+                "mail.mail_activity_data_todo",
+                date_deadline=rec.due_date,
+                summary=summary,
+                note=_("Tender %s (%s) ki due date kal hai.", rec.name, rec.tender_title),
+                user_id=rec.create_uid.id,
+            )

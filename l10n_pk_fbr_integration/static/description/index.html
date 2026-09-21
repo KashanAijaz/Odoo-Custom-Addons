@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pakistan FBR Digital Invoicing - Zalino Tech</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .app-title {
+            border-bottom: 3px solid #198754;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        .screenshot {
+            border: 1px solid #dee2e6;
+            padding: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            max-width: 100%;
+            margin-bottom: 20px;
+        }
+        .highlight {
+            background-color: #e9f7ef;
+            border-left: 5px solid #198754;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            color: #198754;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body class="container py-5">
+
+    <!-- Banner -->
+    <div class="text-center mb-5">
+        <img src="banner.png" alt="FBR Integration Banner" class="img-fluid rounded">
+    </div>
+
+    <h1 class="app-title">Pakistan FBR Digital Invoicing</h1>
+
+    <p class="lead">
+        <strong>App Summary:</strong>
+        The <b>FBR Integration App</b> by <b>Zalino Tech</b> seamlessly connects Odoo ERP with Pakistan’s Federal Board of Revenue (FBR) digital invoicing system.
+        It ensures that all sales invoices are validated, synced, and compliant with FBR’s prescribed formats, HS Codes, and reporting requirements.
+    </p>
+
+    <!-- Features -->
+    <h2 class="section-title">Key Features</h2>
+    <ul class="list-group mb-5">
+        <li class="list-group-item">Automatic synchronization of Odoo invoices with FBR</li>
+        <li class="list-group-item">Real-time response handling from FBR APIs</li>
+        <li class="list-group-item">Error and status reporting inside Odoo</li>
+        <li class="list-group-item">Secure authentication with FBR APIs</li>
+        <li class="list-group-item">Audit logs of all invoices synced with FBR</li>
+    </ul>
+
+    <!-- Sync Example -->
+    <h2 class="section-title">Invoice Sync with FBR</h2>
+    <div class="highlight">
+        <p>Invoices generated in Odoo are automatically submitted to FBR’s digital invoicing system. Below is a sample response:</p>
+    </div>
+    <pre class="bg-dark text-light p-3 rounded">
+{
+  "dated": "2025-09-19 12:32:32",
+  "validationResponse": {
+    "statusCode": "01",
+    "status": "Invalid",
+    "errorCode": "0052",
+    "error": "HS Code does not match with provided sale type.",
+    "invoiceStatuses": null
+  }
+}
+    </pre>
+    <p><small class="text-muted">Errors are logged in Odoo for quick correction and resubmission.</small></p>
+
+    <h2 class="section-title">Application Overview</h2>
+    <div class="highlight">
+        <p>When you search for 'fbr' in Apps, the <b>l10n_pk_fbr_integration</b> module will appear with the title <b>Pakistan FBR Digital Invoicing</b>.</p>
+    </div>
+    <img src="assets/screenshots/1.png" class="screenshot img-fluid rounded" alt="App Overview">
+
+    <h2 class="section-title">Install the App</h2>
+    <div class="highlight">
+        <p>After searching for 'fbr' in Apps, the <b>l10n_pk_fbr_integration</b> module will be available with the title <b>Pakistan FBR Digital Invoicing</b>. You can now install it.</p>
+    </div>
+    <img src="assets/screenshots/2.png" class="screenshot img-fluid rounded" alt="Install App">
+
+    <h2 class="section-title">Configurations</h2>
+    <div class="highlight">
+        <p>After installation, go to <b>Settings > General Settings</b>. At the bottom of the page, you will see the FBR Integration fields. Please fill in the details as per your account information received from the FBR portal.</p>
+    </div>
+    <img src="assets/screenshots/3.png" class="screenshot img-fluid rounded" alt="Configuration">
+
+
+    <h2 class="section-title">Customization in Product Template</h2>
+    <div class="highlight">
+        <p>Addition of new fields in product <b>HS Code, HS Unit of Measure</b>. Update your products accordingly. For more details about HS codes, please visit the FBR portal.</p>
+    </div>
+    <img src="assets/screenshots/6.png" class="screenshot img-fluid rounded" alt="Create Invoice">
+
+
+
+    <h2 class="section-title">Create New Invoice</h2>
+    <div class="highlight">
+        <p>When you create a new invoice, a new button <b>Sync with FBR</b> will appear. After creating the invoice, click the button and your data will be synced with FBR.</p>
+    </div>
+    <img src="assets/screenshots/4.png" class="screenshot img-fluid rounded" alt="Create Invoice">
+
+
+   <!-- Audit Reports -->
+    <h2 class="section-title">Audit & Compliance</h2>
+    <div class="highlight">
+        <p>Every invoice submission and FBR response is logged in Odoo for full traceability and compliance audits.</p>
+    </div>
+    <img src="assets/screenshots/5.png" class="screenshot img-fluid rounded" alt="Audit Reports">
+
+    <!-- Closing -->
+    <h2 class="section-title">Closing Remarks</h2>
+    <div class="highlight">
+        <p>The <b>Zalino Tech FBR Integration App</b> ensures your business remains fully compliant with Pakistan’s e-invoicing regulations.
+        It simplifies invoice submission, validation, and error handling—making Odoo a powerful tool for automated FBR reporting.</p>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

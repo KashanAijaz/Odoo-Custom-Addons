@@ -21,6 +21,7 @@
         "security/tdc_tender_security.xml",
         "security/ir.model.access.csv",
         "data/sequence.xml",
+        'data/tender_cron.xml', ##
         'data/tender_sequence.xml',
         "views/product_view.xml",
         # "views/other_info_hide.xml",
@@ -66,6 +67,9 @@
         "web.assets_backend": [
             #"tdc_tender/static/src/js/notification_systray.js",
             #"tdc_tender/static/src/xml/notification_systray.xml",
+            'tdc_tender/static/src/js/tender_notification.js',
+            'tdc_tender/static/src/xml/tender_notification.xml',
+            'tdc_tender/static/src/scss/tender_notification.scss',
         ],
     },
   

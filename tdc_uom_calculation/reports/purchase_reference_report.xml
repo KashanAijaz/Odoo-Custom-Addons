@@ -1,0 +1,25 @@
+<odoo>
+    <record id="paperformat_purchase_reference_landscape" model="report.paperformat">
+        <field name="name">Purchase Reference Landscape</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">20</field>
+        <field name="margin_bottom">15</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">20</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_purchase_reference" model="ir.actions.report">
+        <field name="name">Purchase Reference</field>
+        <field name="model">sale.order.purchase.reference.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tdc_uom_calculation.report_purchase_reference_document</field>
+        <field name="report_file">tdc_uom_calculation.report_purchase_reference_document</field>
+        <field name="print_report_name">'Purchase Reference - %s' % (object.sale_order_id.name)</field>
+        <field name="paperformat_id" ref="paperformat_purchase_reference_landscape"/>
+    </record>
+</odoo>

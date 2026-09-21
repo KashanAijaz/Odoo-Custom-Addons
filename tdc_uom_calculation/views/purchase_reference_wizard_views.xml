@@ -1,0 +1,30 @@
+<odoo>
+    <record id="view_sale_order_purchase_reference_wizard_form" model="ir.ui.view">
+        <field name="name">sale.order.purchase.reference.wizard.form</field>
+        <field name="model">sale.order.purchase.reference.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Reference">
+                <field name="sale_order_id" invisible="1"/>
+                <field name="partner_id" invisible="1"/>
+                <div class="d-flex justify-content-end mb-2">
+                    <button name="action_select_all" string="Select All" type="object" class="btn-secondary"/>
+                </div>
+                <field name="line_ids">
+                    <list editable="bottom" create="0" delete="0">
+                        <field name="selected" widget="boolean_toggle"/>
+                        <field name="name"/>
+                        <field name="date_order"/>
+                        <field name="amount_total"/>
+                        <field name="state"/>
+                        <field name="currency_id" column_invisible="1"/>
+                        <field name="purchase_order_id" column_invisible="1"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_print_pdf" string="Download PDF" type="object" class="btn-primary"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

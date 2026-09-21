@@ -1,0 +1,129 @@
+<odoo>
+    <template id="report_purchase_reference_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-family: Arial, Helvetica, sans-serif; color:#222;">
+
+                        <!-- ================= HEADER ================= -->
+                        <table style="width:100%; font-size:14px; border-collapse:collapse; margin-bottom:10px;">
+                            <tr>
+                                <td style="width:60%; vertical-align:top;">
+                                    <div style="font-size:13px; font-weight:bold; text-transform:uppercase; color:#555; letter-spacing:0.5px; margin-bottom:4px;">
+                                        Customer
+                                    </div>
+                                    <div style="font-size:18px; font-weight:bold; color:#1a1a1a;">
+                                        <span t-field="doc.sale_order_id.partner_id.name"/>
+                                    </div>
+                                </td>
+                                <td style="width:40%;">
+                                    <table style="width:100%; border-collapse:collapse;">
+                                        <tr>
+                                            <td style="padding:3px 0; font-size:14px; font-weight:bold; color:#555;">Date</td>
+                                            <td style="padding:3px 0; font-size:14px;">
+                                                <span t-field="doc.sale_order_id.date_order" t-options='{"widget":"date"}'/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:3px 0; font-size:14px; font-weight:bold; color:#555;">Sale Order No.</td>
+                                            <td style="padding:3px 0; font-size:14px;">
+                                                <span t-field="doc.sale_order_id.name"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- ================= BANNER ================= -->
+                        <div style="text-align:center; background:#1a1a1a; padding:8px 0; margin-bottom:15px;">
+                            <h3 style="font-weight:bold; font-size:22px; color:#ffffff; letter-spacing:1px; margin:0;">
+                                BURHANI IRON
+                            </h3>
+                        </div>
+
+                        <div class="row mt32 flex-nowrap">
+
+                            <!-- LEFT: Sale Order — 60% -->
+                            <div class="col-7">
+                                <div style="font-size:16px; font-weight:bold; color:#1a1a1a; border-left:4px solid #1a1a1a; padding-left:8px; margin-bottom:8px;">
+                                    Sale Order
+                                </div>
+                                <table border="1" style="width:100%; border-collapse:collapse; font-size:13px; border:1px solid #999;">
+                                    <thead>
+                                        <tr style="background:#1a1a1a;">
+                                            <th style="text-align:left; font-size:13px; font-weight:bold; color:#ffffff; padding:6px 4px;">Description</th>
+                                            <th style="text-align:right; font-size:13px; font-weight:bold; color:#ffffff; padding:6px 4px;">Qty</th>
+                                            <th style="text-align:center; font-size:13px; font-weight:bold; color:#ffffff; padding:6px 4px;">Unit</th>
+                                            <th style="text-align:right; font-size:13px; font-weight:bold; color:#ffffff; padding:6px 4px;">Rate</th>
+                                            <th style="text-align:right; font-size:13px; font-weight:bold; color:#ffffff; padding:6px 4px;">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="doc.sale_order_id.order_line" t-as="line">
+                                            <tr t-if="not line.display_type">
+                                                <td style="padding:6px 4px; border:1px solid #ccc;"><span t-field="line.product_id.name"/></td>
+                                                <td style="text-align:right; padding:6px 4px; border:1px solid #ccc;"><span t-field="line.product_uom_qty"/></td>
+                                                <td style="text-align:center; padding:6px 4px; border:1px solid #ccc;"><span t-field="line.product_uom_id.name"/></td>
+                                                <td style="text-align:right; padding:6px 4px; border:1px solid #ccc;"><span t-field="line.price_unit"/></td>
+                                                <td style="text-align:right; padding:6px 4px; border:1px solid #ccc;"><span t-field="line.price_subtotal"/></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr style="background:#f2f2f2;">
+                                            <td colspan="4" style="text-align:right; padding:6px 4px; font-weight:bold; border:1px solid #999;">Total</td>
+                                            <td style="text-align:right; padding:6px 4px; font-weight:bold; border:1px solid #999;">
+                                                <span t-field="doc.sale_order_id.amount_total"/>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <!-- GAP -->
+                            <div class="col-1"/>
+
+                            <!-- RIGHT: Purchase Record — 40% -->
+                            <div class="col-4">
+                                <div style="font-size:16px; font-weight:bold; color:#1a1a1a; border-left:4px solid #1a1a1a; padding-left:8px; margin-bottom:8px;">
+                                    Purchase Record
+                                </div>
+                                <t t-set="selected_lines" t-value="doc.line_ids.filtered(lambda l: l.selected)"/>
+                                <table border="1" style="width:100%; border-collapse:collapse; font-size:13px; border:1px solid #999;">
+                                    <thead>
+                                        <tr style="background:#1a1a1a;">
+                                            <th style="text-align:left; font-size:13px; font-weight:bold; color:#ffffff; padding:6px 4px;">Reference</th>
+                                            <th style="text-align:left; font-size:13px; font-weight:bold; color:#ffffff; padding:6px 4px;">Date</th>
+                                            <th style="text-align:right; font-size:13px; font-weight:bold; color:#ffffff; padding:6px 4px;">Amount</th>
+                                            <th style="text-align:center; font-size:13px; font-weight:bold; color:#ffffff; padding:6px 4px;">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="selected_lines" t-as="line">
+                                            <td style="padding:6px 4px; border:1px solid #ccc;"><span t-field="line.name"/></td>
+                                            <td style="padding:6px 4px; border:1px solid #ccc;"><span t-field="line.date_order"/></td>
+                                            <td style="text-align:right; padding:6px 4px; border:1px solid #ccc;"><span t-field="line.amount_total"/></td>
+                                            <td style="text-align:center; padding:6px 4px; border:1px solid #ccc;"><span t-field="line.state"/></td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr style="background:#f2f2f2;">
+                                            <td colspan="2" style="text-align:right; padding:6px 4px; font-weight:bold; border:1px solid #999;">Total</td>
+                                            <td style="text-align:right; padding:6px 4px; font-weight:bold; border:1px solid #999;">
+                                                <span t-esc="sum(selected_lines.mapped('amount_total'))"
+                                                    t-options='{"widget": "monetary", "display_currency": doc.sale_order_id.currency_id}'/>
+                                            </td>
+                                            <td style="border:1px solid #999;"/>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

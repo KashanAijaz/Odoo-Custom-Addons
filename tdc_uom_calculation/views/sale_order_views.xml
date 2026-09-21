@@ -1,0 +1,36 @@
+<odoo>
+    <record id="sale_order_form_inherit_tdc_uom" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.tdc.uom</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Quantity: readonly only when Unit is Ft/Kg -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="attributes">
+                <attribute name="readonly">uom_is_weight</attribute>
+            </xpath>
+
+            <!-- Unit: readonly only when Unit is Ft/Kg -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_id']" position="attributes">
+                <attribute name="readonly">uom_is_weight</attribute>
+            </xpath>
+
+            <!-- Weight Kg./Ft. (from product) + In Kg / In Ft checkboxes + Qty fields -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_id']" position="after">
+                <field name="uom_is_weight" column_invisible="1"/>
+                <field name="product_weight_kg_ft" string="Weight Kg./Ft."/>
+                <field name="is_in_kg" string="In Kg" invisible="not uom_is_weight"/>
+                <field name="is_in_ft" string="In Ft" invisible="not uom_is_weight"/>
+                <field name="qty_in_ft" readonly="not uom_is_weight or not is_in_ft"/>
+                <field name="qty_in_kg" readonly="not uom_is_weight or not is_in_kg"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <button name="action_open_purchase_reference"
+                        string="Purchase Reference"
+                        type="object"
+                        class="oe_link"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
