@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_azezem_than_print_form" model="ir.ui.view">
+        <field name="name">azezem.than.print.form</field>
+        <field name="model">azezem.than.print</field>
+        <field name="arch" type="xml">
+            <form string="Azezem Than Print">
+                <header>
+                    <button name="action_print_than"
+                            string="Print"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-print"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="than_number"/>
+                        <field name="product_id"/>
+                        <field name="categ_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_azezem_than_print_tree" model="ir.ui.view">
+        <field name="name">azezem.than.print.tree</field>
+        <field name="model">azezem.than.print</field>
+        <field name="arch" type="xml">
+            <list string="Azezem Than Print">
+                <field name="than_number"/>
+                <field name="product_id"/>
+                <field name="categ_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_azezem_than_print" model="ir.actions.act_window">
+        <field name="name">Than Print</field>
+        <field name="res_model">azezem.than.print</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_azezem_than_print_root"
+              name="Product Code"/>
+
+    <menuitem id="menu_azezem_than_print"
+              name="Than Print"
+              parent="menu_azezem_than_print_root"
+              action="action_azezem_than_print"/>
+
+</odoo>

@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from datetime import timedelta
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
 
 class TDCEarnestMoneyAttachmentLine(models.Model):
@@ -743,7 +744,94 @@ class TDCEarnestMoney(models.Model):
             "res_id": self.tender_id.id,
             "target": "current",
         }
+    def _get_notify_limit_date(self):
+        today = fields.Date.context_today(self)
+        param = self.env["ir.config_parameter"].sudo().get_param(
+            "tdc.earnest_notify_days", "1"
+        )
+        days = int(param) if str(param).isdigit() else 1
+        return today + timedelta(days=days)
+    ###################################################################################
 
+    def _get_notify_limit_date(self):
+        today = fields.Date.context_today(self)
+        param = self.env["ir.config_parameter"].sudo().get_param(
+            "tdc.earnest_notify_days", "1"
+        )
+        days = int(param) if str(param).isdigit() else 1
+        return today + timedelta(days=days)
+
+    @api.model
+    def get_due_notifications(self):
+        today = fields.Date.context_today(self)
+        limit_date = self._get_notify_limit_date()
+
+        recs = self.search([
+            ("state", "!=", "returned"),
+            ("validity_date", "!=", False),
+            ("validity_date", "<=", limit_date),
+        ], order="validity_date asc")
+
+        result = []
+        for rec in recs:
+            left = (rec.validity_date - today).days
+            if left < 0:
+                msg = _("Validity expired %s day(s) ago", abs(left))
+            elif left == 0:
+                msg = _("Validity expires today!")
+            elif left == 1:
+                msg = _("Validity expires tomorrow")
+            else:
+                msg = _("Validity expires in %s days", left)
+
+            result.append({
+                "id": rec.id,
+                "model": "tdc.earnest.money",
+                "name": rec.name,
+                "tender_title": rec.tender_title or "",
+                "partner": rec.partner_id.display_name or "",
+                "due_date": rec.validity_date.strftime("%d %b %Y"),
+                "days_left": left,
+                "message": msg,
+                "priority": "gray",
+                "priority_label": _("Earnest Money"),
+            })
+        return result
+
+    @api.model
+    def action_open_due_records(self):
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Earnest Money Notifications"),
+            "res_model": "tdc.earnest.money",
+            "view_mode": "list,form",
+            "views": [[False, "list"], [False, "form"]],
+            "domain": [
+                ("state", "!=", "returned"),
+                ("validity_date", "!=", False),
+                ("validity_date", "<=", self._get_notify_limit_date()),
+            ],
+            "target": "current",
+        }
+
+    @api.model
+    def _cron_validity_reminder(self):
+        today = fields.Date.context_today(self)
+        recs = self.search([
+            ("state", "!=", "returned"),
+            ("validity_date", "=", today + timedelta(days=1)),
+        ])
+        summary = _("Earnest Money validity expires tomorrow")
+        for rec in recs:
+            if rec.activity_ids.filtered(lambda a: a.summary == summary):
+                continue
+            rec.activity_schedule(
+                "mail.mail_activity_data_todo",
+                date_deadline=rec.validity_date,
+                summary=summary,
+                note=_("Earnest Money %s ki validity kal khatam ho rahi hai.", rec.name),
+                user_id=rec.create_uid.id,
+            )
     # ============================================================
     # Sequence Generation
     # ============================================================

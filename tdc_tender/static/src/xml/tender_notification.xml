@@ -27,7 +27,7 @@
                         No upcoming deadlines
                     </div>
 
-                    <div t-foreach="state.items" t-as="n" t-key="n.id"
+                    <div t-foreach="state.items" t-as="n" t-key="n.model + '-' + n.id"
                          t-attf-class="tdc_notif_item tdc_prio_{{n.priority}}"
                          t-on-click="() => this.openTender(n)">
 
@@ -48,6 +48,12 @@
                     </div>
                 </t>
             </Dropdown>
+
+            <button t-if="state.activeCount > 1"
+                    class="tdc_clear_all_btn"
+                    t-on-click="clearAllToasts">
+                Clear All (<t t-esc="state.activeCount"/>)
+            </button>
         </div>
     </t>
 

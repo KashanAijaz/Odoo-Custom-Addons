@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="tdc_tender.TenderNotificationListAction">
+        <div class="tdc_notif_page">
+            <div class="tdc_notif_page_header">All Notifications</div>
+
+            <div t-if="!state.items.length" class="p-4 text-muted text-center">
+                No upcoming deadlines
+            </div>
+
+            <table t-if="state.items.length" class="tdc_notif_table">
+                <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Title</th>
+                        <th>Organization</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="state.items" t-as="n" t-key="n.model + '-' + n.id"
+                        t-attf-class="tdc_notif_row tdc_prio_{{n.priority}}"
+                        t-on-click="() => this.openRecord(n)">
+
+                        <td class="fw-bold" t-esc="n.name"/>
+                        <td class="text-truncate" t-esc="n.tender_title"/>
+                        <td class="text-truncate" t-esc="n.partner"/>
+                        <td>
+                            <span class="badge tdc_prio_badge" t-esc="n.priority_label"/>
+                        </td>
+                        <td class="tdc_due">
+                            <i class="fa fa-clock-o me-1"/>
+                            <t t-esc="n.message"/> (<t t-esc="n.due_date"/>)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </t>
+
+</templates>

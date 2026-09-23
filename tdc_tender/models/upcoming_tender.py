@@ -303,6 +303,7 @@ class UpcomingTender(models.Model):
 
             result.append({
                 "id": rec.id,
+                "model": "tdc.upcoming.tender",          # <-- ye line add karo
                 "name": rec.name,
                 "tender_title": rec.tender_title,
                 "partner": rec.partner_id.display_name or "",

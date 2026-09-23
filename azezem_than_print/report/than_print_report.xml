@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_than_print_document">
+        <t t-foreach="docs" t-as="doc">
+            <div class="than-label-page">
+                <div class="than-label-box">
+                    <div class="than-label-heading">Azezem</div>
+                    <div class="than-label-row">
+                        <span class="than-label-key">Than Number</span>
+                        <span class="than-label-colon">:</span>
+                        <span class="than-label-val" t-esc="doc.than_number or ''"/>
+                    </div>
+                    <div class="than-label-row">
+                        <span class="than-label-key">Product</span>
+                        <span class="than-label-colon">:</span>
+                        <span class="than-label-val" t-esc="doc.product_id.display_name or ''"/>
+                    </div>
+                    <div class="than-label-row than-label-row-last">
+                        <span class="than-label-key">Category</span>
+                        <span class="than-label-colon">:</span>
+                        <span class="than-label-val" t-esc="doc.categ_id.name or ''"/>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_than_print">
+        <t t-call="web.basic_layout">
+            <style>
+                @page {
+                    size: 1.8in 0.9in;
+                    margin: 0;
+                }
+                html, body {
+                    width: 1.8in;
+                    height: 0.9in;
+                    margin: 0;
+                    padding: 0;
+                }
+                .than-label-page {
+                    box-sizing: border-box;
+                    width: 1.8in;
+                    height: 0.9in;
+                    padding: 1mm;
+                    font-family: Arial, sans-serif;
+                    page-break-after: always;
+                }
+                .than-label-box {
+                    box-sizing: border-box;
+                    width: 100%;
+                    height: 100%;
+                    border: 1.2px solid #000000;
+                    border-radius: 3px;
+                    padding: 1mm 2mm;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .than-label-heading {
+                    font-size: 13px;
+                    font-weight: 800;
+                    text-align: center;
+                    text-transform: uppercase;
+                    letter-spacing: 0.6px;
+                    line-height: 1.2;
+                    margin-bottom: 1px;
+                }
+                .than-label-row {
+                    display: grid;
+                    grid-template-columns: auto 3px 1fr;
+                    column-gap: 3px;
+                    align-items: center;
+                    font-size: 7.5px;
+                    line-height: 1.5;
+                    border-bottom: 0.5px solid #000000;
+                    white-space: nowrap;
+                    overflow: hidden;
+                }
+                .than-label-row-last {
+                    border-bottom: none;
+                }
+                .than-label-key {
+                    font-weight: 400;
+                }
+                .than-label-colon {
+                    font-weight: 400;
+                    text-align: center;
+                }
+                .than-label-val {
+                    font-weight: 800;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            </style>
+            <t t-call="azezem_than_print.report_than_print_document"/>
+        </t>
+    </template>
+
+    <record id="action_report_than_print" model="ir.actions.report">
+        <field name="name">Azezem Than Print</field>
+        <field name="model">azezem.than.print</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">azezem_than_print.report_than_print</field>
+        <field name="report_file">azezem_than_print.report_than_print</field>
+        <field name="paperformat_id" ref="paperformat_azezem_than_print"/>
+        <field name="print_report_name">'Than Label - %s' % (object.than_number or 'Print')</field>
+        <field name="binding_model_id" ref="model_azezem_than_print"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

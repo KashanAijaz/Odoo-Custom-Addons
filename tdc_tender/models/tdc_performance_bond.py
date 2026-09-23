@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
 from datetime import timedelta, date
 
@@ -226,6 +226,87 @@ class TDCPerformanceBond(models.Model):
                 'default_current_validity': self.validity_date,
             }
         }
+    #######################################################################
+    #######################################################################
+    def _get_notify_limit_date(self):
+        today = fields.Date.context_today(self)
+        param = self.env["ir.config_parameter"].sudo().get_param(
+            "tdc.pbond_notify_days", "1"
+        )
+        days = int(param) if str(param).isdigit() else 1
+        return today + timedelta(days=days)
+
+    @api.model
+    def get_due_notifications(self):
+        today = fields.Date.context_today(self)
+        limit_date = self._get_notify_limit_date()
+
+        recs = self.search([
+            ("state", "!=", "returned"),
+            ("delivery_date", "!=", False),
+            ("delivery_date", "<=", limit_date),
+        ], order="delivery_date asc")
+
+        result = []
+        for rec in recs:
+            left = (rec.delivery_date - today).days
+            if left < 0:
+                msg = _("Delivery date passed %s day(s) ago", abs(left))
+            elif left == 0:
+                msg = _("Delivery date is today!")
+            elif left == 1:
+                msg = _("Delivery date is tomorrow")
+            else:
+                msg = _("Delivery date in %s days", left)
+
+            result.append({
+                "id": rec.id,
+                "model": "tdc.performance.bond",
+                "name": rec.name,
+                "tender_title": rec.tender_title or "",
+                "partner": rec.partner_id.display_name or "",
+                "due_date": rec.delivery_date.strftime("%d %b %Y"),
+                "days_left": left,
+                "message": msg,
+                "priority": "gray",
+                "priority_label": _("Performance Bond"),
+            })
+        return result
+
+    @api.model
+    def action_open_due_records(self):
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Performance Bond Notifications"),
+            "res_model": "tdc.performance.bond",
+            "view_mode": "list,form",
+            "views": [[False, "list"], [False, "form"]],
+            "domain": [
+                ("state", "!=", "returned"),
+                ("delivery_date", "!=", False),
+                ("delivery_date", "<=", self._get_notify_limit_date()),
+            ],
+            "target": "current",
+        }
+
+    @api.model
+    def _cron_validity_reminder(self):
+        today = fields.Date.context_today(self)
+        recs = self.search([
+            ("state", "!=", "returned"),
+            ("delivery_date", "=", today + timedelta(days=1)),
+        ])
+        summary = _("Performance Bond delivery date tomorrow")
+        for rec in recs:
+            if rec.activity_ids.filtered(lambda a: a.summary == summary):
+                continue
+            rec.activity_schedule(
+                "mail.mail_activity_data_todo",
+                date_deadline=rec.delivery_date,
+                summary=summary,
+                note=_("Performance Bond %s ki delivery date kal hai.", rec.name),
+                user_id=rec.create_uid.id,
+            )
 
     # ============================================================
     # Performance Bond Amount

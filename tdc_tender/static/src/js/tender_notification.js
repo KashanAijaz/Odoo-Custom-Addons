@@ -12,6 +12,7 @@ const COUNT_REFRESH_MS = 5 * 60 * 1000;   // bell count har 5 minute
 const REMINDER_MS = 30 * 60 * 1000;       // popup reminder har 30 minute
 let toastsShownThisLoad = false;          // refresh par sirf ek dafa pehla popup
 
+
 export class TenderNotificationSystray extends Component {
     static template = "tdc_tender.TenderNotificationSystray";
     static components = { Dropdown };
@@ -22,7 +23,8 @@ export class TenderNotificationSystray extends Component {
         this.action = useService("action");
         this.notification = useService("notification");
         this.dropdown = useDropdownState();
-        this.state = useState({ items: [] });
+        this.state = useState({ items: [], activeCount: 0 });
+        this.activeToasts = new Map(); // key -> close function, duplicate rokne ke liye
 
         onMounted(async () => {
             await this.load();
@@ -41,16 +43,15 @@ export class TenderNotificationSystray extends Component {
     }
 
     async load() {
-        try {
-            this.state.items = await this.orm.call(
-                "tdc.upcoming.tender",
-                "get_due_notifications",
-                []
-            );
-        } catch (e) {
-            // user ke paas access na ho to chup-chaap ignore
-            this.state.items = [];
-        }
+        const calls = [
+            this.orm.call("tdc.upcoming.tender", "get_due_notifications", []).catch(() => []),
+            this.orm.call("tdc.earnest.money", "get_due_notifications", []).catch(() => []),
+            this.orm.call("tdc.performance.bond", "get_due_notifications", []).catch(() => []),
+        ];
+        const [tenders, earnest, bonds] = await Promise.all(calls);
+        const items = [...tenders, ...earnest, ...bonds];
+        items.sort((a, b) => a.days_left - b.days_left);
+        this.state.items = items;
     }
 
     showToasts(isReminder = false) {
@@ -66,19 +67,44 @@ export class TenderNotificationSystray extends Component {
             : this.state.items;
 
         items.slice(0, MAX_TOASTS).forEach((n) => {
-            this.notification.add(`${n.tender_title} (${n.partner}) — ${n.message}`, {
-                title: `${isReminder ? "⏰ Reminder: " : ""}${n.name} • ${n.priority_label}`,
-                type: TOAST_TYPE[n.priority] || "info",
-                sticky: true,
-                buttons: [
-                    {
-                        name: "Open",
-                        primary: true,
-                        onClick: () => this.openTender(n),
+            const key = `${n.model}-${n.id}-${isReminder ? "r" : "n"}`;
+            // agar isi tender ka popup pehle se screen par hai to dobara mat dikhao
+            if (this.activeToasts.has(key)) {
+                return;
+            }
+
+            const close = this.notification.add(
+                `${n.tender_title} (${n.partner}) — ${n.message}`,
+                {
+                    title: `${isReminder ? "⏰ Reminder: " : ""}${n.name} • ${n.priority_label}`,
+                    type: TOAST_TYPE[n.priority] || "info",
+                    className: n.priority === "gray" ? "tdc_toast_gray" : "",
+                    sticky: true,
+                    buttons: [
+                        {
+                            name: "Open",
+                            primary: true,
+                            onClick: () => this.openTender(n),
+                        },
+                    ],
+                    onClose: () => {
+                        this.activeToasts.delete(key);
+                        this.state.activeCount = this.activeToasts.size;
                     },
-                ],
-            });
+                }
+            );
+
+            this.activeToasts.set(key, close);
+            this.state.activeCount = this.activeToasts.size;
         });
+    }
+
+    clearAllToasts() {
+        for (const close of this.activeToasts.values()) {
+            close();
+        }
+        this.activeToasts.clear();
+        this.state.activeCount = 0;
     }
 
     closeMenu() {
@@ -87,20 +113,28 @@ export class TenderNotificationSystray extends Component {
 
     async viewAll() {
         this.dropdown.close();
-        const action = await this.orm.call(
-            "tdc.upcoming.tender",
-            "action_open_due_tenders",
-            []
-        );
-        await this.action.doAction(action);
+        await this.action.doAction({
+            type: "ir.actions.client",
+            tag: "tdc_tender_notification_list",
+            name: "All Notifications",
+        });
+    }
+
+    hasModel(model) {
+        return this.state.items.some((n) => n.model === model);
     }
 
     async openTender(n) {
         this.dropdown.close();
+        const nameMap = {
+            "tdc.upcoming.tender": "Upcoming Tender",
+            "tdc.earnest.money": "Earnest Money",
+            "tdc.performance.bond": "Performance Bond",
+        };
         await this.action.doAction({
             type: "ir.actions.act_window",
-            name: "Upcoming Tender",
-            res_model: "tdc.upcoming.tender",
+            name: nameMap[n.model] || "Record",
+            res_model: n.model,
             res_id: n.id,
             views: [[false, "form"]],
             target: "current",

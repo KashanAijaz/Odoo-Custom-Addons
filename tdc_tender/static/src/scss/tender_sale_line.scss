@@ -33,3 +33,12 @@
         margin: 0 8px 0 0 !important;
     }
 }
+.tdc_toast_gray {
+    background-color: #6c757d !important;
+    border-color: #5a6268 !important;
+    color: #fff !important;
+
+    .o_notification_icon, .btn-close, a, .btn {
+        color: #fff !important;
+    }
+}
